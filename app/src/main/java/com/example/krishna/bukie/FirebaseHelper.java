@@ -22,6 +22,62 @@ private boolean isListening;
 private DatabaseReference ddref;
 private ChildEventListener childEventListener;
 
+/*
+* When you enter one-to-one chat page, first create an object of FirebaseHelper(...)
+* Parameter description
+*   ad - refers to a unique ID assigned to the ad in question
+*   sel - username of the seller for the particular product in question
+*   buy - username of the buyer for the product
+*   listener - incoming message listener interface object (described below in details)
+*
+*   After you create the object, call the getPreviousMessages() to retrieve a list of previous texts in chronological order
+*   this function returns an ArrayList<Chat> type object, make sure you follow its data fields
+*   PS: this function shouldn't be called multiple times, just once you enter the page (preferable on the onCreate() method of your activity/fragment)
+*
+*   To continuously listen to new texts throughout the active time of the current page call startListening()
+*   this method listens for new texts and calls receiveIncomingMessage(Chat) method on the attached listener
+*   make sure you call the stopListening() during exiting from the activity, this is mandatory!!
+*
+*   This is a demo usage for the FirebaseHelper class.
+*
+*   public void onCreate()
+*   {
+*       ...
+*       FirebaseHelper fh = new FirebaseHelper(adId, usernameseller, usernamebuyer,new IncomingMessageListener(){
+*
+*           public void receiveIncomingMessage(Chat ch)
+*           {
+*               String chatText = ch.getMessage();
+*               String date = ch.getDate();
+*               ...
+*               //add this chatText to any scrollview/listview as the text to display
+*           }
+*
+*       });
+*       fh.startListening();
+*       //after executing this line, the above method receiveIncomingMessage(Chat) gets called for any new text from other user
+*       ...
+*
+*   }
+*
+*   //its similarly important to stop listening to incoming texts, insert the code to onDestroy() and onPause()
+*
+*   public void onDestroy()  // or onPause()
+*   {
+*       ...
+*       fh.stopListening();
+*       ...
+*   }
+*
+*   //to send texts written by this user, call sendMessage(String message)
+*
+*   ..
+*   fh.sendMessage(text);
+*   ..
+*
+*   PS: consider reading the documentation for Chat class once
+*
+*/
     public FirebaseHelper(String ad, String sel, String buy, IncomingMessageListener listener)
     {
         adID = ad;
@@ -68,7 +124,7 @@ private ChildEventListener childEventListener;
         return chats;
     }
 
-    public void pushMessage(String message)
+    public void sendMessage(String message)
     {
         Chat chat = new Chat(message);
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
