@@ -11,5 +11,9 @@
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">#673ab7</item>
+        //the rest of your codes...
+    </style>
 
 </resources>
