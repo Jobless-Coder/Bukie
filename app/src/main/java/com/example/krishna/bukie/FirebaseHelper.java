@@ -124,7 +124,7 @@ private ChildEventListener childEventListener;
         return chats;
     }
 
-    public void sendMessage(String message)
+    public void sendMessage(String message)//add to recyclerview then send
     {
         Chat chat = new Chat(message);
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);

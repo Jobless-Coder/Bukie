@@ -12,12 +12,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -35,14 +38,22 @@ public class ChatActivity extends AppCompatActivity {
                 Log.e("Toolbar","Clicked");
             }
         });
+
         recyclerView=(RecyclerView)findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageItemList=new ArrayList<>();
-        MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am");
-        for(int i=0;i<10;i++){
+        MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am","Indranil");
+        MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
+        View send=(View)findViewById(R.id.send);
+        send.setOnClickListener(this);
+
+        for(int i=0;i<5;i++){
 
             messageItemList.add(messageItem2);
+            messageItemList.add(messageItem2);
+            messageItemList.add(messageItem3);
+            messageItemList.add(messageItem3);
             //Toast.makeText(this, "hello"+messageItem2.getMessage_body()+i, Toast.LENGTH_SHORT).show();
         }
         //Toast.makeText(this, messageItemList.get(9).getMessage_body()+"", Toast.LENGTH_SHORT).show();
@@ -108,6 +119,31 @@ public class ChatActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+    String msg,date;
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.send:
+                EditText chatbox=(EditText)findViewById(R.id.chatbox);
+                msg=chatbox.getText().toString();
+                Date d = new Date();
+
+                SimpleDateFormat ft =
+                        new SimpleDateFormat ("hh:mm a");
+                date=ft.format(d);
+                MessageItem m=new MessageItem(msg,date,"Indranil");
+                messageItemList.add(m);
+                adapter.notifyItemInserted(messageItemList.size()-1);
+                recyclerView.scrollToPosition(messageItemList.size()-1);
+                chatbox.setText("");
+                Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
+
+                break;
+
+            default:
+                break;
+        }
     }
 }
 

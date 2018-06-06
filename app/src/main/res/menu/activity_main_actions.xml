@@ -15,14 +15,21 @@
         android:icon="@drawable/blockuser"
 
         android:title="Block user"
-        android:orderInCategory="3"
-        app:showAsAction="ifRoom" />
+        android:orderInCategory="4"
+        app:showAsAction="withText" />
     <item
         android:id="@+id/delete_chat"
         android:icon="@drawable/deletechat"
 
         android:title="Delete chat"
         android:orderInCategory="2"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/mark_as_sold"
+        android:icon="@drawable/deletechat"
+
+        android:title="Mark as sold"
+        android:orderInCategory="3"
         app:showAsAction="withText" />
 
     <!-- Location Found -->
