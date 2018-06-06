@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- Search / will display always -->
+    <item
+        android:id="@+id/share_location"
+        android:icon="@drawable/location"
+
+        android:title="Share location"
+        android:orderInCategory="1"
+        app:actionViewClass="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/block_user"
+        android:icon="@drawable/blockuser"
+
+        android:title="Block user"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/delete_chat"
+        android:icon="@drawable/deletechat"
+
+        android:title="Delete chat"
+        android:orderInCategory="2"
+        app:showAsAction="withText" />
+
+    <!-- Location Found -->
+    <!--item android:id="@+id/action_location_found"
+        android:icon="@drawable/ic_action_location_found"
+        android:title="Hello"
+        app:showAsAction="ifRoom" /-->
+
+    <!-- Refresh -->
+    <!--item android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/action_refresh"
+        app:showAsAction="ifRoom" />
+
+
+    <item android:id="@+id/action_help"
+        android:icon="@drawable/ic_action_help"
+        android:title="@string/action_help"
+        app:showAsAction="never" />
+
+
+    <item android:id="@+id/action_check_updates"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/action_check_updates"
+        app:showAsAction="never"-->
+</menu>
