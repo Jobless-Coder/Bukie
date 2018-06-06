@@ -59,6 +59,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //Toast.makeText(this, messageItemList.get(9).getMessage_body()+"", Toast.LENGTH_SHORT).show();
         adapter=new MyAdapter(messageItemList,this);
         recyclerView.setAdapter(adapter);
+        recyclerView.scrollToPosition(messageItemList.size()-1);
 
 
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,6 +88,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
