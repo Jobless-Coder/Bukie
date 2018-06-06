@@ -134,7 +134,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 SimpleDateFormat ft =
                         new SimpleDateFormat ("hh:mm a");
                 date=ft.format(d);
-                MessageItem m=new MessageItem(msg,date,"Indranil");
+                MessageItem m=new MessageItem(msg,date,"Krishna");
                 fh.sendMessage(m);
                 /*messageItemList.add(m);
                 adapter.notifyItemInserted(messageItemList.size()-1);
