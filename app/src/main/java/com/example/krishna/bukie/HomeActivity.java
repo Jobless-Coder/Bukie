@@ -28,4 +28,8 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(this,ChatActivity.class));
 
     }
+
+    public void goToFeedback(View view) {
+        startActivity(new Intent(this, FeedbackActivity.class));
+    }
 }

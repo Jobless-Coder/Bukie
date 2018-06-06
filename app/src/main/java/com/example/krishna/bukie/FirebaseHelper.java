@@ -11,11 +11,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FirebaseHelper {
 private String adID;
 private String seller;
 private String buyer;
+private String username;
 private String refID;//this id is the node key for this entire chat section
 private IncomingMessageListener listener;
 private boolean isListening;
@@ -43,19 +45,17 @@ private ChildEventListener childEventListener;
 *   public void onCreate()
 *   {
 *       ...
-*       FirebaseHelper fh = new FirebaseHelper(adId, usernameseller, usernamebuyer,new IncomingMessageListener(){
+*       FirebaseHelper fh = new FirebaseHelper(adId, usernameseller, usernamebuyer, usernameofuser, new IncomingMessageListener(){
 *
-*           public void receiveIncomingMessage(Chat ch)
+*           public void receiveIncomingMessage(MessageItem ch)
 *           {
-*               String chatText = ch.getMessage();
-*               String date = ch.getDate();
 *               ...
 *               //add this chatText to any scrollview/listview as the text to display
 *           }
 *
 *       });
 *       fh.startListening();
-*       //after executing this line, the above method receiveIncomingMessage(Chat) gets called for any new text from other user
+*       //after executing this line, the above method receiveIncomingMessage(MessageItem) gets called for any new text from other user
 *       ...
 *
 *   }
@@ -75,14 +75,15 @@ private ChildEventListener childEventListener;
 *   fh.sendMessage(text);
 *   ..
 *
-*   PS: consider reading the documentation for Chat class once
+*   PS: consider reading the documentation for MessageItem class once
 *
 */
-    public FirebaseHelper(String ad, String sel, String buy, IncomingMessageListener listener)
+    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
     {
         adID = ad;
         seller = sel;
         buyer = buy;
+        username = usernameofuser;
         this.listener = listener;
         isListening = false;
         createRefID();
@@ -101,9 +102,9 @@ private ChildEventListener childEventListener;
     }
 
 
-    public ArrayList<Chat> getPreviousTexts()
+    public ArrayList<MessageItem> getPreviousTexts()
     {
-        final ArrayList<Chat> chats = new ArrayList<>();
+        final ArrayList<MessageItem> chats = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference dref = database.getReference().child("chats/"+refID);
@@ -111,7 +112,7 @@ private ChildEventListener childEventListener;
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot data:dataSnapshot.getChildren()) {
-                    chats.add(data.getValue(Chat.class));
+                    chats.add(data.getValue(MessageItem.class));
                 }
             }
 
@@ -126,7 +127,7 @@ private ChildEventListener childEventListener;
 
     public void sendMessage(String message)//add to recyclerview then send
     {
-        Chat chat = new Chat(message);
+        MessageItem chat = new MessageItem(message, new Date().toString(),username);
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
         dref.push().setValue(chat);
     }
@@ -138,7 +139,7 @@ private ChildEventListener childEventListener;
         childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Chat chat = dataSnapshot.getValue(Chat.class);
+                MessageItem chat = dataSnapshot.getValue(MessageItem.class);
                 listener.receiveIncomingMessage(chat);
             }
 

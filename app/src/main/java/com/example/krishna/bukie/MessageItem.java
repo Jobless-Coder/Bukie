@@ -11,6 +11,10 @@ public class MessageItem {
         this.username = username;
     }
 
+    public MessageItem()
+    {
+        //Savour yourself, Firebase!
+    }
 
 
     public String getMessage_body() {
