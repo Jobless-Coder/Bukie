@@ -91,6 +91,7 @@
 
 
                 <android.support.v7.widget.CardView
+
                     android:onClick="addImage"
                     android:id="@+id/imageaddingbutton"
                     android:layout_width="wrap_content"
@@ -110,7 +111,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@color/colorPrimary"
+                        android:background="@color/colorPrimaryDark"
                         android:padding="10dp"
                         android:src="@drawable/ic_action_add_image" />
 
@@ -129,13 +130,26 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/feedbackmessage" />
 
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toTopOf="@+id/submit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/userselectedimage" />
+
                 <android.support.v7.widget.CardView
                     android:id="@+id/submit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_marginBottom="8dp"
-                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardBackgroundColor="@color/colorPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <TextView
@@ -158,7 +172,7 @@
             app:layout_anchorGravity="bottom|center"
             app:layout_anchor="@id/headersection"
             app:cardCornerRadius="40dp"
-            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardBackgroundColor="@color/colorPrimaryDark"
             android:layout_width="80dp"
             android:layout_height="80dp">
 
