@@ -17,6 +17,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".FeedbackActivity"
+            android:theme="@style/NoActionTheme"/>
     </application>
 
 </manifest>

@@ -16,4 +16,8 @@
         //the rest of your codes...
     </style>
 
+    <style name="NoActionTheme" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>
