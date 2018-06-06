@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -28,13 +29,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessageItem> messageItemList;
     private  FirebaseHelper fh;
     private Context context;
-    private String adId, usernameseller, usernamebuyer, usernameofuser;
+    private String adId, usernameseller, usernamebuyer, usernameofuser,tmpuser;
+    private TextView username2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
+        TextView username2=(TextView)findViewById(R.id.username);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context=getApplicationContext();
@@ -53,7 +57,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
         View send=(View)findViewById(R.id.send);
         send.setOnClickListener(this);
-        String adId="123456",usernameseller="Indranil",usernamebuyer="Krishna",usernameofuser="Krishna";
+         adId="123456";usernameseller="Indranil";usernamebuyer="Krishna";usernameofuser="Indranil";
+         if(usernameofuser.compareTo(usernamebuyer)==0)
+             tmpuser=usernameseller;
+         else
+             tmpuser=usernamebuyer;
+        username2.setText(tmpuser);
         fh = new FirebaseHelper(adId, usernameseller, usernamebuyer, usernameofuser, new IncomingMessageListener(){
                  public void receiveIncomingMessage(MessageItem ch)
           {
@@ -134,13 +143,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 SimpleDateFormat ft =
                         new SimpleDateFormat ("hh:mm a");
                 date=ft.format(d);
-                MessageItem m=new MessageItem(msg,date,"Indranil");
+                MessageItem m=new MessageItem(msg,date,usernameofuser);
                 fh.sendMessage(m);
                 /*messageItemList.add(m);
                 adapter.notifyItemInserted(messageItemList.size()-1);
                 recyclerView.scrollToPosition(messageItemList.size()-1);*/
                 chatbox.setText("");
-                Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
 
                 break;
 
