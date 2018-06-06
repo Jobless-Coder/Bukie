@@ -99,10 +99,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     @Override
     public int getItemCount() {
-        if(messageItemList==null)
+        /*if(messageItemList==null)
         {
             messageItemList = new ArrayList<MessageItem>();
-        }
+        }*/
         return messageItemList.size();
     }
 

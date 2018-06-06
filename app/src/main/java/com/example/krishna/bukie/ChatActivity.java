@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import android.content.Context;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,14 +26,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
-
+    private  FirebaseHelper fh;
+    private Context context;
+    private String adId, usernameseller, usernamebuyer, usernameofuser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        context=getApplicationContext();
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,46 +53,42 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
         View send=(View)findViewById(R.id.send);
         send.setOnClickListener(this);
+        String adId="123456",usernameseller="Indranil",usernamebuyer="Krishna",usernameofuser="Krishna";
+        fh = new FirebaseHelper(adId, usernameseller, usernamebuyer, usernameofuser, new IncomingMessageListener(){
+                 public void receiveIncomingMessage(MessageItem ch)
+          {
+              messageItemList.add(ch);
+              adapter=new MyAdapter(messageItemList,context);
+              recyclerView.setAdapter(adapter);
+              recyclerView.scrollToPosition(messageItemList.size()-1);
+          }
 
-        for(int i=0;i<5;i++){
+              });
+        fh.startListening();
+
+
+
+       /* for(int i=0;i<2;i++){
 
             messageItemList.add(messageItem2);
             messageItemList.add(messageItem2);
             messageItemList.add(messageItem3);
             messageItemList.add(messageItem3);
-            //Toast.makeText(this, "hello"+messageItem2.getMessage_body()+i, Toast.LENGTH_SHORT).show();
-        }
-        //Toast.makeText(this, messageItemList.get(9).getMessage_body()+"", Toast.LENGTH_SHORT).show();
-        adapter=new MyAdapter(messageItemList,this);
+
+        }*/
+       /* adapter=new MyAdapter(messageItemList,this);
         recyclerView.setAdapter(adapter);
-        recyclerView.scrollToPosition(messageItemList.size()-1);
-
-
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        recyclerView.scrollToPosition(messageItemList.size()-1);*/
 
 
 
-        //toolbar.setTitle("Hello");
-        //toolbar.setTitleTextColor(getResources().getColor(android.R.color.black));
-        setSupportActionBar(toolbar);
-        ActionMenuView amv = (ActionMenuView) toolbar.findViewById(R.id.amvMenu);
-        amv.setOnMenuItemClickListener(new ActionMenuView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                return onOptionsItemSelected(menuItem);
-            }
-        });
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(null);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       ActionBar ab=getSupportActionBar();
-       //ab.setIcon(R.drawable.boy);
-       ab.setDisplayHomeAsUpEnabled(true);*/
 
 
 
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        fh.stopListening();
     }
 
 
@@ -102,7 +104,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         SearchView searchView =
                 (SearchView) searchItem.getActionView();
 
-        // Configure the search info and add any event listeners...
+
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -110,12 +112,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // action with ID action_refresh was selected
             case R.id.share_location:
                 Toast.makeText(this, "search selected", Toast.LENGTH_SHORT)
                         .show();
                 break;
-            // action with ID action_settings was selected
 
             default:
                 break;
@@ -135,9 +135,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         new SimpleDateFormat ("hh:mm a");
                 date=ft.format(d);
                 MessageItem m=new MessageItem(msg,date,"Indranil");
-                messageItemList.add(m);
+                fh.sendMessage(m);
+                /*messageItemList.add(m);
                 adapter.notifyItemInserted(messageItemList.size()-1);
-                recyclerView.scrollToPosition(messageItemList.size()-1);
+                recyclerView.scrollToPosition(messageItemList.size()-1);*/
                 chatbox.setText("");
                 Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
 

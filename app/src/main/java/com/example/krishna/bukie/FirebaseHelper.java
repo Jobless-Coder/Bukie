@@ -80,6 +80,7 @@ private ChildEventListener childEventListener;
 */
     public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
     {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         adID = ad;
         seller = sel;
         buyer = buy;
@@ -125,11 +126,11 @@ private ChildEventListener childEventListener;
         return chats;
     }
 
-    public void sendMessage(String message)//add to recyclerview then send
+    public void sendMessage(MessageItem message)//add to recyclerview then send
     {
-        MessageItem chat = new MessageItem(message, new Date().toString(),username);
+        //MessageItem chat = new MessageItem(message, new Date().toString(),username);
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
-        dref.push().setValue(chat);
+        dref.push().setValue(message);
     }
 
     public void startListening()

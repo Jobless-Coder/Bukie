@@ -25,6 +25,7 @@
 
 <android.support.v7.widget.RecyclerView
     android:id="@+id/reyclerview"
+    android:layout_margin="10dp"
     android:layout_width="match_parent"
     android:layout_weight="1"
     android:layout_height="0dp"
@@ -84,13 +85,14 @@ app:stackFromEnd="true"
 
         android:layout_marginLeft="5dp"
         app:cardCornerRadius="20dp"
+        android:id="@+id/send"
         android:background="?attr/selectableItemBackgroundBorderless"
-        app:cardBackgroundColor="#ffffff"
+        android:elevation="6dp"
         android:layout_width="40dp"
         android:layout_height="40dp">
     <ImageView
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:id="@+id/send"
+
         android:layout_gravity="center"
         android:src="@drawable/send"
         android:layout_width="20dp"
