@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout android:orientation="vertical"
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content">
     <android.support.v7.widget.Toolbar
         android:elevation="4dp"
+
         android:id="@+id/toolbar_chats"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -22,14 +24,14 @@
     </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-
 <android.support.v7.widget.RecyclerView
     android:id="@+id/reyclerview"
     android:layout_margin="10dp"
+
     android:layout_width="match_parent"
     android:layout_weight="1"
     android:layout_height="0dp"
-app:stackFromEnd="true"
+
     >
 </android.support.v7.widget.RecyclerView>
 

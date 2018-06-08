@@ -2,6 +2,8 @@ package com.example.krishna.bukie;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -80,7 +82,7 @@ private ChildEventListener childEventListener;
 */
     public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
     {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         adID = ad;
         seller = sel;
         buyer = buy;
@@ -105,6 +107,7 @@ private ChildEventListener childEventListener;
 
     public ArrayList<MessageItem> getPreviousTexts()
     {
+        Log.d("MyApp","I am here");
         final ArrayList<MessageItem> chats = new ArrayList<>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 

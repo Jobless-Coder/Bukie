@@ -3,4 +3,7 @@
     <string name="feedbacktext">Hey there valuable user! we are working hard to make it a remarkable experience.Kindly share with us any suggestions/feedback you have.
         Also don\'t forget to report bugs.
     </string>
+    <string name="facebook_app_id">999908260170527</string>
+    <string name="fb_login_protocol_scheme">fb999908260170527</string>
+    <!--string name="default_web_client_id">743515921060-qb58ds2qtmq6mflbuejv23hrt8h4aa5j.apps.googleusercontent.com</1string-->
 </resources>
