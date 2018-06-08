@@ -18,13 +18,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
    private List<MessageItem> messageItemList;
    private Context context;
    private View itemView2;
-   String previous_user="";
+   String previous_user="-1",previous_user2;
    String current_user="";
 
     public MyAdapter(List<MessageItem> messageItemList, Context context) {
         this.messageItemList = messageItemList;
         this.context = context;
     }
+
     @Override
     public int getItemViewType(int position) {
         return position;
@@ -43,7 +44,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
     MessageItem messageItem=messageItemList.get(position);
     current_user=messageItem.getUsername();
-    //RelativeLayout rl=itemView2.findViewById(R.id.rellayout);
+    if(position>0) {
+        previous_user=messageItemList.get(position - 1).getUsername();
+        //previous_user2 = messageItemList.get(-1).getUsername();
+    }
+    else
+        previous_user="-1";
+
+
 
     if(current_user.compareTo("Indranil")==0&&current_user.compareTo(previous_user)==0)
     {
@@ -51,33 +59,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
         holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
         holder.message_body1.setText(messageItem.getMessage_body());
         holder.time1.setText(messageItem.getTime());
-        //holder.rlfather.setGravity(Gravity.RIGHT);
-        //holder.lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        //holder.lp.gravity=Gravity.RIGHT;
-        previous_user=current_user;
+
 
 
     }
-    else if(current_user.compareTo("Indranil")==0&&current_user.compareTo(previous_user)!=0){
+    else if(current_user.compareTo("Indranil")==0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0)*/)){
         holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
         holder.message_body1.setText(messageItem.getMessage_body());
         holder.time1.setText(messageItem.getTime());
-       // holder.rlfather.setGravity(Gravity.RIGHT);
-       // holder.lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-       // holder.lp.gravity=Gravity.RIGHT;
-        previous_user=current_user;
+
 
     }
-    else if(current_user.compareTo("Indranil")!=0&&current_user.compareTo(previous_user)!=0){
+    else if(current_user.compareTo("Indranil")!=0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0*/)){
         holder.rlson1.setVisibility(View.GONE);
         holder.rlson2.setVisibility(View.VISIBLE);
         holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
         holder.message_body2.setText(messageItem.getMessage_body());
         holder.time2.setText(messageItem.getTime());
-        //holder.rlfather.setGravity(Gravity.LEFT);
-        //holder.lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        //holder.lp.gravity=Gravity.LEFT;
-        previous_user=current_user;
 
     }
     else if(current_user.compareTo("Indranil")!=0&&current_user.compareTo(previous_user)==0){
@@ -86,15 +84,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
         holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
         holder.message_body2.setText(messageItem.getMessage_body());
         holder.time2.setText(messageItem.getTime());
-        //holder.rlfather.setGravity(Gravity.LEFT);
-        //holder.lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        //holder.lp.gravity=Gravity.LEFT;
-        previous_user=current_user;
+
 
     }
-    /*holder.rlfather.setLayoutParams(holder.lp);
-    holder.message_body.setText(messageItem.getMessage_body());
-    holder.time.setText(messageItem.getTime());*/
+
     }
 
     @Override

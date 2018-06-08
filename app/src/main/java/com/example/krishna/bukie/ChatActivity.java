@@ -29,13 +29,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessageItem> messageItemList;
     private  FirebaseHelper fh;
     private Context context;
+    private EditText chatbox;
+    private int count;
     private String adId, usernameseller, usernamebuyer, usernameofuser,tmpuser;
     private TextView username2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        chatbox=(EditText)findViewById(R.id.chatbox);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+       getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         TextView username2=(TextView)findViewById(R.id.username);
 
@@ -57,6 +63,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
         View send=(View)findViewById(R.id.send);
         send.setOnClickListener(this);
+        //count=recyclerView.getAdapter().getItemCount()-1;
          adId="123456";usernameseller="Indranil";usernamebuyer="Krishna";usernameofuser="Indranil";
          if(usernameofuser.compareTo(usernamebuyer)==0)
              tmpuser=usernameseller;
@@ -73,21 +80,33 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
           }
 
               });
+
         fh.startListening();
+        chatbox.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
+                    {
+                        //if(messageItemList!=null)
+                            recyclerView.scrollToPosition(messageItemList.size()-1);
+                        Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                /*LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                // you may want to play with the offset parameter
+                layoutManager.scrollToPosition(recyclerView.getAdapter().getItemCount()-1);
+                chatbox.setFocusableInTouchMode(true);
+                /*chatbox.post(() -> {
+                    chatbox.requestFocus();
+                    UiUtils.showKeyboard(chatbox);
+                });*/
+            }
+        });
 
 
 
-       /* for(int i=0;i<2;i++){
 
-            messageItemList.add(messageItem2);
-            messageItemList.add(messageItem2);
-            messageItemList.add(messageItem3);
-            messageItemList.add(messageItem3);
-
-        }*/
-       /* adapter=new MyAdapter(messageItemList,this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.scrollToPosition(messageItemList.size()-1);*/
 
 
 
@@ -95,6 +114,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
     public void onDestroy() {
         super.onDestroy();
         fh.stopListening();
@@ -136,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.send:
-                EditText chatbox=(EditText)findViewById(R.id.chatbox);
+
                 msg=chatbox.getText().toString();
                 Date d = new Date();
 
