@@ -30,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void goToFeedback(View view) {
-        startActivity(new Intent(this, FeedbackActivity.class));
+        startActivity(new Intent(this, AuthActivity.class));
+        //startActivity(new Intent(this, FeedbackActivity.class));
     }
 }

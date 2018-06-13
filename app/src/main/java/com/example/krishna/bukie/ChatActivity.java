@@ -58,6 +58,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView=(RecyclerView)findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
+            {
+                //if(messageItemList!=null)
+                recyclerView.scrollToPosition(messageItemList.size()-1);
+                Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         messageItemList=new ArrayList<>();
         MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am","Indranil");
         MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
@@ -82,17 +93,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
               });
 
         fh.startListening();
+
         chatbox.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
-                    {
-                        //if(messageItemList!=null)
-                            recyclerView.scrollToPosition(messageItemList.size()-1);
-                        Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
-                    }
-                });
+
                 /*LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 // you may want to play with the offset parameter
                 layoutManager.scrollToPosition(recyclerView.getAdapter().getItemCount()-1);
