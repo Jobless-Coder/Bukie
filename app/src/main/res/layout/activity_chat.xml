@@ -16,7 +16,7 @@
 
         android:id="@+id/toolbar_chats"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="?android:attr/actionBarSize"
         android:theme="@style/BaseTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
@@ -75,7 +75,7 @@
         android:maxLines="4"
         android:inputType="textMultiLine" />
         <ImageView
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/gallery"
             android:layout_width="wrap_content"
             android:layout_height="25dp" />
@@ -88,12 +88,12 @@
         android:layout_marginLeft="5dp"
         app:cardCornerRadius="20dp"
         android:id="@+id/send"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="?android:attr/selectableItemBackground"
         android:elevation="6dp"
         android:layout_width="40dp"
         android:layout_height="40dp">
     <ImageView
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="?android:attr/selectableItemBackground"
 
         android:layout_gravity="center"
         android:src="@drawable/send"

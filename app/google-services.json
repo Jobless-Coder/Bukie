@@ -15,12 +15,16 @@
       },
       "oauth_client": [
         {
-          "client_id": "854258071480-3f3nrkibat329uoc8cgcpbao3njblngm.apps.googleusercontent.com",
+          "client_id": "854258071480-7r2ad3c0oqtusk1rpj355fsk9n65eerg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.krishna.bukie",
-            "certificate_hash": "7cd1987f450e23949faf59a86fd14d2839ee2d77"
+            "certificate_hash": "76df6a5ef7a755564895ac48c67ff737beb25b7a"
           }
+        },
+        {
+          "client_id": "854258071480-c1uvq3uttcca72d7md02nutvb8ej22et.apps.googleusercontent.com",
+          "client_type": 3
         },
         {
           "client_id": "854258071480-fra268gftjp6idsppv0vs253r2oq0n2d.apps.googleusercontent.com",
@@ -44,7 +48,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "854258071480-fra268gftjp6idsppv0vs253r2oq0n2d.apps.googleusercontent.com",
+              "client_id": "854258071480-c1uvq3uttcca72d7md02nutvb8ej22et.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
