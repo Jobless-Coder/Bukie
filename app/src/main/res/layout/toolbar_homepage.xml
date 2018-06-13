@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+   
+    android:layout_width="fill_parent"
+    android:layout_height="?android:actionBarSize">
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/image1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/profile_pic"
+            android:layout_width="35.0dip"
+            android:layout_height="35.0dip"
+            android:src="@drawable/boy"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/image1"
+        android:orientation="vertical"
+        android:paddingBottom="2.0dip"
+        android:paddingLeft="4.0dip"
+        android:paddingRight="0.0dip"
+        android:paddingTop="0.0dip" >
+
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_weight="0.6"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="BookMart"
+            android:textStyle="bold" />
+
+
+
+
+    </LinearLayout>
+</RelativeLayout>

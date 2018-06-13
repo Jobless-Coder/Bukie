@@ -48,12 +48,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context=getApplicationContext();
-        toolbar.setOnClickListener(new View.OnClickListener() {
+        /*toolbar_chats.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("Toolbar","Clicked");
             }
-        });
+        });*/
 
         recyclerView=(RecyclerView)findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);

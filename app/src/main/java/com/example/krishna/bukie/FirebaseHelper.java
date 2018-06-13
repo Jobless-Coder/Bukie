@@ -35,11 +35,11 @@ private ChildEventListener childEventListener;
 *   listener - incoming message listener interface object (described below in details)
 *
 *   After you create the object, call the getPreviousMessages() to retrieve a list of previous texts in chronological order
-*   this function returns an ArrayList<Chat> type object, make sure you follow its data fields
+*   this function returns an ArrayList<BookAds> type object, make sure you follow its data fields
 *   PS: this function shouldn't be called multiple times, just once you enter the page (preferable on the onCreate() method of your activity/fragment)
 *
 *   To continuously listen to new texts throughout the active time of the current page call startListening()
-*   this method listens for new texts and calls receiveIncomingMessage(Chat) method on the attached listener
+*   this method listens for new texts and calls receiveIncomingMessage(BookAds) method on the attached listener
 *   make sure you call the stopListening() during exiting from the activity, this is mandatory!!
 *
 *   This is a demo usage for the FirebaseHelper class.

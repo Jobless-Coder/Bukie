@@ -16,18 +16,24 @@ android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?android:attr/actionBarSize">
         <android.support.v7.widget.Toolbar
-            android:elevation="4dp"
-
+            android:background="@color/white"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:theme="@style/BaseTheme"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             >
+            <LinearLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
             <include
-                android:id="@+id/toolbar_layout" layout="@layout/toolbar_conversation"/>
+                 layout="@layout/toolbar_homepage"/>
+            </LinearLayout>
+
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 <!--android.support.v4.widget.NestedScrollView
@@ -73,7 +79,7 @@ android:layout_height="match_parent">
 
 
     </FrameLayout>
-    <android.support.design.widget.FloatingActionButton
+    <!--android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         app:fabSize="normal"
         android:layout_marginRight="35dp"
@@ -86,13 +92,12 @@ android:layout_height="match_parent">
         android:tint="@color/white"
         app:backgroundTint="@color/colorAccent"
         app:rippleColor="@android:color/background_light"
-        app:srcCompat="@drawable/post" />
+        app:srcCompat="@drawable/post" /-->
 
 
 <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
     android:id="@+id/bottom_navigation"
     app:menu="@menu/navmenu"
-    android:elevation="10dp"
     android:layout_gravity="bottom"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

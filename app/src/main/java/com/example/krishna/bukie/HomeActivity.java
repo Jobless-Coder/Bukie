@@ -13,10 +13,10 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        /*final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
-        setSupportActionBar(toolbar);
+        /*final Toolbar toolbar_chats = (Toolbar) findViewById(R.id.toolbar_chats);
+        setSupportActionBar(toolbar_chats);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setOnClickListener(new View.OnClickListener() {
+        toolbar_chats.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("Toolbar","Clicked");

@@ -7,6 +7,7 @@
 
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/image1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,20 +50,9 @@
             android:maxLines="1"
             android:textSize="18sp"
             android:textColor="@color/colorPrimaryDark"
-            android:text="Dodo"
+            android:text="My Ads"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/action_bar_title_2"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginLeft="6dp"
-            android:layout_weight="0.4"
-            android:ellipsize="end"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="last seen today"
-            android:maxLines="1"
-            android:textSize="12sp" />
 
 
     </LinearLayout>
