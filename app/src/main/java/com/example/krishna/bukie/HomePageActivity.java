@@ -44,6 +44,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         toolbargroup=findViewById(R.id.toolbar_layout);
 
+
         setSupportActionBar(toolbar);
          actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -55,35 +56,15 @@ public class HomePageActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        // set item as selected to persist highlight
                         menuItem.setChecked(true);
-                        // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
 
-                        // Add code here to update the UI based on the item selected
-                        // For example, swap UI fragments here
 
                         return true;
                     }
                 });
-        //fabhide
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-                if (dy > 0)
-                    fabAddNew.hide();
-                else if (dy < 0)
-                    fabAddNew.show();
-            }
-        });*/
 
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        /*BottomNavigationViewEx bnve = (BottomNavigationViewEx) findViewById(R.id.bnve);
-        bnve.enableAnimation(false);
-        bnve.enableShiftingMode(false);*/
-        //bnve.enableItemShiftingMode(false);
         loadFragment(new HomeFragment());
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
 
@@ -104,32 +85,12 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search:
-                Toast.makeText(this, "search selected", Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            case R.id.filter:
-                Toast.makeText(this, "filter selected", Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
 
-
-            default:
-                break;
-        }
-        return true;
-    }
 
 
     private void initializeViews() {
         item1 = new AHBottomNavigationItem("Home", R.drawable.home, R.color.colorAccent);
-        item2 = new AHBottomNavigationItem("BookAds", R.drawable.chat, R.color.violet);
+        item2 = new AHBottomNavigationItem("Chats", R.drawable.chat, R.color.violet);
         item3 = new AHBottomNavigationItem("My ads", R.drawable.myads, R.color.colorAccent);
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
@@ -148,9 +109,9 @@ public class HomePageActivity extends AppCompatActivity {
                 switch (position){
 
                     case 0:
-                        toolbargroup.removeAllViews();
+                        /*toolbargroup.removeAllViews();
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
-                        toolbargroup.addView(toolbarview);
+                        toolbargroup.addView(toolbarview);*/
                         fragment = new HomeFragment();
 
 

@@ -46,7 +46,8 @@
         <activity
             android:name=".RegistrationActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name=".HomePageActivity"></activity>
+        <activity android:name=".HomePageActivity" />
+        <activity android:name=".PostnewadActivity"></activity>
     </application>
 
 </manifest>

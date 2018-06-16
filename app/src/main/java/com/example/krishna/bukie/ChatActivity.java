@@ -38,22 +38,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         chatbox=(EditText)findViewById(R.id.chatbox);
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         TextView username2=(TextView)findViewById(R.id.username);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context=getApplicationContext();
-        /*toolbar_chats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Toolbar","Clicked");
-            }
-        });*/
+
 
         recyclerView=(RecyclerView)findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
@@ -82,27 +77,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
               });
 
         fh.startListening();
-        chatbox.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
-                    {
-                        //if(messageItemList!=null)
-                            recyclerView.scrollToPosition(messageItemList.size()-1);
-                        Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                /*LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                // you may want to play with the offset parameter
-                layoutManager.scrollToPosition(recyclerView.getAdapter().getItemCount()-1);
-                chatbox.setFocusableInTouchMode(true);
-                /*chatbox.post(() -> {
-                    chatbox.requestFocus();
-                    UiUtils.showKeyboard(chatbox);
-                });*/
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
+            {
+                //if(messageItemList!=null)
+                recyclerView.scrollToPosition(messageItemList.size()-1);
+                Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });
+
 
 
 
@@ -165,9 +149,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 date=ft.format(d);
                 MessageItem m=new MessageItem(msg,date,usernameofuser);
                 fh.sendMessage(m);
-                /*messageItemList.add(m);
-                adapter.notifyItemInserted(messageItemList.size()-1);
-                recyclerView.scrollToPosition(messageItemList.size()-1);*/
+
                 chatbox.setText("");
                 //Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
 

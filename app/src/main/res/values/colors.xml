@@ -7,6 +7,15 @@
     <color name="black">#000000</color>
     <color name="violet">#673ab7</color>
     <color name="grey">#E0E0E0</color>
+    <color name="light_grey">#FAFAFA</color>
     <color name="light_violet">#B39DDB</color>
-    <color name="orange">#FDD835</color>
+    <color name="orange">#FF9100</color>
+    <color name="deep_blue">#03A9F4</color>
+    <color name="light_blue">#4FC3F7</color>
+    <color name="green">#76FF03</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="deep_orange">#FF5722</color>
+    <color name="deep_red">#f44336</color>
+    <color name="red">#ff5252</color>
+
 </resources>
