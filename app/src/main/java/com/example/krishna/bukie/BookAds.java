@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,8 @@ public String booktitle;
 public String price;
 public String bookcategory;
 public String bookpic;
-public List<String> bookpicslist;
+public List<String> bookpicslist=new ArrayList<String>();
+
 public BookAds(){
 
     }
@@ -40,19 +42,16 @@ public BookAds(){
         return bookpicslist;
     }
 
-    public BookAds(String coverpic, String date, String booktitle, String price, String bookcategory) {
-        this.coverpic = coverpic;
-        this.date = date;
-        this.booktitle = booktitle;
-        this.price = price;
-        this.bookcategory = bookcategory;
-    }
+
     protected BookAds(Parcel in){
-        coverpic = in.readString();
-        date = in.readString();
-        booktitle = in.readString();
-       price = in.readString();
-        bookcategory = in.readString();
+        this.date = in.readString();
+        this.booktitle = in.readString();
+        this.bookcategory = in.readString();
+        this.price = in.readString();
+        this.coverpic = in.readString();
+        this.bookpicslist = new ArrayList<String>();
+        in.readList(bookpicslist,String.class.getClassLoader());
+        //bookpicslist=in.readList(boo);
     }
     public static final Creator<BookAds> CREATOR = new Creator<BookAds>() {
         @Override
@@ -93,11 +92,12 @@ public BookAds(){
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(bookcategory);
-        dest.writeString(coverpic);
-        dest.writeString(booktitle);
-        dest.writeString(date);
-        dest.writeString(price);
+        dest.writeString(this.date);
+        dest.writeString(this.booktitle);
+        dest.writeString(this.bookcategory);
+        dest.writeString(this.price);
+        dest.writeString(this.coverpic);
+        dest.writeList(this.bookpicslist);
 
     }
 }

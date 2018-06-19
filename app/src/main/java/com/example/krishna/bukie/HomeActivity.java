@@ -32,11 +32,19 @@ public class HomeActivity extends AppCompatActivity {
 
 
     public void goToFeedback(View view) {
-        startActivity(new Intent(this, AuthActivity.class));
+        startActivity(new Intent(this, FeedbackActivity.class));
         //startActivity(new Intent(this, FeedbackActivity.class));
     }
 
     public void goToHomepage(View view) {
         startActivity(new Intent(this,HomePageActivity.class));
+    }
+
+    public void goToAuth(View view) {
+        startActivity(new Intent(this,AuthActivity.class));
+    }
+
+    public void goToDisplayAd(View view) {
+        startActivity(new Intent(this,DisplayAdActivity.class));
     }
 }

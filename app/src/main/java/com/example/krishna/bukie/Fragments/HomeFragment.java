@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.BookAdsAdapter;
+import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     StorageReference storageReference;
     ViewGroup toolbargroup;
     View toolbarview;
+    BookItemClickListener bookItemClickListener;
     DrawerLayout mDrawerLayout;
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseFirestore firebaseFirestore;
@@ -83,7 +85,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onBindViewHolder(final BookHolder holder, int position, BookAds model)
             {
+
                 final BookAds bookAds=model;
+
                 if(holder.bookprice.getBackground()!=null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Handler handler = new Handler();
@@ -123,6 +127,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     holder.bookcategory.setText(bookAds.getBookcategory());
 
                 }
+                holder.selectad.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                       // Toast.makeText(context, ""+bookAds.getBookcategory(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, DisplayAdActivity.class);
+                        intent.putExtra("bookads", bookAds);
+
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                });
             }
           /* @Override
             public int getItemCount() {
@@ -148,17 +164,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 return new BookHolder(view);*/
                 View v= LayoutInflater.from(getContext())
                         .inflate(R.layout.bookadview,parent,false);
-                return  new BookHolder(v);
+                final BookHolder bookHolder=new BookHolder(v);
+
+                return bookHolder;
             }
         };
         firestoreRecyclerAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(firestoreRecyclerAdapter);
 
     }
-    public class BookHolder extends RecyclerView.ViewHolder {
+    public class BookHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView bookpic;
         public TextView bookprice,bookdate,bookcategory,booktitle;
         public ShimmerFrameLayout shimmerFrameLayout;
+        public View selectad;
        /* @BindView(R.id.name)
         TextView textName;
         @BindView(R.id.image)
@@ -176,7 +195,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             bookdate=itemView.findViewById(R.id.bookdate);
             bookprice=itemView.findViewById(R.id.bookprice);
             booktitle=itemView.findViewById(R.id.booktitle);
-            //ButterKnife.bind(this, itemView);
+            selectad=itemView.findViewById(R.id.selectad);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bookItemClickListener.onItemClick(v, getAdapterPosition());
+
+                }
+            });
+        }
+
+        @Override
+        public void onClick(View v) {
+
         }
     }
     @Override
