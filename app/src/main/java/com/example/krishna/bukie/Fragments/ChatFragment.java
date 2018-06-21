@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.krishna.bukie.BookAds;
@@ -66,6 +68,7 @@ public class ChatFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         getMyChats();
+        //firebaseFirestore=context.FirebaseFirestore.getInstance();
 
         setHasOptionsMenu(true);
 
@@ -74,19 +77,23 @@ public class ChatFragment extends Fragment {
     }
 
     private void getMyChats() {
+        //Toast.makeText(context, "new chat", Toast.LENGTH_SHORT).show();
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         final String username=sharedPreferences.getString("username",null);
+        //Toast.makeText(context, "new chat"+username, Toast.LENGTH_SHORT).show();
         Query query = firebaseFirestore.collection("users").document(username).collection("mychats");
         FirestoreRecyclerOptions<MyChats> response = new FirestoreRecyclerOptions.Builder<MyChats>()
                 .setQuery(query, MyChats.class)
                 .build();
-        firestoreRecyclerAdapter=new FirestoreRecyclerAdapter<MyChats, ChatFragment.MyChatHolder>(response) {
+        firestoreRecyclerAdapter=new FirestoreRecyclerAdapter<MyChats, MyChatHolder>(response) {
+
             @Override
-            public void onBindViewHolder(final ChatFragment.MyChatHolder holder, int position, MyChats model)
+            public void onBindViewHolder(final MyChatHolder holder, int position, MyChats model)
             {
 
                 final MyChats myChats=model;
                 //holder.ppcard.setCard
+                //Toast.makeText(context, "new chat", Toast.LENGTH_SHORT).show();
                 if(holder.username.getBackground()!=null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Handler handler = new Handler();
@@ -100,10 +107,15 @@ public class ChatFragment extends Fragment {
                             Glide.with(context)
                                     .load(myChats.getCoverpic())
                                     .into(holder.ppic);
-                            if(myChats.getBuyer().compareTo(username)==0)
-                            holder.username.setText(myChats.getSeller());
+                            if(myChats.getBuyer().compareTo(username)==0) {
+                                identity = "buyer";
+                                holder.username.setText(myChats.getSeller());
+                            }
                             else
+                            {
+                                identity = "seller";
                                 holder.username.setText(myChats.getBuyer());
+                            }
                         }
                     }, 1000);
                 }
@@ -154,7 +166,7 @@ public class ChatFragment extends Fragment {
 
             @NonNull
             @Override
-            public ChatFragment.MyChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public MyChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                /* View view = LayoutInflater.from(group.getContext())
                         .inflate(R.layout.list_item, group, false);
 
@@ -177,6 +189,7 @@ public class ChatFragment extends Fragment {
 
         public MyChatHolder(View itemView) {
             super(itemView);
+            //Toast.makeText(context, "new chat", Toast.LENGTH_SHORT).show();
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             chatlayout=itemView.findViewById(R.id.chatlayout);
             ppic=itemView.findViewById(R.id.profilepic);
@@ -193,10 +206,23 @@ public class ChatFragment extends Fragment {
             });
         }
 
+
         @Override
         public void onClick(View v) {
 
         }
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        firestoreRecyclerAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        firestoreRecyclerAdapter.stopListening();
+    }
+
 
 }

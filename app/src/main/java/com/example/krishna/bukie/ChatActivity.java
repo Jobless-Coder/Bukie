@@ -42,6 +42,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_chat);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         username=sharedPreferences.getString("username",null);
+       // Log.d("usernamechaat",username);
         Bundle bundle = getIntent().getExtras();
         myChats = bundle.getParcelable("mychats");
         identity=bundle.getString("identity");
@@ -96,7 +97,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             {
                 //if(messageItemList!=null)
                 recyclerView.scrollToPosition(messageItemList.size()-1);
-                Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -129,8 +130,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share_location:
-                Toast.makeText(this, "search selected", Toast.LENGTH_SHORT)
-                        .show();
+                //Toast.makeText(this, "search selected", Toast.LENGTH_SHORT)
+                        //.show();
                 break;
 
             default:
@@ -151,7 +152,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     SimpleDateFormat ft =
                             new SimpleDateFormat("hh:mm a");
                     date = ft.format(d);
-                    MessageItem m = new MessageItem(msg, date, usernameofuser);
+                    MessageItem m = new MessageItem(msg, date, username);
                     fh.sendMessage(m);
 
                     chatbox.setText("");

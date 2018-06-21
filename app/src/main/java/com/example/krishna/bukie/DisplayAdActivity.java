@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,15 +45,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private String chatid,username;
     private MyChats myChats;
 
-   // private String [] desc={"Makaut organizer","das pal","makaut organizer","das pal","makaut organizer"};
-   /* private String [] images={"https://firebasestorage.googleapis.com/v0/b/booksapp-e588d.appspot.com/o/adimages%2F3c1bf95e-0033-4f1c-9327-1185e80942c0.png?alt=media&token=177fd3e0-8b64-41fe-a1de-ba38a05b9f00",
-            "https://firebasestorage.googleapis.com/v0/b/booksapp-e588d.appspot.com/o/adimages%2F78e781f0-d088-43d4-9448-c666390cd479.png?alt=media&token=7d507578-7e68-426b-a9dd-650595fc2671",
-    "https://firebasestorage.googleapis.com/v0/b/booksapp-e588d.appspot.com/o/adimages%2F04f3d3c0-920b-4511-93f3-71871148017d.png?alt=media&token=2d2704c5-18cc-479c-a329-26daa9559aaf",
-    "https://firebasestorage.googleapis.com/v0/b/booksapp-e588d.appspot.com/o/adimages%2Ff5c76931-dbce-4e92-98e0-60ae23c450b5.png?alt=media&token=5e35e3d7-1d84-4a47-aa64-04418d69ad05",
-    "https://firebasestorage.googleapis.com/v0/b/booksapp-e588d.appspot.com/o/adimages%2F71f22c71-0060-4e4d-946a-f84ba04477b7.png?alt=media&token=05ee90f8-b482-4a7c-b6e6-f7264acedf26"};*/
-    private List<String> images=new ArrayList<String>();
 
-    //{R.drawable.bookpic,R.drawable.bookpic,R.drawable.bookpic,R.drawable.bookpic,R.drawable.bookpic};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +53,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setContentView(R.layout.activity_display_ad);
         Bundle bundle = getIntent().getExtras();
         bookAds = bundle.getParcelable("bookads");
+        Log.i("bookads",bookAds.getSeller()+"hello");
         floatingActionButton=findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
@@ -99,7 +93,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-                Toast.makeText(DisplayAdActivity.this, "liked", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(DisplayAdActivity.this, "liked", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -166,23 +160,25 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             case R.id.floatingActionButton:
                 SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
                 username=sharedPreferences.getString("username",null);
-
-                DocumentReference mychat=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
+                chatid=username+bookAds.getAdid();
+                firebaseFirestore=FirebaseFirestore.getInstance();
+                DocumentReference mychatdoc=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
                 if(username!=null) {
+                    //Log.i("kll",bookAds.getSeller()+"hello");
                     if(username.compareTo(bookAds.getSeller())!=0) {
 
-                        mychat.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        mychatdoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                                 if (task.isSuccessful()) {
-                                    chatid=username+bookAds.getAdid();
-                                    myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(0),chatid);
+
+                                    myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid);
                                     DocumentSnapshot snapshot = task.getResult();
 
                                     if (snapshot.exists()) {
 
-                                        Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                         intent.putExtra("mychats", myChats);
                                         intent.putExtra("identity", "buyer");
@@ -191,7 +187,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                                     } else {
                                         //chatid=username+bookAds.getAdid();
-                                        Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
                                         createNewChat();
                                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                         intent.putExtra("mychats", myChats);
@@ -224,7 +220,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     @Override
                     public void onSuccess(Void aVoid) {
                         //progressDialog.dismiss();
-                        Toast.makeText(DisplayAdActivity.this, "Chat created buyer", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(DisplayAdActivity.this, "Chat created buyer", Toast.LENGTH_SHORT).show();
 
                         //startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
 
@@ -247,7 +243,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     @Override
                     public void onSuccess(Void aVoid) {
                         //progressDialog.dismiss();
-                        Toast.makeText(DisplayAdActivity.this, "Chat created seller", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(DisplayAdActivity.this, "Chat created seller", Toast.LENGTH_SHORT).show();
 
                         //startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
 

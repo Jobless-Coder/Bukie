@@ -358,7 +358,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         if(downloadurl.size()==hset.size())
                        {
                             //Log.e("hello","error");
-                           madid=musername+"%"+UUID.randomUUID();
+                           madid=musername+UUID.randomUUID();
                             BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,musername,madid,downloadurl);
                            // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
                            firebaseFirestore.collection("bookads").document(madid).set(bookAds)

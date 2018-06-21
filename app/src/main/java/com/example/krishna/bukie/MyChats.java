@@ -17,6 +17,9 @@ public class MyChats implements Parcelable{
         this.coverpic = coverpic;
         this.chatid = chatid;
     }
+    public MyChats(){
+
+    }
 
     protected MyChats(Parcel in) {
         seller = in.readString();

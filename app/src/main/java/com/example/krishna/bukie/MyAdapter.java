@@ -1,8 +1,10 @@
 package com.example.krishna.bukie;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
     MessageItem messageItem=messageItemList.get(position);
     current_user=messageItem.getUsername();
+        SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        String username=sharedPreferences.getString("username",null);
+        //Log.d("username",username);
+
     if(position>0) {
         previous_user=messageItemList.get(position - 1).getUsername();
         //previous_user2 = messageItemList.get(-1).getUsername();
@@ -53,7 +59,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
 
 
-    if(current_user.compareTo("Indranil")==0&&current_user.compareTo(previous_user)==0)
+    if(current_user.compareTo(username)==0&&current_user.compareTo(previous_user)==0)
     {
 
         holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
@@ -63,14 +69,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
 
     }
-    else if(current_user.compareTo("Indranil")==0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0)*/)){
+    else if(current_user.compareTo(username)==0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0)*/)){
         holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
         holder.message_body1.setText(messageItem.getMessage_body());
         holder.time1.setText(messageItem.getTime());
 
 
     }
-    else if(current_user.compareTo("Indranil")!=0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0*/)){
+    else if(current_user.compareTo(username)!=0&&(current_user.compareTo(previous_user)!=0/*||previous_user.compareTo("-1")==0*/)){
         holder.rlson1.setVisibility(View.GONE);
         holder.rlson2.setVisibility(View.VISIBLE);
         holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
@@ -78,7 +84,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
         holder.time2.setText(messageItem.getTime());
 
     }
-    else if(current_user.compareTo("Indranil")!=0&&current_user.compareTo(previous_user)==0){
+    else if(current_user.compareTo(username)!=0&&current_user.compareTo(previous_user)==0){
         holder.rlson1.setVisibility(View.GONE);
         holder.rlson2.setVisibility(View.VISIBLE);
         holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);

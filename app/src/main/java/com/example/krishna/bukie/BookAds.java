@@ -64,6 +64,7 @@ public BookAds(){
         this.bookpicslist = new ArrayList<String>();
         in.readList(bookpicslist,String.class.getClassLoader());
         this.adid=in.readString();
+        this.seller=in.readString();
         //bookpicslist=in.readList(boo);
     }
     public static final Creator<BookAds> CREATOR = new Creator<BookAds>() {
@@ -112,6 +113,7 @@ public BookAds(){
         //dest.writeString(this.coverpic);
         dest.writeList(this.bookpicslist);
         dest.writeString(this.adid);
+        dest.writeString(this.seller);
 
     }
 }

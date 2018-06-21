@@ -42,7 +42,7 @@
 
             <TextView
                 android:layout_centerVertical="true"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/deep_red"
                 android:textStyle="bold"
                 android:textSize="20dp"
                 android:text="Details"
@@ -145,7 +145,7 @@
                 app:piv_animationType="thinWorm"
                 app:piv_dynamicCount="true"
                 app:piv_interactiveAnimation="true"
-                app:piv_selectedColor="@color/deep_blue"
+                app:piv_selectedColor="@color/deep_orange"
                 app:piv_unselectedColor="@color/grey"
                 app:piv_viewPager="@id/viewPager"
                 app:piv_radius="8dp"
@@ -161,7 +161,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@color/deep_blue"
+            android:textColor="@color/orange"
             android:textStyle="bold"
             android:layout_weight="1.5"
             android:text="Title :"
@@ -184,7 +184,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@color/deep_blue"
+            android:textColor="@color/orange"
             android:textStyle="bold"
             android:layout_weight="1.5"
             android:text="Category:"
@@ -209,7 +209,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@color/deep_blue"
+            android:textColor="@color/orange"
             android:textStyle="bold"
             android:layout_weight="1.5"
             android:text="Price :"
@@ -234,7 +234,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:textColor="@color/deep_blue"
+            android:textColor="@color/orange"
             android:textStyle="bold"
             android:layout_weight="1.5"
             android:text="Date :"
@@ -265,7 +265,7 @@
         android:clickable="true"
         app:elevation="8dp"
         android:tint="@color/white"
-        app:backgroundTint="@color/green"
+        app:backgroundTint="@color/red"
         app:rippleColor="@android:color/background_light"
         app:srcCompat="@drawable/comments" />
 </android.support.design.widget.CoordinatorLayout>
