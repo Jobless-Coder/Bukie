@@ -102,7 +102,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             holder.booktitle.setBackground(null);
                             holder.bookprice.setBackground(null);
                             Glide.with(context)
-                                    .load(bookAds.getBookpic())
+                                    .load(bookAds.getBookpicslist().get(0))
                                     .into(holder.bookpic);
                             holder.booktitle.setText(bookAds.getBooktitle());
                             holder.bookprice.setText(bookAds.getPrice());
@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             holder.booktitle.setBackground(null);
             holder.bookprice.setBackground(null);*/
                     Glide.with(context)
-                            .load(bookAds.getBookpic())
+                            .load(bookAds.getBookpicslist().get(0))
                             .into(holder.bookpic);
                     holder.booktitle.setText(bookAds.getBooktitle());
                     holder.bookprice.setText(bookAds.getPrice());

@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    android:background="@color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<android.support.v4.widget.NestedScrollView
+    android:id="@+id/nsv"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,20 +34,29 @@
         android:theme="@style/BaseTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
-        <LinearLayout
+        <RelativeLayout
+
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
-
+                android:layout_centerVertical="true"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
                 android:textSize="20dp"
                 android:text="Details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-        </LinearLayout>
+            <com.like.LikeButton
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                app:icon_type="star"
+                app:icon_size="25dp"
+                android:id="@+id/favourites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
 
 
     </android.support.v7.widget.Toolbar>
@@ -147,8 +171,8 @@
         <TextView
             android:layout_weight="3"
             android:layout_marginLeft="30dp"
-            android:textColor="@color/deep_blue"
-            android:textStyle="bold"
+
+
             android:id="@+id/title"
             android:textSize="20dp"
             android:layout_width="0dp"
@@ -172,8 +196,8 @@
             android:layout_gravity="left"
             android:layout_weight="3"
             android:layout_marginLeft="30dp"
-            android:textColor="@color/deep_blue"
-            android:textStyle="bold"
+
+
 
             android:textSize="20dp"
             android:layout_width="0dp"
@@ -196,12 +220,13 @@
             android:id="@+id/price"
             android:layout_weight="3"
             android:layout_marginLeft="30dp"
-            android:textColor="@color/deep_blue"
-            android:textStyle="bold"
+
+
 
             android:textSize="20dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -220,13 +245,27 @@
             android:id="@+id/date"
             android:layout_weight="3"
             android:layout_marginLeft="30dp"
-            android:textColor="@color/deep_blue"
-            android:textStyle="bold"
-
             android:textSize="20dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
 
+
 </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        app:fabSize="normal"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|right"
+        android:clickable="true"
+        app:elevation="8dp"
+        android:tint="@color/white"
+        app:backgroundTint="@color/green"
+        app:rippleColor="@android:color/background_light"
+        app:srcCompat="@drawable/comments" />
+</android.support.design.widget.CoordinatorLayout>

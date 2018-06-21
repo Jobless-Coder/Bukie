@@ -31,7 +31,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeActivity">
+        <activity android:name=".AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,11 +41,11 @@
         <activity
             android:name=".FeedbackActivity"
             android:theme="@style/NoActionTheme" />
-        <activity android:name=".LoginActivity" />
+        <!--activity android:name=".LoginActivity" /-->
         <activity
             android:name=".ChatActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name=".AuthActivity" />
+        <activity android:name=".HomeActivity" />
         <activity
             android:name=".RegistrationActivity"
            />

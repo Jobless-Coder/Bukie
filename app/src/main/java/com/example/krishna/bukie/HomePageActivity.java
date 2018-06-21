@@ -39,6 +39,7 @@ public class HomePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+
         frameLayout =findViewById(R.id.frame);
         toolbar=findViewById(R.id.toolbar);
 

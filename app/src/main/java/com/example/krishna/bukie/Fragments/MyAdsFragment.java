@@ -1,5 +1,6 @@
 package com.example.krishna.bukie.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,13 +9,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.krishna.bukie.AuthActivity;
+import com.example.krishna.bukie.ChatActivity;
 import com.example.krishna.bukie.R;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class MyAdsFragment extends Fragment {
+public class MyAdsFragment extends Fragment implements View.OnClickListener {
+    private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
     }
 
@@ -22,7 +30,20 @@ public class MyAdsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_myads, null);
+        View v=inflater.inflate(R.layout.fragment_myads, null);
+        Button button=v.findViewById(R.id.logout);
+        button.setOnClickListener(this);
+        return v;//inflater.inflate(R.layout.fragment_myads, null);
     }
 
+    @Override
+    public void onClick(View v) {
+        if(firebaseAuth.getCurrentUser()!=null) {
+            firebaseAuth.signOut();
+            Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), AuthActivity.class);
+            getContext().startActivity(intent);
+        }
+
+    }
 }

@@ -93,7 +93,8 @@ private ChildEventListener childEventListener;
     }
 
     private void createRefID() {
-        seller = seller.toLowerCase();
+        refID=adID;
+       /* seller = seller.toLowerCase();
         buyer = buyer.toLowerCase();
         String concat = "";
         if(seller.compareTo(buyer)<0)
@@ -101,7 +102,7 @@ private ChildEventListener childEventListener;
         else
             concat = buyer+"%"+seller;
         concat = adID+"%"+concat;
-        refID = concat;
+        refID = concat;*/
     }
 
 

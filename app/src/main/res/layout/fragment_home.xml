@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
-        android:layout_margin="10dp"
+
 
 
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
         android:tint="@color/white"
         app:backgroundTint="@color/colorAccent"
         app:rippleColor="@android:color/background_light"
-        app:srcCompat="@drawable/post" />
+        app:srcCompat="@drawable/plus" />
 
 
 

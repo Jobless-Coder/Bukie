@@ -45,6 +45,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void goToDisplayAd(View view) {
-        startActivity(new Intent(this,DisplayAdActivity.class));
+        startActivity(new Intent(this,RegistrationActivity.class));
     }
 }

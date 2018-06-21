@@ -1,7 +1,9 @@
 package com.example.krishna.bukie;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -57,17 +60,21 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private List<String> imagesPathList;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
-    private String mtitle,mcategory,mprice,mdate;
+    private String mtitle,mcategory,mprice,mdate,madid,musername;
     private CollectionReference bookadscollection;
     private LinearLayout linearLayout;
     private HashSet<Uri> hset;
     private Uri coveruri;
     private FloatingActionButton floatingActionButton;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_postnewad);
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        musername=sharedPreferences.getString("username",null);
+        progressDialog=new ProgressDialog(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
        linearLayout=findViewById(R.id.imgscroll);
@@ -192,7 +199,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             }
             else if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
                     && null != data){
-                Toast.makeText(this, "kkll", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "kkll", Toast.LENGTH_SHORT).show();
 
                     try {
                         final Uri imageUri = data.getData();
@@ -260,7 +267,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 break;*/
 
             case R.id.fabpostad:
-                Toast.makeText(this, "Enter all fields to proceedkll", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Enter all fields to proceedkll", Toast.LENGTH_SHORT).show();
                 downloadurl=new ArrayList<String>();
 
                 mtitle=title.getText().toString();
@@ -299,6 +306,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     private void uploadFile(final HashSet<Uri> hset) {
         //Toast.makeText(this, "lll"+hset, Toast.LENGTH_SHORT).show();
+        progressDialog.setMessage("Posting ad ...");
+        progressDialog.show();
         hset.add(coveruri);
         Iterator iterator = hset.iterator();
 
@@ -337,21 +346,42 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 }).*/.addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        if(downloadurl.size()<hset.size()-1) {
+
                             downloadurl.add(uri + "");
-                            Toast.makeText(PostnewadActivity.this, ""+123, Toast.LENGTH_SHORT).show();
-                        }
+                            Toast.makeText(PostnewadActivity.this, "images added ", Toast.LENGTH_SHORT).show();
+                        /*}
                         else {
                             Toast.makeText(PostnewadActivity.this, ""+uri, Toast.LENGTH_SHORT).show();
                             coverurl = uri + "";
-                        }
+                        }*/
                         //Toast.makeText(PostnewadActivity.this, ""+uri, Toast.LENGTH_SHORT).show();
-                        if(downloadurl.size()==hset.size()-1&&coverurl.isEmpty()==false)
+                        if(downloadurl.size()==hset.size())
                        {
                             //Log.e("hello","error");
-                            BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory, downloadurl, coverurl,coverurl);
-                            bookadscollection.add(bookAds);
-                            Toast.makeText(getApplicationContext(), "ad posted", Toast.LENGTH_SHORT).show();
+                           madid=musername+"%"+UUID.randomUUID();
+                            BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,musername,madid,downloadurl);
+                           // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
+                           firebaseFirestore.collection("bookads").document(madid).set(bookAds)
+                                   .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                       @Override
+                                       public void onSuccess(Void aVoid) {
+                                           progressDialog.dismiss();
+
+
+                                           Toast.makeText(PostnewadActivity.this, "Ad posted successfully", Toast.LENGTH_SHORT).show();
+                                           startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+                                       }
+                                   })
+                                   .addOnFailureListener(new OnFailureListener() {
+                                       @Override
+                                       public void onFailure(@NonNull Exception e) {
+                                           progressDialog.dismiss();
+                                           Toast.makeText(PostnewadActivity.this, "Error posting ad,pls try again later", Toast.LENGTH_SHORT).show();
+
+                                       }
+                                   });
+                           // bookadscollection.add(bookAds);
+                            //Toast.makeText(getApplicationContext(), "ad posted", Toast.LENGTH_SHORT).show();
                         }
 
                     }

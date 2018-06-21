@@ -5,6 +5,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -52,7 +53,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout loginflow, signflow;
     View facebookbtn, googlebtn, signinbtn, signupbtn,sendemail;
     EditText regemail, regpass, repregpass, loginpass, loginemail,forgotemail;
-    String email, password,reppassword;
+    String email, password,reppassword,signinmethod;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
     private CallbackManager mCallbackManager;
@@ -62,7 +63,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        String username=sharedPreferences.getString("username",null);
+        Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
+        firebaseAuth=FirebaseAuth.getInstance();
+        FirebaseUser user=firebaseAuth.getCurrentUser();
+
+        if(username!=null&&user!=null)
+            startActivity(intent);
         setContentView(R.layout.activity_auth);
         regemail = findViewById(R.id.regemail);
         regpass = findViewById(R.id.regpass);
@@ -82,7 +92,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         sendemail.setOnClickListener(this);
         signupbtn.setOnClickListener(this);
         progressDialog = new ProgressDialog(this);
-        firebaseAuth=FirebaseAuth.getInstance();
+
         //google sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -263,8 +273,22 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             //Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                           // FirebaseUser user = firebaseAuth.getCurrentUser();
                             Toast.makeText(AuthActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
+                            boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
+                            if(isNew)
+                            {
+                                Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+                                intent.putExtra("signinmethod","google");
+                                startActivity(intent);
+                            }
+                            else{
+                                Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                                //intent.putExtra("signinmethod","google");
+                                startActivity(intent);
+                            }
+
+
                             //updateUI(user);
                         } else {
                             Toast.makeText(AuthActivity.this, "Sign in failure , please try again",
@@ -309,7 +333,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     progressDialog.dismiss();
                     if (task.isSuccessful()){
-                        Toast.makeText(AuthActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(AuthActivity.this, "Signed in with email address ", Toast.LENGTH_SHORT).show();
+                        Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+                        intent.putExtra("signinmethod","email");
+                        startActivity(intent);
                     }
                     else
                     {
@@ -359,6 +387,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         progressDialog.dismiss();
                         if (task.isSuccessful()){
                             Toast.makeText(AuthActivity.this, "Success logging in", Toast.LENGTH_SHORT).show();
+                            Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                            //intent.putExtra("signinmethod","google");
+                            startActivity(intent);
                         }
                         else
                             Toast.makeText(AuthActivity.this, "Failure", Toast.LENGTH_SHORT).show();
@@ -378,7 +409,23 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            /*Toast.makeText(AuthActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
+                            Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+                            intent.putExtra("signinmethod","facebook");
+                            startActivity(intent);*/
                             Toast.makeText(AuthActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
+                            boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
+                            if(isNew)
+                            {
+                                Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+                                intent.putExtra("signinmethod","facebook");
+                                startActivity(intent);
+                            }
+                            else{
+                                Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                                //intent.putExtra("signinmethod","google");
+                                startActivity(intent);
+                            }
                             //Log.d(TAG, "signInWithCredential:success");
                             //FirebaseUser user = firebaseAuth.getCurrentUser();
                             //updateUI(user);
@@ -438,10 +485,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
 
                             Toast.makeText(AuthActivity.this, "Password reset email sent to your email address", Toast.LENGTH_SHORT).show();
+                           findViewById(R.id.loginscreen).setVisibility(View.VISIBLE);
+                           findViewById(R.id.forgotpasslayout).setVisibility(View.GONE);
                             // Log.d(TAG, "Email sent.");
                         }
                         else{
-                            Toast.makeText(AuthActivity.this, "Cannot send email", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, "Cannot send email,retry!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

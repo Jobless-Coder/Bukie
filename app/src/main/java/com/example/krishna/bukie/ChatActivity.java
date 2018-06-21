@@ -1,6 +1,7 @@
 package com.example.krishna.bukie;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,12 +33,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private EditText chatbox;
     private int count;
-    private String adId, usernameseller, usernamebuyer, usernameofuser,tmpuser;
+    private String adId, usernameseller, usernamebuyer, usernameofuser,tmpuser,identity,username;
     private TextView username2;
+    private MyChats myChats;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        username=sharedPreferences.getString("username",null);
+        Bundle bundle = getIntent().getExtras();
+        myChats = bundle.getParcelable("mychats");
+        identity=bundle.getString("identity");
+        if(identity.compareTo("buyer")==0)
+            tmpuser=myChats.getSeller();
+        else
+            tmpuser=myChats.getBuyer();
         chatbox=(EditText)findViewById(R.id.chatbox);
 
        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -54,18 +66,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageItemList=new ArrayList<>();
-        MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am","Indranil");
-        MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");
+      /*  MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am","Indranil");
+        MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");*/
         View send=(View)findViewById(R.id.send);
         send.setOnClickListener(this);
         //count=recyclerView.getAdapter().getItemCount()-1;
-         adId="123456";usernameseller="Indranil";usernamebuyer="Krishna";usernameofuser="Indranil";
-         if(usernameofuser.compareTo(usernamebuyer)==0)
+        // adId="123456";usernameseller="Indranil";usernamebuyer="Krishna";usernameofuser="Indranil";
+         /*if(usernameofuser.compareTo(usernamebuyer)==0)
              tmpuser=usernameseller;
          else
-             tmpuser=usernamebuyer;
+             tmpuser=usernamebuyer;*/
+
         username2.setText(tmpuser);
-        fh = new FirebaseHelper(adId, usernameseller, usernamebuyer, usernameofuser, new IncomingMessageListener(){
+        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener(){
                  public void receiveIncomingMessage(MessageItem ch)
           {
               messageItemList.add(ch);
@@ -86,16 +99,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
-
-
-
-
-
-
-
 
     }
 
@@ -142,15 +145,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.send:
 
                 msg=chatbox.getText().toString();
-                Date d = new Date();
+                if(TextUtils.isEmpty(msg)==false) {
+                    Date d = new Date();
 
-                SimpleDateFormat ft =
-                        new SimpleDateFormat ("hh:mm a");
-                date=ft.format(d);
-                MessageItem m=new MessageItem(msg,date,usernameofuser);
-                fh.sendMessage(m);
+                    SimpleDateFormat ft =
+                            new SimpleDateFormat("hh:mm a");
+                    date = ft.format(d);
+                    MessageItem m = new MessageItem(msg, date, usernameofuser);
+                    fh.sendMessage(m);
 
-                chatbox.setText("");
+                    chatbox.setText("");
+                }
                 //Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
 
                 break;

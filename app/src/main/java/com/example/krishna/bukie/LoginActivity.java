@@ -1,4 +1,4 @@
-package com.example.krishna.bukie;
+/*package com.example.krishna.bukie;
 
 import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         firebaseAuth=FirebaseAuth.getInstance();
-       /*FirebaseUser user to get email */
+       /*FirebaseUser user to get email
 
         username=(EditText)findViewById(R.id.username);
         email=(EditText)findViewById(R.id.email);
@@ -79,4 +79,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         password.setText("");
         email.setText("");
     }
-}
+}*/

@@ -1,15 +1,24 @@
 package com.example.krishna.bukie;
 
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +35,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -36,17 +48,40 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.UUID;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="dfg" ;
-    private static final int RC_SIGN_IN =1 ;
-    private EditText username,password,email;
-    private Button register;
+    private static final int SELECT_PHOTO = 1;
+
+    private EditText username;
+    private View register,ppview;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
-    private  CallbackManager mCallbackManager;
-    private GoogleSignInClient mGoogleSignInClient;
-    private GoogleSignIn account;
+    private ImageView imageView;
+    private Uri imageUri;
+    private String usernameid,profilepicurl,path,signinmethod;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference storageReference;
+    private FirebaseFirestore firebaseFirestore;
+    private DocumentReference documentReference;
+    private CollectionReference usercollection;
+    private SharedPreferences pref ;
+
+
+
 
 
     @Override
@@ -54,204 +89,229 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_registration);
+        pref=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        Bundle bundle = getIntent().getExtras();
+        signinmethod=bundle.getString("signinmethod");
         //button set enabled
         username = (EditText) findViewById(R.id.username);
-        email = (EditText) findViewById(R.id.email);
-        password = (EditText) findViewById(R.id.password);
-        register = (Button) findViewById(R.id.register);
+        register = (View) findViewById(R.id.register);
+        imageView=findViewById(R.id.profile_pic);
+        ppview=findViewById(R.id.ppview);
         register.setOnClickListener(this);
+        ppview.setOnClickListener(this);
         progressDialog = new ProgressDialog(this);
         firebaseAuth=FirebaseAuth.getInstance();
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        // Configure Google Sign In
-        // Configure Google Sign In
-        if(firebaseAuth.getCurrentUser()!=null) {
+        firebaseStorage=FirebaseStorage.getInstance();
+        firebaseFirestore=FirebaseFirestore.getInstance();
+        storageReference=firebaseStorage.getReference();
+
+
+
+        // documentReference=firebaseFirestore.document("bookads/"+UUID.randomUUID());
+        //User user=new User("indra","");
+        //usercollection = firebaseFirestore.collection("users");
+        /*firebaseFirestore.collection("users").document("indra")
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });*/
+        /*if(firebaseAuth.getCurrentUser()!=null) {
             firebaseAuth.signOut();
             Toast.makeText(this, "already signed in", Toast.LENGTH_SHORT).show();
         }
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.login_button);
-        loginButton.setReadPermissions("email", "public_profile");
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-                // ...
-            }
-
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
-                // ...
-            }
-        });
+        */
 
     }
 
 
 
 
-    private void handleFacebookAccessToken(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(RegistrationActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
-
-                        // ...
-                    }
-                });
-    }
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-       // updateUI(currentUser);
-    }
-
-       /* @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-
-            // Pass the activity result back to the Facebook SDK
-            if(requestCode!= RC_SIGN_IN)
-            mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-        }*/
 
 
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
-                break;
             case R.id.register:
-                registerUser();
+                usernameid=username.getText().toString();
+                if(usernameid.isEmpty()==false){
+                    registerUser();
+                    progressDialog.setMessage("Registering user ...");
+                    progressDialog.show();
+                }
+
+                else
+                    Toast.makeText(this, "Input valid username", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.ppview:
+                changeProfilepic();
+                break;
+            
             default:
                 break;
         }
 
 
     }
-    //email starts
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+
+         if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
+                && null != data){
+           // Toast.makeText(this, "kkll", Toast.LENGTH_SHORT).show();
+
+            try {
+                imageUri = data.getData();
+
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                imageView.setImageBitmap(selectedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            Toast.makeText(this, "You haven't picked Image",
+                    Toast.LENGTH_LONG).show();
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void changeProfilepic() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PHOTO);
+    }
 
     private void registerUser() {
-        String emailid=email.getText().toString().trim();
-        String userid=username.getText().toString().trim();
-        String passwordid=password.getText().toString().trim();
-        Toast.makeText(this, emailid+userid+passwordid, Toast.LENGTH_SHORT).show();
-        if(TextUtils.isEmpty(emailid)){
-            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if(TextUtils.isEmpty(passwordid)){
-            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
-        return;
-        }
-        if(TextUtils.isEmpty(userid)){
-            Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
-        return;
-
-        }
-        progressDialog.setMessage("Registering user...");
-        progressDialog.show();
-        firebaseAuth.createUserWithEmailAndPassword(emailid,passwordid).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        username.setText("");
+        //Toast
+        DocumentReference user=firebaseFirestore.collection("users").document(usernameid);
+        user.get().addOnCompleteListener(new OnCompleteListener <DocumentSnapshot> () {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                progressDialog.dismiss();
-                if (task.isSuccessful()){
-                    Toast.makeText(RegistrationActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Toast.makeText(RegistrationActivity.this, "Couldnot register pls try again", Toast.LENGTH_SHORT).show();
+            public void onComplete(@NonNull Task < DocumentSnapshot > task) {
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        progressDialog.dismiss();
+                        Toast.makeText(RegistrationActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        createNewUser();
+                    }
+
+
                 }
             }
         });
 
 
-    }
-    //email ends
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+
+
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void createNewUser() {
+        profilepicurl="";
+        if (imageUri != null) {
+            path = "profilepicuser/" + usernameid + ".png";
+            final StorageReference riversRef = storageReference.child(path);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if(requestCode!= RC_SIGN_IN)
-            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+            UploadTask uploadTask = riversRef.putFile(imageUri);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        progressDialog.dismiss();                        //throw task.getException();
+                        Toast.makeText(RegistrationActivity.this, "Error uploading photo,checck internet connection", Toast.LENGTH_SHORT).show();
+                    }
 
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                // ...
-            }
+
+                    return riversRef.getDownloadUrl();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+                    profilepicurl=uri+"";
+                    User user=new User(usernameid,profilepicurl,signinmethod);
+                    firebaseFirestore.collection("users").document(usernameid)
+                            .set(user)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    progressDialog.dismiss();
+                                    SharedPreferences.Editor editor = pref.edit();
+                                    editor.putString("username",usernameid);
+                                    editor.commit();
+
+                                    Toast.makeText(RegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(RegistrationActivity.this, "Error registering,pls try again later", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+
+                }
+            });
+
+        }
+        else {
+
+            User user=new User(usernameid,profilepicurl,signinmethod);
+            //User user=new User(usernameid,profilepicurl);
+            firebaseFirestore.collection("users").document(usernameid)
+                    .set(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            progressDialog.dismiss();
+                            Toast.makeText(RegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("username",usernameid);
+                            editor.commit();
+                            startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+
+
+                            //Toast.makeText(RegistrationActivity.this, ""+username, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(RegistrationActivity.this, "Error registering,pls try again later", Toast.LENGTH_SHORT).show();
+                            //Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+            // usercollection.add(user);
+            //Toast.makeText(RegistrationActivity.this, ""+profilepicurl, Toast.LENGTH_SHORT).show();
+
         }
     }
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
 
-                        // ...
-                    }
-                });
-    }
 }

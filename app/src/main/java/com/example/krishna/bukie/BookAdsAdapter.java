@@ -58,7 +58,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
                     holder.booktitle.setBackground(null);
                     holder.bookprice.setBackground(null);
                     Glide.with(context)
-                            .load(bookAds.getBookpic())
+                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
                             .into(holder.bookpic);
                     holder.booktitle.setText(bookAds.getBooktitle());
                     holder.bookprice.setText(bookAds.getPrice());
@@ -75,7 +75,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
             holder.booktitle.setBackground(null);
             holder.bookprice.setBackground(null);*/
             Glide.with(context)
-                    .load(bookAds.getBookpic())
+                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getBooktitle());
             holder.bookprice.setText(bookAds.getPrice());
