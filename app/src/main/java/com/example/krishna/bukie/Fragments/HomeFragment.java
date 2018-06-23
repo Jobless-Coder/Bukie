@@ -24,8 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.krishna.bukie.BookAds;
-import com.example.krishna.bukie.BookAdsAdapter;
+//import com.example.krishna.bukie.BookAdsAdapter;
 import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
@@ -42,7 +45,6 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recyclerView;
-   // private RecyclerView.Adapter adapter;
     private List<BookAds> bookAdsList;
     private Context context;
     private View v;
@@ -67,11 +69,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         firebaseFirestore=FirebaseFirestore.getInstance();
         context=getContext();
 
-        /*toolbargroup=getActivity().findViewById(R.id.toolbar_layout);
-        toolbargroup.removeAllViews();
-        toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
-        toolbargroup.addView(toolbarview);
-        mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);*/
 
 
     }
@@ -89,11 +86,37 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 final BookAds bookAds=model;
 
                 if(holder.bookprice.getBackground()!=null) {
+
                     holder.shimmerFrameLayout.startShimmerAnimation();
-                    Handler handler = new Handler();
+                    Glide.with(context)
+                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                                    holder.bookcategory.setBackground(null);
+                                    holder.bookpic.setBackground(null);
+                                    holder.bookdate.setBackground(null);
+                                    holder.booktitle.setBackground(null);
+                                    holder.bookprice.setBackground(null);
+                                    holder.booktitle.setText(bookAds.getBooktitle());
+                                    holder.bookprice.setText(bookAds.getPrice());
+                                    holder.bookdate.setText(bookAds.getDate());
+                                    holder.bookcategory.setText(bookAds.getBookcategory());
+                                    return false;
+                                }
+                            })
+                            .into(holder.bookpic);
+                    /*Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             // Do something after 5s = 5000ms
                             holder.shimmerFrameLayout.stopShimmerAnimation();
                             holder.bookcategory.setBackground(null);
@@ -110,16 +133,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             holder.bookcategory.setText(bookAds.getBookcategory());
                             //bookAds.setShowShimmer(false);
                         }
-                    }, 1000);
+                    }, 1000);*/
                 }
                 else{
-            /*holder.bookcategory.setBackground(null);
-            holder.bookpic.setBackground(null);
-            holder.bookdate.setBackground(null);
-            holder.booktitle.setBackground(null);
-            holder.bookprice.setBackground(null);*/
+
                     Glide.with(context)
-                            .load(bookAds.getBookpicslist().get(0))
+                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
                             .into(holder.bookpic);
                     holder.booktitle.setText(bookAds.getBooktitle());
                     holder.bookprice.setText(bookAds.getPrice());
@@ -131,7 +150,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v)
                     {
-                       // Toast.makeText(context, ""+bookAds.getBookcategory(), Toast.LENGTH_SHORT).show();
+
                         Intent intent = new Intent(context, DisplayAdActivity.class);
                         intent.putExtra("bookads", bookAds);
 
@@ -140,16 +159,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                 });
             }
-          /* @Override
-            public int getItemCount() {
 
-                return bookAdsList.size();
-            }*/
-
-            /*@Override
-            public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, BookAds model) {
-
-            }*/
             @Override
             public int getItemViewType(int position) {
                 return position;
@@ -158,10 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @NonNull
             @Override
             public BookHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-               /* View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.list_item, group, false);
 
-                return new BookHolder(view);*/
                 View v= LayoutInflater.from(getContext())
                         .inflate(R.layout.bookadview,parent,false);
                 final BookHolder bookHolder=new BookHolder(v);
@@ -178,14 +185,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         public TextView bookprice,bookdate,bookcategory,booktitle;
         public ShimmerFrameLayout shimmerFrameLayout;
         public View selectad;
-       /* @BindView(R.id.name)
-        TextView textName;
-        @BindView(R.id.image)
-        CircleImageView imageView;
-        @BindView(R.id.title)
-        TextView textTitle;
-        @BindView(R.id.company)
-        TextView textCompany;*/
+
 
         public BookHolder(View itemView) {
             super(itemView);
@@ -235,42 +235,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         toolbargroup.addView(toolbarview);
         mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
-        //recyclerView=(RecyclerView)v.findViewById(R.id.recyclerview);
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         floatingActionButton.setOnClickListener(this);
         getadvertisements();
 
-        /*final BookAds bookAds=new BookAds("http://i.imgur.com/zuG2bGQ.jpg","28th jan,2018","Makaut organizer","Rs 250","Engg books");
-        bookAdsList=new ArrayList<BookAds>();
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        bookAdsList.add(bookAds);
-        /*for(BookAds bookAds1:bookAdsList){
-            bookAds1.setShowShimmer(true);
-        }*/
-        /*adapter=new BookAdsAdapter(bookAdsList,context);
-        recyclerView.setAdapter(adapter);
-        recyclerView.scrollToPosition(0);*/
-        /*recyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                for(BookAds bookAds1:bookAdsList){
-                    bookAds1.setShowShimmer(false);
-                }
-                adapter.notifyDataSetChanged();
 
-            }
-        },1500);*/
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
@@ -296,13 +267,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.homemenu, menu2);
-        //Toast.makeText(getContext(), ""+menu2.size(), Toast.LENGTH_SHORT).show();
-        /*MenuItem searchItem = menu.findItem(R.id.share_location);
-        searchItem = menu.findItem(R.id.delete_chat);
-        searchItem = menu.findItem(R.id.block_user);
 
-        SearchView searchView =
-                (SearchView) searchItem.getActionView();*/
 
         super.onCreateOptionsMenu(menu2,inflater2);
     }
@@ -335,7 +300,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         floatingActionButton.hide();
         super.onDestroyView();
 
-        //Log.d("Tag", "FragmentA.onDestroyView() has been called.");
+
     }
 
 

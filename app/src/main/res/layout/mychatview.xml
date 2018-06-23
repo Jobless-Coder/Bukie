@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     android:id="@+id/chatlayout"
-    android:background="@drawable/ripplebg"
+    android:foreground="@drawable/ripplebg"
+    android:clickable="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="4dp"
+    android:layout_marginBottom="5dp"
 
 
     android:layout_width="match_parent">
@@ -13,83 +15,120 @@
         android:id="@+id/shimmerlayout"
         android:layout_width="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android" >
-    <LinearLayout
-        android:layout_margin="5dp"
-        android:gravity="center_vertical"
-    android:layout_width="match_parent"
-    android:orientation="horizontal"
-    android:layout_height="80dp">
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-        <android.support.v7.widget.CardView
-            android:layout_width="50dp"
-            app:cardElevation="10dp"
-            android:layout_margin="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_gravity="center"
-            app:cardCornerRadius="25dp"
-            android:id="@+id/ppcard"
-           app:cardBackgroundColor="@color/grey"
-            android:layout_height="50dp">
-            <ImageView
-                android:scaleType="centerCrop"
-                android:cropToPadding="true"
-                android:id="@+id/profilepic"
 
-                android:layout_gravity="center"
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </android.support.v7.widget.CardView>
-        </RelativeLayout>
         <LinearLayout
-            android:layout_weight="5"
-            android:layout_marginLeft="20dp"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:background="@color/grey"
-                android:id="@+id/username"
-                android:textSize="16dp"
-                android:textStyle="bold"
-                android:minWidth="200dp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:textSize="12dp"
-                android:text="hello!"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/adcard"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="20dp"
+                    app:cardBackgroundColor="@color/grey">
+
+                    <ImageView
+                        android:id="@+id/adpic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:cropToPadding="true"
+                        android:scaleType="centerCrop" />
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/ppcard"
+                    app:cardBackgroundColor="@color/grey"
+                   android:layout_marginTop="10dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignBottom="@+id/adcard"
+                    android:layout_alignEnd="@+id/adcard"
+                    app:cardCornerRadius="20dp">
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="30dp"
+                        android:id="@+id/ppcard2"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        app:cardBackgroundColor="@color/grey"
+
+                        app:cardCornerRadius="15dp"
+                        app:cardElevation="10dp">
+
+                        <ImageView
+                            android:id="@+id/profilepic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_gravity="center"
+
+                            android:cropToPadding="true"
+                            android:scaleType="centerCrop" />
+                    </android.support.v7.widget.CardView>
+                </android.support.v7.widget.CardView>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/grey"
+                    android:minWidth="250dp"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="hello!"
+                    android:textSize="12dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/online"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/green"
+                    app:cardCornerRadius="5dp"></android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="5:00 pm"
+                    android:textSize="6sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
         </LinearLayout>
-    <LinearLayout
-        android:layout_weight="1"
-        android:gravity="center"
-        android:layout_marginLeft="5dp"
-        android:orientation="vertical"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content">
-        <android.support.v7.widget.CardView
-            android:layout_width="10dp"
-            android:id="@+id/online"
-            android:visibility="gone"
-            app:cardCornerRadius="5dp"
-            app:cardBackgroundColor="@color/green"
-            android:layout_height="10dp"></android.support.v7.widget.CardView>
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/time"
-            android:textSize="6sp"
-            android:layout_marginTop="10dp"
-            android:text="5:00 pm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-</LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 </android.support.v7.widget.CardView>

@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -66,20 +67,20 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private static final String TAG ="dfg" ;
     private static final int SELECT_PHOTO = 1;
 
-    private EditText username;
+    private EditText username,fullname;
     private View register,ppview;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
     private ImageView imageView;
     private Uri imageUri;
-    private String usernameid,profilepicurl,path,signinmethod;
+    private String usernameid,profilepicurl,path,signinmethod,uid,fullnameid;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
     private CollectionReference usercollection;
     private SharedPreferences pref ;
-
+    private FirebaseUser firebaseUser;
 
 
 
@@ -92,7 +93,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         pref=getSharedPreferences("UserInfo",MODE_PRIVATE);
         Bundle bundle = getIntent().getExtras();
         signinmethod=bundle.getString("signinmethod");
-        //button set enabled
+        fullname=(EditText) findViewById(R.id.fullname);
         username = (EditText) findViewById(R.id.username);
         register = (View) findViewById(R.id.register);
         imageView=findViewById(R.id.profile_pic);
@@ -104,31 +105,18 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         firebaseStorage=FirebaseStorage.getInstance();
         firebaseFirestore=FirebaseFirestore.getInstance();
         storageReference=firebaseStorage.getReference();
+        firebaseUser=firebaseAuth.getCurrentUser();
+        if(firebaseUser.getPhotoUrl()!=null)
+        profilepicurl=firebaseUser.getPhotoUrl().toString();
+        else
+            profilepicurl="";
+        uid=firebaseUser.getUid();
+        fullnameid=firebaseUser.getDisplayName();
+        Glide.with(getApplicationContext()).load(profilepicurl).into(imageView);
+        fullname.setText(fullnameid);
 
 
 
-        // documentReference=firebaseFirestore.document("bookads/"+UUID.randomUUID());
-        //User user=new User("indra","");
-        //usercollection = firebaseFirestore.collection("users");
-        /*firebaseFirestore.collection("users").document("indra")
-                .set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });*/
-        /*if(firebaseAuth.getCurrentUser()!=null) {
-            firebaseAuth.signOut();
-            Toast.makeText(this, "already signed in", Toast.LENGTH_SHORT).show();
-        }
-        */
 
     }
 
@@ -169,7 +157,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
          if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
                 && null != data){
-           // Toast.makeText(this, "kkll", Toast.LENGTH_SHORT).show();
 
             try {
                 imageUri = data.getData();
@@ -227,7 +214,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void createNewUser() {
-        profilepicurl="";
+
         if (imageUri != null) {
             path = "profilepicuser/" + usernameid + ".png";
             final StorageReference riversRef = storageReference.child(path);
@@ -249,7 +236,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 public void onSuccess(Uri uri) {
 
                     profilepicurl=uri+"";
-                    User user=new User(usernameid,profilepicurl,signinmethod);
+                    User user=new User(usernameid,profilepicurl,signinmethod,uid,fullnameid);
                     firebaseFirestore.collection("users").document(usernameid)
                             .set(user)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -258,6 +245,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                                     progressDialog.dismiss();
                                     SharedPreferences.Editor editor = pref.edit();
                                     editor.putString("username",usernameid);
+                                    editor.putString("profilepic",profilepicurl);
+                                    editor.putString("fullname",fullnameid);
                                     editor.commit();
 
                                     Toast.makeText(RegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
@@ -280,7 +269,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
         else {
 
-            User user=new User(usernameid,profilepicurl,signinmethod);
+            User user=new User(usernameid,profilepicurl,signinmethod,uid,fullnameid);
             //User user=new User(usernameid,profilepicurl);
             firebaseFirestore.collection("users").document(usernameid)
                     .set(user)
@@ -292,11 +281,13 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
                             SharedPreferences.Editor editor = pref.edit();
                             editor.putString("username",usernameid);
+                            editor.putString("profilepic",profilepicurl);
+                            editor.putString("fullname",fullnameid);
                             editor.commit();
                             startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
 
 
-                            //Toast.makeText(RegistrationActivity.this, ""+username, Toast.LENGTH_SHORT).show();
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -304,11 +295,10 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
                             Toast.makeText(RegistrationActivity.this, "Error registering,pls try again later", Toast.LENGTH_SHORT).show();
-                            //Log.w(TAG, "Error writing document", e);
+
                         }
                     });
-            // usercollection.add(user);
-            //Toast.makeText(RegistrationActivity.this, ""+profilepicurl, Toast.LENGTH_SHORT).show();
+
 
         }
     }

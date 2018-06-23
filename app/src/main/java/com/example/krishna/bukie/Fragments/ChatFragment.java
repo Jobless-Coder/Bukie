@@ -23,6 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.ChatActivity;
 import com.example.krishna.bukie.DisplayAdActivity;
@@ -92,50 +95,57 @@ public class ChatFragment extends Fragment {
             {
 
                 final MyChats myChats=model;
-                //holder.ppcard.setCard
-                //Toast.makeText(context, "new chat", Toast.LENGTH_SHORT).show();
                 if(holder.username.getBackground()!=null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Do something after 5s = 5000ms
-                            holder.shimmerFrameLayout.stopShimmerAnimation();
-                            holder.ppcard.setCardBackgroundColor(Color.WHITE);
-                            holder.username.setBackground(null);
-                            Glide.with(context)
-                                    .load(myChats.getCoverpic())
-                                    .into(holder.ppic);
-                            if(myChats.getBuyer().compareTo(username)==0) {
-                                identity = "buyer";
-                                holder.username.setText(myChats.getSeller());
-                            }
-                            else
-                            {
-                                identity = "seller";
-                                holder.username.setText(myChats.getBuyer());
-                            }
-                        }
-                    }, 1000);
-                }
-                else{
-            /*holder.bookcategory.setBackground(null);
-            holder.bookpic.setBackground(null);
-            holder.bookdate.setBackground(null);
-            holder.booktitle.setBackground(null);
-            holder.bookprice.setBackground(null);*/
                     Glide.with(context)
                             .load(myChats.getCoverpic())
-                            .into(holder.ppic);
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                                    holder.ppcard.setCardBackgroundColor(Color.WHITE);
+                                    holder.ppcard2.setCardBackgroundColor(Color.WHITE);
+                                    holder.username.setBackground(null);
+
+                                    if(myChats.getBuyer().compareTo(username)==0) {
+                                        identity = "buyer";
+                                        holder.username.setText(myChats.getSellerfullname());
+                                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                                    }
+                                    else
+                                    {
+                                        identity = "seller";
+                                        holder.username.setText(myChats.getBuyerfullname());
+                                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+                                    }
+                                    return false;
+                                }
+                            })
+                            .into(holder.adpic);
+
+
+
+                }
+                else{
+
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .into(holder.adpic);
                     if(myChats.getBuyer().compareTo(username)==0) {
                         identity = "buyer";
-                        holder.username.setText(myChats.getSeller());
+                        holder.username.setText(myChats.getSellerfullname());
+                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
                     }
                     else
                     {
                         identity = "seller";
-                        holder.username.setText(myChats.getBuyer());
+                        holder.username.setText(myChats.getBuyerfullname());
+                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
                     }
                     }
 
@@ -143,18 +153,12 @@ public class ChatFragment extends Fragment {
                     @Override
                     public void onClick(View v)
                     {
-                        // Toast.makeText(context, ""+bookAds.getBookcategory(), Toast.LENGTH_SHORT).show();
-                        //Intent intent = new Intent(context, ChatActivity.class);
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra("mychats", myChats);
                         intent.putExtra("identity", identity);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
-                        //intent.putExtra("chatid", chatid);
 
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
                     }
                 });
             }
@@ -167,10 +171,7 @@ public class ChatFragment extends Fragment {
             @NonNull
             @Override
             public MyChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-               /* View view = LayoutInflater.from(group.getContext())
-                        .inflate(R.layout.list_item, group, false);
 
-                return new BookHolder(view);*/
                 View v= LayoutInflater.from(getContext())
                         .inflate(R.layout.mychatview,parent,false);
                 final MyChatHolder myChatHolder=new MyChatHolder(v);
@@ -182,10 +183,10 @@ public class ChatFragment extends Fragment {
         recyclerView.setAdapter(firestoreRecyclerAdapter);
     }
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView ppic;
+        public ImageView ppic,adpic;
         public TextView username;
         public ShimmerFrameLayout shimmerFrameLayout;
-        public CardView chatlayout,ppcard;
+        public CardView chatlayout,ppcard,ppcard2;
 
         public MyChatHolder(View itemView) {
             super(itemView);
@@ -195,6 +196,8 @@ public class ChatFragment extends Fragment {
             ppic=itemView.findViewById(R.id.profilepic);
             username=itemView.findViewById(R.id.username);
             ppcard=itemView.findViewById(R.id.ppcard);
+            ppcard2=itemView.findViewById(R.id.ppcard2);
+            adpic=itemView.findViewById(R.id.adpic);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

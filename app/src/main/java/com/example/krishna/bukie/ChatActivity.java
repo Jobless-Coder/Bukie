@@ -17,8 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private EditText chatbox;
     private int count;
-    private String adId, usernameseller, usernamebuyer, usernameofuser,tmpuser,identity,username;
+    private String fullname, ppic,tmpuser,identity,username;
     private TextView username2;
     private MyChats myChats;
     @Override
@@ -42,14 +45,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_chat);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         username=sharedPreferences.getString("username",null);
+        username=sharedPreferences.getString("username",null);
+        username=sharedPreferences.getString("username",null);
        // Log.d("usernamechaat",username);
         Bundle bundle = getIntent().getExtras();
         myChats = bundle.getParcelable("mychats");
         identity=bundle.getString("identity");
-        if(identity.compareTo("buyer")==0)
+        if(identity.compareTo("buyer")==0){
             tmpuser=myChats.getSeller();
-        else
+            ppic=myChats.getSellerpic();
+            fullname=myChats.getSellerfullname();
+        }
+
+        else{
             tmpuser=myChats.getBuyer();
+            ppic=myChats.getBuyerpic();
+            fullname=myChats.getBuyerfullname();
+
+        }
+
         chatbox=(EditText)findViewById(R.id.chatbox);
 
        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -57,6 +71,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         TextView username2=(TextView)findViewById(R.id.username);
+        ImageView pp=(ImageView)findViewById(R.id.profile_pic);
+        username2.setText(fullname);
+        Glide.with(getApplicationContext()).load(ppic).into(pp);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,18 +84,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageItemList=new ArrayList<>();
-      /*  MessageItem messageItem2=new MessageItem("Hello nibbas xD","4:00am","Indranil");
-        MessageItem messageItem3=new MessageItem("okay Nibbas","5:00am","Krishna");*/
+
         View send=(View)findViewById(R.id.send);
         send.setOnClickListener(this);
-        //count=recyclerView.getAdapter().getItemCount()-1;
-        // adId="123456";usernameseller="Indranil";usernamebuyer="Krishna";usernameofuser="Indranil";
-         /*if(usernameofuser.compareTo(usernamebuyer)==0)
-             tmpuser=usernameseller;
-         else
-             tmpuser=usernamebuyer;*/
 
-        username2.setText(tmpuser);
+
+
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener(){
                  public void receiveIncomingMessage(MessageItem ch)
           {
@@ -145,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.send:
 
-                msg=chatbox.getText().toString();
+                msg=chatbox.getText().toString().trim();
                 if(TextUtils.isEmpty(msg)==false) {
                     Date d = new Date();
 

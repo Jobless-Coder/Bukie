@@ -11,23 +11,35 @@ import android.os.Parcelable;
 public class BookAds implements Parcelable{
 
 
-//public String coverpic;
 public String date;
 public String booktitle;
 public String price;
 public String bookcategory;
-//public String bookpic;
+
 public  String seller;
 public String adid;
+private String sellerpic;
+private String sellerfullname;
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String seller, String adid, List<String> bookpicslist) {
+    public String getSellerfullname() {
+        return sellerfullname;
+    }
+
+    public BookAds(String date, String booktitle, String price, String bookcategory, String seller, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
         this.bookcategory = bookcategory;
         this.seller = seller;
         this.adid = adid;
+        this.sellerpic = sellerpic;
+        this.sellerfullname = sellerfullname;
         this.bookpicslist = bookpicslist;
+    }
+
+
+    public String getSellerpic() {
+        return sellerpic;
     }
 
     public String getSeller() {
@@ -44,10 +56,6 @@ public BookAds(){
 
     }
 
-   /* public String getCoverpic() {
-        return coverpic;
-    }*/
-
 
     public List<String> getBookpicslist() {
         return bookpicslist;
@@ -59,13 +67,15 @@ public BookAds(){
         this.booktitle = in.readString();
         this.bookcategory = in.readString();
         this.price = in.readString();
-        //this.coverpic = in.readString();
+
 
         this.bookpicslist = new ArrayList<String>();
         in.readList(bookpicslist,String.class.getClassLoader());
         this.adid=in.readString();
         this.seller=in.readString();
-        //bookpicslist=in.readList(boo);
+        this.sellerpic=in.readString();
+        this.sellerfullname=in.readString();
+
     }
     public static final Creator<BookAds> CREATOR = new Creator<BookAds>() {
         @Override
@@ -114,6 +124,8 @@ public BookAds(){
         dest.writeList(this.bookpicslist);
         dest.writeString(this.adid);
         dest.writeString(this.seller);
+        dest.writeString(this.sellerpic);
+        dest.writeString(this.sellerfullname);
 
     }
 }

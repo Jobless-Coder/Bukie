@@ -42,7 +42,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private BookAds bookAds;
     private LikeButton likeButton;
     private FirebaseFirestore firebaseFirestore;
-    private String chatid,username;
+    private String chatid,username,userprofilepic;
     private MyChats myChats;
 
 
@@ -53,7 +53,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setContentView(R.layout.activity_display_ad);
         Bundle bundle = getIntent().getExtras();
         bookAds = bundle.getParcelable("bookads");
-        Log.i("bookads",bookAds.getSeller()+"hello");
+       // Log.i("bookads",bookAds.getSeller()+"hello");
         floatingActionButton=findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
@@ -78,7 +78,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         date.setText(bookAds.getDate());
         category.setText(bookAds.getBookcategory());
         floatingActionButton.setOnClickListener(this);
-        //Toast.makeText(this, "hello"+bookAds.getCoverpic(), Toast.LENGTH_SHORT).show();
+
         viewPager=findViewById(R.id.viewPager);
         gotoleft=findViewById(R.id.gotoleft);
         gotoright=findViewById(R.id.gotoright);
@@ -93,7 +93,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-               // Toast.makeText(DisplayAdActivity.this, "liked", Toast.LENGTH_SHORT).show();
+
 
             }
 
@@ -107,7 +107,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         viewPager.setAdapter(viewPagerAdapter);
         pageIndicatorView = findViewById(R.id.pageIndicatorView);
         pageIndicatorView.setCount(bookAds.getBookpicslist().size()); // specify total count of indicators
-        //pageIndicatorView.setSelection(0);
+
         pageIndicatorView.setClickListener(this);
         //viewPager.
 
@@ -147,7 +147,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                 else{
                     viewPager.setCurrentItem(pos-1,true);
-                    //viewPager.setScrollBarFadeDuration(10000);
+
                 }
 
                 break;
@@ -160,7 +160,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             case R.id.floatingActionButton:
                 SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
                 username=sharedPreferences.getString("username",null);
-                chatid=username+bookAds.getAdid();
+                userprofilepic=sharedPreferences.getString("profilepic",null);
+                final String userfullname=sharedPreferences.getString("fullname",null);
+                chatid=username+"%"+bookAds.getAdid();
                 firebaseFirestore=FirebaseFirestore.getInstance();
                 DocumentReference mychatdoc=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
                 if(username!=null) {
@@ -173,7 +175,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                                 if (task.isSuccessful()) {
 
-                                    myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid);
+                                    myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
                                     DocumentSnapshot snapshot = task.getResult();
 
                                     if (snapshot.exists()) {
@@ -192,7 +194,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                         intent.putExtra("mychats", myChats);
                                         intent.putExtra("identity", "buyer");
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         getApplicationContext().startActivity(intent);
                                     }
 
@@ -213,28 +215,20 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void createNewChat() {
-       // MyChats myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(0),chatid);
+
         firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid)
                 .set(myChats)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         //progressDialog.dismiss();
-                        //Toast.makeText(DisplayAdActivity.this, "Chat created buyer", Toast.LENGTH_SHORT).show();
 
-                        //startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
-
-
-
-                        //Toast.makeText(RegistrationActivity.this, ""+username, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //progressDialog.dismiss();
-                        //Toast.makeText(DisplayAdActivity.this, "Error registering,pls try again later", Toast.LENGTH_SHORT).show();
-                        //Log.w(TAG, "Error writing document", e);
+
                     }
                 });
         firebaseFirestore.collection("users").document(bookAds.getSeller()).collection("mychats").document(chatid)
@@ -242,22 +236,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        //progressDialog.dismiss();
-                        //Toast.makeText(DisplayAdActivity.this, "Chat created seller", Toast.LENGTH_SHORT).show();
 
-                        //startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
-
-
-
-                        //Toast.makeText(RegistrationActivity.this, ""+username, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        //progressDialog.dismiss();
-                        //Toast.makeText(DisplayAdActivity.this, "Error registering,pls try again later", Toast.LENGTH_SHORT).show();
-                        //Log.w(TAG, "Error writing document", e);
+
                     }
                 });
 

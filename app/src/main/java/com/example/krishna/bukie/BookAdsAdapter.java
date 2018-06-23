@@ -1,5 +1,5 @@
 
-package com.example.krishna.bukie;
+/*package com.example.krishna.bukie;
 
         import android.content.Context;
         import android.os.Handler;
@@ -69,11 +69,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
             }, 1000);
         }
         else{
-            /*holder.bookcategory.setBackground(null);
-            holder.bookpic.setBackground(null);
-            holder.bookdate.setBackground(null);
-            holder.booktitle.setBackground(null);
-            holder.bookprice.setBackground(null);*/
+
             Glide.with(context)
                     .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
                     .into(holder.bookpic);
@@ -87,30 +83,6 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
 
 
 
-
-        //holder.shimmerFrameLayout.stopShimmer();
-        /*if(bookAds.isShowShimmer()){
-            //holder.shimmerFrameLayout.setShimmer(s)
-        holder.shimmerFrameLayout.startShimmerAnimation();
-
-        }
-        else {
-
-        holder.shimmerFrameLayout.stopShimmerAnimation();
-        holder.bookcategory.setBackground(null);
-        holder.bookpic.setBackground(null);
-            holder.bookdate.setBackground(null);
-            holder.booktitle.setBackground(null);
-            holder.bookprice.setBackground(null);
-            Glide.with(context)
-                    .load(bookAds.getBookpic())
-                    .into(holder.bookpic);
-            holder.booktitle.setText(bookAds.getBooktitle());
-            holder.bookprice.setText(bookAds.getPrice());
-            holder.bookdate.setText(bookAds.getDate());
-            holder.bookcategory.setText(bookAds.getBookcategory());
-
-        }*/
         }
 
 
@@ -119,10 +91,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        /*if(messageItemList==null)
-        {
-            messageItemList = new ArrayList<MessageItem>();
-        }*/
+
         return bookAdsList.size();
     }
 
@@ -144,6 +113,6 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
 
         }
     }
-}
+}*/
 
 

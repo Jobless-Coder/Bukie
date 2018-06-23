@@ -60,7 +60,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private List<String> imagesPathList;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
-    private String mtitle,mcategory,mprice,mdate,madid,musername;
+    private String mtitle,mcategory,mprice,mdate,madid,musername,mprofilepic,mfullname;
     private CollectionReference bookadscollection;
     private LinearLayout linearLayout;
     private HashSet<Uri> hset;
@@ -74,6 +74,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_postnewad);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         musername=sharedPreferences.getString("username",null);
+        mprofilepic=sharedPreferences.getString("profilepic",null);
+        mfullname=sharedPreferences.getString("fullname",null);
         progressDialog=new ProgressDialog(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -267,7 +269,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 break;*/
 
             case R.id.fabpostad:
-                //Toast.makeText(this, "Enter all fields to proceedkll", Toast.LENGTH_SHORT).show();
+
                 downloadurl=new ArrayList<String>();
 
                 mtitle=title.getText().toString();
@@ -284,17 +286,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 if(mprice.isEmpty()||mtitle.isEmpty()||mcategory.isEmpty()/*||mArrayUri!=null*/)
                     Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
                 else {
-                    //String date, String booktitle, String price, String bookcategory, List<Uri> listbookpics
+
                     uploadFile(hset);
 
-
-
                 }
-
-
-
-
-
 
                 break;
 
@@ -348,7 +343,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     public void onSuccess(Uri uri) {
 
                             downloadurl.add(uri + "");
-                            Toast.makeText(PostnewadActivity.this, "images added ", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(PostnewadActivity.this, "images added ", Toast.LENGTH_SHORT).show();
                         /*}
                         else {
                             Toast.makeText(PostnewadActivity.this, ""+uri, Toast.LENGTH_SHORT).show();
@@ -358,8 +353,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         if(downloadurl.size()==hset.size())
                        {
                             //Log.e("hello","error");
-                           madid=musername+UUID.randomUUID();
-                            BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,musername,madid,downloadurl);
+                           madid=musername+"%"+UUID.randomUUID();
+                            BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,musername,madid,mprofilepic,mfullname,downloadurl);
                            // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
                            firebaseFirestore.collection("bookads").document(madid).set(bookAds)
                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -380,8 +375,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
                                        }
                                    });
-                           // bookadscollection.add(bookAds);
-                            //Toast.makeText(getApplicationContext(), "ad posted", Toast.LENGTH_SHORT).show();
+
                         }
 
                     }

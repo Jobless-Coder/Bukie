@@ -9,7 +9,7 @@
         android:title="Share location"
         android:orderInCategory="1"
         app:actionViewClass="true"
-        app:showAsAction="always" />
+        app:showAsAction="withText" />
     <item
         android:id="@+id/block_user"
         android:icon="@drawable/blockuser"
