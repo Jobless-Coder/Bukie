@@ -112,28 +112,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 }
                             })
                             .into(holder.bookpic);
-                    /*Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
 
-                            // Do something after 5s = 5000ms
-                            holder.shimmerFrameLayout.stopShimmerAnimation();
-                            holder.bookcategory.setBackground(null);
-                            holder.bookpic.setBackground(null);
-                            holder.bookdate.setBackground(null);
-                            holder.booktitle.setBackground(null);
-                            holder.bookprice.setBackground(null);
-                            Glide.with(context)
-                                    .load(bookAds.getBookpicslist().get(0))
-                                    .into(holder.bookpic);
-                            holder.booktitle.setText(bookAds.getBooktitle());
-                            holder.bookprice.setText(bookAds.getPrice());
-                            holder.bookdate.setText(bookAds.getDate());
-                            holder.bookcategory.setText(bookAds.getBookcategory());
-                            //bookAds.setShowShimmer(false);
-                        }
-                    }, 1000);*/
                 }
                 else{
 
@@ -233,7 +212,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         toolbargroup.removeAllViews();
         toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
         toolbargroup.addView(toolbarview);
-        mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+        //mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
 
         recyclerView.setHasFixedSize(true);

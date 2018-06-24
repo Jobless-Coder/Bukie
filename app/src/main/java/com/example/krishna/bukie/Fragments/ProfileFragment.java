@@ -7,20 +7,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.krishna.bukie.AuthActivity;
-import com.example.krishna.bukie.ChatActivity;
 import com.example.krishna.bukie.R;
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MyAdsFragment extends Fragment implements View.OnClickListener {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,11 +29,11 @@ public class MyAdsFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View v=inflater.inflate(R.layout.fragment_myads, null);
+        View v=inflater.inflate(R.layout.fragment_profile, null);
         Button button=v.findViewById(R.id.logout);
         button.setOnClickListener(this);
         firebaseAuth=FirebaseAuth.getInstance();
-        return v;//inflater.inflate(R.layout.fragment_myads, null);
+        return v;//inflater.inflate(R.layout.fragment_profile, null);
     }
 
     @Override

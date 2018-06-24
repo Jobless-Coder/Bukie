@@ -2,27 +2,23 @@ package com.example.krishna.bukie;
 
 import android.graphics.Color;
 import android.support.annotation.ColorRes;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.example.krishna.bukie.Fragments.ChatFragment;
 import com.example.krishna.bukie.Fragments.HomeFragment;
-import com.example.krishna.bukie.Fragments.MyAdsFragment;
+import com.example.krishna.bukie.Fragments.ProfileFragment;
 
 public class HomePageActivity extends AppCompatActivity {
     AHBottomNavigation bottomNavigation;
@@ -47,10 +43,10 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         setSupportActionBar(toolbar);
-         actionbar = getSupportActionBar();
+       /*  actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);*/
+       /* mDrawerLayout = findViewById(R.id.drawer_layout);
 
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(
@@ -63,7 +59,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                         return true;
                     }
-                });
+                });*/
 
 
         loadFragment(new HomeFragment());
@@ -92,7 +88,7 @@ public class HomePageActivity extends AppCompatActivity {
     private void initializeViews() {
         item1 = new AHBottomNavigationItem("Home", R.drawable.home, R.color.colorAccent);
         item2 = new AHBottomNavigationItem("Chats", R.drawable.chat, R.color.violet);
-        item3 = new AHBottomNavigationItem("My ads", R.drawable.myads, R.color.colorAccent);
+        item3 = new AHBottomNavigationItem("Profile", R.drawable.profile, R.color.colorAccent);
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
@@ -129,7 +125,7 @@ public class HomePageActivity extends AppCompatActivity {
                         toolbargroup.removeAllViews();
                        toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myads,toolbargroup,false);
                         toolbargroup.addView(toolbarview);
-                        fragment = new MyAdsFragment();
+                        fragment = new ProfileFragment();
 
                         break;
                         default:

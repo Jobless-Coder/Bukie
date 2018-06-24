@@ -45,8 +45,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_chat);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         username=sharedPreferences.getString("username",null);
-        username=sharedPreferences.getString("username",null);
-        username=sharedPreferences.getString("username",null);
+       // username=sharedPreferences.getString("username",null);
+        //username=sharedPreferences.getString("username",null);
        // Log.d("usernamechaat",username);
         Bundle bundle = getIntent().getExtras();
         myChats = bundle.getParcelable("mychats");
@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
           }
 
               });
-
+        //fh.getPreviousTexts();
         fh.startListening();
         recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -163,7 +163,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     SimpleDateFormat ft =
                             new SimpleDateFormat("hh:mm a");
                     date = ft.format(d);
-                    MessageItem m = new MessageItem(msg, date, username);
+                    MessageItem m = new MessageItem(msg, date, username,d.getTime()+"");
                     fh.sendMessage(m);
 
                     chatbox.setText("");
