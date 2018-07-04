@@ -7,3 +7,5 @@ But post semesters with those books are no less.
 
 Are you fed up with your used up books using up your shelf space?
 Turn them to Bukie, load your wallet, not your shelf.
+
+https://docs.google.com/document/d/1-mobmOwJbACZzXCUU77mX-UEwIKHUpG8EmA1e04HXmU/edit?usp=sharing
