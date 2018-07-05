@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,8 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+        
+
 
 
         frameLayout =findViewById(R.id.frame);
@@ -123,7 +126,7 @@ public class HomePageActivity extends AppCompatActivity {
                         break;
                     case 2:
                         toolbargroup.removeAllViews();
-                       toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myads,toolbargroup,false);
+                       toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myprofile,toolbargroup,false);
                         toolbargroup.addView(toolbarview);
                         fragment = new ProfileFragment();
 

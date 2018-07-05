@@ -4,27 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder>{
    private List<MessageItem> messageItemList;
    private Context context;
    private View itemView2;
    String previous_user="-1",previous_user2;
    String current_user="";
 
-    public MyAdapter(List<MessageItem> messageItemList, Context context) {
+    public MessageAdapter(List<MessageItem> messageItemList, Context context) {
         this.messageItemList = messageItemList;
         this.context = context;
         //Toast.makeText(context, ""+messageItemList.size(), Toast.LENGTH_SHORT).show();
@@ -42,7 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     @NonNull
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v= LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.message,parent,false);
         return  new ViewHolder(v);
@@ -50,7 +46,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
     MessageItem messageItem=messageItemList.get(position);
     current_user=messageItem.getUsername();
         SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);

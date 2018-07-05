@@ -251,6 +251,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
                                     Toast.makeText(RegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+                                    finish();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -285,6 +286,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                             editor.putString("fullname",fullnameid);
                             editor.commit();
                             startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+                            finish();
 
 
 

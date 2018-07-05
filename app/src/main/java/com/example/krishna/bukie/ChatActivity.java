@@ -2,16 +2,13 @@ package com.example.krishna.bukie;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +16,6 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -94,7 +90,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                  public void receiveIncomingMessage(MessageItem ch)
           {
               messageItemList.add(ch);
-              adapter=new MyAdapter(messageItemList,context);
+              adapter=new MessageAdapter(messageItemList,context);
               recyclerView.setAdapter(adapter);
               recyclerView.scrollToPosition(messageItemList.size()-1);
           }

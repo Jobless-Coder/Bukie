@@ -84,6 +84,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         if(username!=null){
             Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
             startActivity(intent);
+            finish();
         }
 
         //Toast.makeText(this, "hello123", Toast.LENGTH_SHORT).show();
@@ -287,6 +288,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","google");
                                 startActivity(intent);
+                                finish();
                             }
                             else{
                                 firebaseFirestore.collection("users")
@@ -315,6 +317,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                         });
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
+                                finish();
                             }
 
 
@@ -447,6 +450,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                             //intent.putExtra("signinmethod","google");
                             startActivity(intent);
+                            finish();
                         }
                         else
                             Toast.makeText(AuthActivity.this, "Failure", Toast.LENGTH_SHORT).show();
@@ -476,6 +480,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","facebook");
                                 startActivity(intent);
+                                finish();
                             }
                             else{
                                 firebaseFirestore.collection("users")
@@ -504,6 +509,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                         });
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
+                                finish();
                             }
 
                         } else {
@@ -554,6 +560,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                 intent.putExtra("signinmethod","email");
                 startActivity(intent);
+                finish();
 
                 break;
             default:
@@ -633,5 +640,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
         intent.putExtra("signinmethod","email");
         startActivity(intent);
+        finish();
     }
 }

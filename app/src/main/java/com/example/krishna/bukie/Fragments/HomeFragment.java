@@ -72,6 +72,39 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
     }
+    @Override
+    public View onCreateView(LayoutInflater inflater2, ViewGroup container,  Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        v=inflater2.inflate(R.layout.fragment_home, container,false);
+        floatingActionButton=v.findViewById(R.id.floatingActionButton);
+        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
+        toolbargroup=getActivity().findViewById(R.id.toolbar_layout);
+        toolbargroup.removeAllViews();
+        toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
+        toolbargroup.addView(toolbarview);
+        //mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
+
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        floatingActionButton.setOnClickListener(this);
+        getadvertisements();
+
+
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+                if (dy > 0)
+                    floatingActionButton.hide();
+                else if (dy < 0)
+                    floatingActionButton.show();
+            }
+        });
+
+
+        return v;
+    }
 
     private void getadvertisements() {
         Query query = firebaseFirestore.collection("bookads");
@@ -135,6 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
+                        getActivity().finish();
                     }
                 });
             }
@@ -202,39 +236,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater2, ViewGroup container,  Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
-        v=inflater2.inflate(R.layout.fragment_home, container,false);
-         floatingActionButton=v.findViewById(R.id.floatingActionButton);
-        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        toolbargroup=getActivity().findViewById(R.id.toolbar_layout);
-        toolbargroup.removeAllViews();
-        toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
-        toolbargroup.addView(toolbarview);
-        //mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        floatingActionButton.setOnClickListener(this);
-        getadvertisements();
-
-
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-                if (dy > 0)
-                    floatingActionButton.hide();
-                else if (dy < 0)
-                    floatingActionButton.show();
-            }
-        });
-
-
-        return v;
-    }
 
 
 
@@ -287,6 +289,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Intent intent=new Intent(getContext(), PostnewadActivity.class);
         startActivity(intent);
+        getActivity().finish();
 
     }
 }
