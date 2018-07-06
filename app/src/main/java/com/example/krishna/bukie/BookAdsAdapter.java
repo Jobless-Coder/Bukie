@@ -1,5 +1,5 @@
 
-/*package com.example.krishna.bukie;
+package com.example.krishna.bukie;
 
         import android.content.Context;
         import android.os.Handler;
@@ -113,6 +113,6 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
 
         }
     }
-}*/
+}
 
 

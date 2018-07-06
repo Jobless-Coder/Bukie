@@ -33,20 +33,13 @@ public class MyWishlistFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View v=inflater.inflate(R.layout.fragment_myads, null);
-        //Button button=v.findViewById(R.id.logout);
-        //button.setOnClickListener(this);
+        View v=inflater.inflate(R.layout.fragment_mywishlist, container,false);
         firebaseAuth=FirebaseAuth.getInstance();
-        return v;//inflater.inflate(R.layout.fragment_profile, null);
+
+        return v;
     }
 
-    @Override
-    public void onDestroyView() {
 
-        super.onDestroyView();
-
-
-    }
 
     @Override
     public void onClick(View v) {
