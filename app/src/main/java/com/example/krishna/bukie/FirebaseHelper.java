@@ -5,12 +5,26 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,64 +39,13 @@ private IncomingMessageListener listener;
 private boolean isListening;
 private DatabaseReference ddref;
 private ChildEventListener childEventListener;
+private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
+private CollectionReference collectionReference;
 
-/*
-* When you enter one-to-one chat page, first create an object of FirebaseHelper(...)
-* Parameter description
-*   ad - refers to a unique ID assigned to the ad in question
-*   sel - username of the seller for the particular product in question
-*   buy - username of the buyer for the product
-*   listener - incoming message listener interface object (described below in details)
-*
-*   After you create the object, call the getPreviousMessages() to retrieve a list of previous texts in chronological order
-*   this function returns an ArrayList<BookAds> type object, make sure you follow its data fields
-*   PS: this function shouldn't be called multiple times, just once you enter the page (preferable on the onCreate() method of your activity/fragment)
-*
-*   To continuously listen to new texts throughout the active time of the current page call startListening()
-*   this method listens for new texts and calls receiveIncomingMessage(BookAds) method on the attached listener
-*   make sure you call the stopListening() during exiting from the activity, this is mandatory!!
-*
-*   This is a demo usage for the FirebaseHelper class.
-*
-*   public void onCreate()
-*   {
-*       ...
-*       FirebaseHelper fh = new FirebaseHelper(adId, usernameseller, usernamebuyer, usernameofuser, new IncomingMessageListener(){
-*
-*           public void receiveIncomingMessage(MessageItem ch)
-*           {
-*               ...
-*               //add this chatText to any scrollview/listview as the text to display
-*           }
-*
-*       });
-*       fh.startListening();
-*       //after executing this line, the above method receiveIncomingMessage(MessageItem) gets called for any new text from other user
-*       ...
-*
-*   }
-*
-*   //its similarly important to stop listening to incoming texts, insert the code to onDestroy() and onPause()
-*
-*   public void onDestroy()  // or onPause()
-*   {
-*       ...
-*       fh.stopListening();
-*       ...
-*   }
-*
-*   //to send texts written by this user, call sendMessage(String message)
-*
-*   ..
-*   fh.sendMessage(text);
-*   ..
-*
-*   PS: consider reading the documentation for MessageItem class once
-*
-*/
+
     public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
     {
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         adID = ad;
         seller = sel;
         buyer = buy;
@@ -94,15 +57,7 @@ private ChildEventListener childEventListener;
 
     private void createRefID() {
         refID=adID;
-       /* seller = seller.toLowerCase();
-        buyer = buyer.toLowerCase();
-        String concat = "";
-        if(seller.compareTo(buyer)<0)
-            concat = seller+"%"+buyer;
-        else
-            concat = buyer+"%"+seller;
-        concat = adID+"%"+concat;
-        refID = concat;*/
+
     }
 
 
@@ -110,7 +65,7 @@ private ChildEventListener childEventListener;
     {
         Log.d("MyApp","I am here");
         final ArrayList<MessageItem> chats = new ArrayList<>();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+       /* FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference dref = database.getReference().child("chats/"+refID);
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -125,22 +80,58 @@ private ChildEventListener childEventListener;
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
+        firebaseFirestore.collection("allchats").document("chats").collection(refID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                MessageItem item= document.toObject(MessageItem.class);
+                                chats.add(item);
+                                Log.i("ghjkl",item.getMessage_body());
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                           // Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         return chats;
     }
 
     public void sendMessage(MessageItem message)//add to recyclerview then send
     {
-       // Log.i("hello","nigga");
-        //MessageItem chat = new MessageItem(message, new Date().toString(),username);
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
-        dref.push().setValue(message);
+        //Log.i("hello","nigga");
+       // //MessageItem chat = new MessageItem(message, new Date().toString(),username);
+       // DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
+       // dref.push().setValue(message);
+        firebaseFirestore.collection("allchats").document("chats").collection(refID)
+                .add(message)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
+                       // restUi();
+                        Log.i("hello","nigga");
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                       // Log.w(TAG, "Error adding event document", e);
+                        /*Toast.makeText(getActivity(),
+                                "Event document could not be added",
+                                Toast.LENGTH_SHORT).show();*/
+                    }
+                });
     }
 
-    public void startListening()
-    {
-        if(isListening) return;
+    public void startListening() {
+       /* if(isListening) return;
         ddref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
         childEventListener = new ChildEventListener() {
             @Override
@@ -170,13 +161,68 @@ private ChildEventListener childEventListener;
             }
         };
         ddref.addChildEventListener(childEventListener);
+        isListening = true;*/
+        if (isListening) return;
+      Query query=firebaseFirestore.collection("allchats").document("chats").collection(refID).orderBy("timestamp");
+      query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // Log.w(TAG, "listen:error", e);
+                    return;
+                }
+
+                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            MessageItem chat=dc.getDocument().toObject(MessageItem.class);;
+                            Log.i("MessageChati",chat.getMessage_body());
+                            listener.receiveIncomingMessage(chat);
+                            // Log.d(TAG, "New city: " + dc.getDocument().getData());
+                            break;
+                        case MODIFIED:
+                            // Log.d(TAG, "Modified city: " + dc.getDocument().getData());
+                            break;
+                        case REMOVED:
+                            //Log.d(TAG, "Removed city: " + dc.getDocument().getData());
+                            break;
+                    }
+
+                }
+            }
+        });
+
         isListening = true;
     }
 
     public void stopListening()
     {
         if(!isListening) return;
-        ddref.removeEventListener(childEventListener);
+        Query query = firebaseFirestore.collection("allchats").document("chats").collection(refID);
+        ListenerRegistration registration = query.addSnapshotListener(
+                new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
+                    }
+                    // ...
+                });
+
+// ...
+
+// Stop listening to changes
+        registration.remove();
+        //collectionReference.
+                /*ListenerRegistration registration = query.addSnapshotListener(
+                new EventListener<QuerySnapshot>() {
+                    // ...
+                });*/
+
+// ...
+
+// Stop listening to changes
+       // registration.remove();
+       // ddref.removeEventListener(childEventListener);
         isListening = false;
     }
 }

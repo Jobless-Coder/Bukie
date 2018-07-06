@@ -26,8 +26,8 @@
 
 <android.support.v7.widget.RecyclerView
     android:id="@+id/reyclerview"
-    android:layout_margin="10dp"
-
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     android:layout_width="match_parent"
     android:layout_weight="1"
     android:layout_height="0dp"
@@ -37,7 +37,10 @@
 
 
 
-
+    <View
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"></View>
 <LinearLayout
     android:id="@+id/layout_chatbox"
     android:layout_width="match_parent"
@@ -50,9 +53,12 @@
     android:gravity="center"
 
     >
+
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         app:cardCornerRadius="25dp"
+
+        android:layout_marginTop="4dp"
         android:layout_height="wrap_content"
         android:layout_weight="1">
         <LinearLayout
