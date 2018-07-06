@@ -101,7 +101,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
             @Override
             public void unLiked(LikeButton likeButton) {
-
             }
         });
         viewPagerAdapter=new ViewPagerAdapter(this,bookAds);
