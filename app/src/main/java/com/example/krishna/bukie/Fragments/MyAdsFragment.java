@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.krishna.bukie.AuthActivity;
 import com.example.krishna.bukie.ChatActivity;
 import com.example.krishna.bukie.R;
+import com.example.krishna.bukie.RegistrationActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -37,23 +38,31 @@ public class MyAdsFragment extends Fragment implements View.OnClickListener {
         Button button=v.findViewById(R.id.logout);
         button.setOnClickListener(this);
         firebaseAuth=FirebaseAuth.getInstance();
+        v.findViewById(R.id.tempregistrationbutton).setOnClickListener(this);
         return v;//inflater.inflate(R.layout.fragment_myads, null);
+
     }
 
     @Override
     public void onClick(View v) {
+        if(v.getId() == R.id.tempregistrationbutton)
+        {
+            Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+            getContext().startActivity(new Intent(getContext(), RegistrationActivity.class));
+            return;
+        }
         //Toast.makeText(getContext(), "hello", Toast.LENGTH_SHORT).show();
 //        Toast.makeText(getContext(), "hello"+firebaseAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
-       // if(firebaseAuth.getCurrentUser()!=null) {
+        // if(firebaseAuth.getCurrentUser()!=null) {
 
-            firebaseAuth.signOut();
-            SharedPreferences settings = getContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-            settings.edit().clear().commit();
-            //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-            Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getContext(), AuthActivity.class);
-            getContext().startActivity(intent);
-       // }
+        firebaseAuth.signOut();
+        SharedPreferences settings = getContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        settings.edit().clear().commit();
+        //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+        Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), AuthActivity.class);
+        getContext().startActivity(intent);
+        // }
 
     }
 }

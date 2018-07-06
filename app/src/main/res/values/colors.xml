@@ -17,5 +17,7 @@
     <color name="deep_orange">#FF5722</color>
     <color name="deep_red">#f44336</color>
     <color name="red">#ff5252</color>
+    <color name="deep_grey">#7b7b7b</color>
+    <color name="brick_red">#FF6868</color>
 
 </resources>

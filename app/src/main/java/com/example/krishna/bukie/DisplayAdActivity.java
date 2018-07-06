@@ -38,7 +38,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private PageIndicatorView pageIndicatorView;
     Toolbar toolbar;
     ActionBar actionBar;
-    private FloatingActionButton floatingActionButton;
+    //private FloatingActionButton floatingActionButton;
     private BookAds bookAds;
     private LikeButton likeButton;
     private FirebaseFirestore firebaseFirestore;
@@ -50,13 +50,14 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_ad);
+        setContentView(R.layout.activity_display_ad_two);
         Bundle bundle = getIntent().getExtras();
         bookAds = bundle.getParcelable("bookads");
        // Log.i("bookads",bookAds.getSeller()+"hello");
-        floatingActionButton=findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(this);
+        //floatingActionButton=findViewById(R.id.floatingActionButton);
+        //floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
+        /*
         nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -67,17 +68,18 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 }
             }
         });
+        */
         firebaseFirestore=FirebaseFirestore.getInstance();
         TextView price,title,category,date;
         price= findViewById(R.id.price);
-        price.setText(bookAds.getPrice());
+        price.setText("Rs."+bookAds.getPrice());
         title=findViewById(R.id.title);
         category=findViewById(R.id.category);
         date=findViewById(R.id.date);
         title.setText(bookAds.getBooktitle());
         date.setText(bookAds.getDate());
         category.setText(bookAds.getBookcategory());
-        floatingActionButton.setOnClickListener(this);
+        //floatingActionButton.setOnClickListener(this);
 
         viewPager=findViewById(R.id.viewPager);
         gotoleft=findViewById(R.id.gotoleft);
@@ -89,7 +91,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         actionBar.setDisplayHomeAsUpEnabled(true);
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
-        likeButton=toolbar.findViewById(R.id.favourites);
+        likeButton=findViewById(R.id.favourites);
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -157,61 +159,68 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 else
                     viewPager.setCurrentItem(pos+1,true);
                 break;
-            case R.id.floatingActionButton:
-                SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-                username=sharedPreferences.getString("username",null);
-                userprofilepic=sharedPreferences.getString("profilepic",null);
-                final String userfullname=sharedPreferences.getString("fullname",null);
-                chatid=username+"%"+bookAds.getAdid();
-                firebaseFirestore=FirebaseFirestore.getInstance();
-                DocumentReference mychatdoc=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
-                if(username!=null) {
-                    //Log.i("kll",bookAds.getSeller()+"hello");
-                    if(username.compareTo(bookAds.getSeller())!=0) {
-
-                        mychatdoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                                if (task.isSuccessful()) {
-
-                                    myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
-                                    DocumentSnapshot snapshot = task.getResult();
-
-                                    if (snapshot.exists()) {
-
-                                        //Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                                        intent.putExtra("mychats", myChats);
-                                        intent.putExtra("identity", "buyer");
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        getApplicationContext().startActivity(intent);
-
-                                    } else {
-                                        //chatid=username+bookAds.getAdid();
-                                        //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
-                                        createNewChat();
-                                        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                                        intent.putExtra("mychats", myChats);
-                                        intent.putExtra("identity", "buyer");
-                                       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        getApplicationContext().startActivity(intent);
-                                    }
-
-
-                                }
-                            }
-                        });
-                    }
-                    else {
-                        Toast.makeText(this, "Why so lonely?,you can't chat with yourself", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
+                /*
+                case R.id.floatingActionButton:
+                goToChat();
                 break;
+                */
                 default:
                     break;
         }
+    }
+
+    private void goToChat(View view) {
+
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        username=sharedPreferences.getString("username",null);
+        userprofilepic=sharedPreferences.getString("profilepic",null);
+        final String userfullname=sharedPreferences.getString("fullname",null);
+        chatid=username+"%"+bookAds.getAdid();
+        firebaseFirestore=FirebaseFirestore.getInstance();
+        DocumentReference mychatdoc=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
+        if(username!=null) {
+            //Log.i("kll",bookAds.getSeller()+"hello");
+            if(username.compareTo(bookAds.getSeller())!=0) {
+
+                mychatdoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                        if (task.isSuccessful()) {
+
+                            myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+                            DocumentSnapshot snapshot = task.getResult();
+
+                            if (snapshot.exists()) {
+
+                                //Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                                intent.putExtra("mychats", myChats);
+                                intent.putExtra("identity", "buyer");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                getApplicationContext().startActivity(intent);
+
+                            } else {
+                                //chatid=username+bookAds.getAdid();
+                                //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
+                                createNewChat();
+                                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                                intent.putExtra("mychats", myChats);
+                                intent.putExtra("identity", "buyer");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                getApplicationContext().startActivity(intent);
+                            }
+
+
+                        }
+                    }
+                });
+            }
+            else {
+                Toast.makeText(this, "Why so lonely?,you can't chat with yourself", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     private void createNewChat() {

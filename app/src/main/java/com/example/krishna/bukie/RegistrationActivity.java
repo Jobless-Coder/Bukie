@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,6 +31,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -49,6 +51,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -56,7 +63,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.Console;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -81,8 +91,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private CollectionReference usercollection;
     private SharedPreferences pref ;
     private FirebaseUser firebaseUser;
-
-
+    private InterestAdapter interestAdapter;
+    private ArrayList<String> interests;
 
 
     @Override
@@ -90,16 +100,19 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_registration);
+
+        ppview=findViewById(R.id.ppview);
+        ppview.setOnClickListener(this);
+        imageView=findViewById(R.id.profile_pic);
+
+        /*
         pref=getSharedPreferences("UserInfo",MODE_PRIVATE);
         Bundle bundle = getIntent().getExtras();
         signinmethod=bundle.getString("signinmethod");
         fullname=(EditText) findViewById(R.id.fullname);
         username = (EditText) findViewById(R.id.username);
         register = (View) findViewById(R.id.register);
-        imageView=findViewById(R.id.profile_pic);
-        ppview=findViewById(R.id.ppview);
         register.setOnClickListener(this);
-        ppview.setOnClickListener(this);
         progressDialog = new ProgressDialog(this);
         firebaseAuth=FirebaseAuth.getInstance();
         firebaseStorage=FirebaseStorage.getInstance();
@@ -114,19 +127,41 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         fullnameid=firebaseUser.getDisplayName();
         Glide.with(getApplicationContext()).load(profilepicurl).into(imageView);
         fullname.setText(fullnameid);
+        */
 
 
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("interests");
+        dref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList t = new ArrayList();
+                for(DataSnapshot s: dataSnapshot.getChildren())
+                {
+                    t.add(s.getValue().toString());
+                }
+                displayInterests(t);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        interests= new ArrayList<>();
+        //{"Engineering", "Comics", "Novels", "Inspirational", "Fiction", "Non-fiction","Classics","Religious"};
 
     }
 
-
-
-
+    private void displayInterests(ArrayList<String> t) {
+        interests = t;
+        FlexboxLayout layout = findViewById(R.id.flexlayout);
+        interestAdapter = new InterestAdapter(this, interests, layout);
+    }
 
 
     @Override
     public void onClick(View v) {
+
 
         switch (v.getId()) {
             case R.id.register:
@@ -148,7 +183,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 break;
         }
 
-
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -158,17 +192,42 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
          if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
                 && null != data){
 
-            try {
+
                 imageUri = data.getData();
+                String destinationFileName = "temp_profile_picture.png";
+
+                UCrop uCrop = UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), destinationFileName)))
+                        .withAspectRatio(1,1);
+
+                //uCrop = basisConfig(uCrop);
+                //uCrop = advancedConfig(uCrop);
+
+
+                uCrop.start(RegistrationActivity.this);
+                /*if (requestMode == REQUEST_SELECT_PICTURE_FOR_FRAGMENT) {       //if build variant = fragment
+                    setupFragment(uCrop);
+                } else {                                                        // else start uCrop Activity
+                    uCrop.start(RegistrationActivity.this);
+                }
+                */
+
+        }
+        else if(requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK && data != null)
+         {
+
+             try {
+                imageUri = UCrop.getOutput(data);
 
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
 
-        }
+         } catch (FileNotFoundException e) {
+                 e.printStackTrace();
+             }
+
+
+         }
         else {
             Toast.makeText(this, "You haven't picked Image",
                     Toast.LENGTH_LONG).show();
