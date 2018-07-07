@@ -168,7 +168,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         }
     }
 
-    private void goToChat(View view) {
+    public void goToChat(View view) {
 
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         username=sharedPreferences.getString("username",null);
@@ -256,4 +256,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
 
     }
+
+    /*public void goToChat(View view) {
+
+    }*/
 }
