@@ -72,7 +72,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         firebaseFirestore=FirebaseFirestore.getInstance();
         TextView price,title,category,date;
         price= findViewById(R.id.price);
-        price.setText("Rs."+bookAds.getPrice());
+        price.setText("₹ "+bookAds.getPrice());
         title=findViewById(R.id.title);
         category=findViewById(R.id.category);
         date=findViewById(R.id.date);
