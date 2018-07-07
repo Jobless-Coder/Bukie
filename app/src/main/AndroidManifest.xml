@@ -44,7 +44,7 @@
         <!--activity android:name=".LoginActivity" /-->
         <activity
             android:name=".ChatActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
+            />
         <activity android:name=".HomeActivity" />
         <activity
             android:name=".RegistrationActivity"

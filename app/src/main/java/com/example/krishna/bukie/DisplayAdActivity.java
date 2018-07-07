@@ -90,6 +90,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
         likeButton=toolbar.findViewById(R.id.favourites);
+
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {

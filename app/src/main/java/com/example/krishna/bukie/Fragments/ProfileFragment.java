@@ -106,7 +106,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         //tabLayout.addTab(tabLayout.newTab().setText("Games"));
         replaceFragment(new MyAdsFragment());*/
 
-
+        myads.setSelected(true);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         fullname=sharedPreferences.getString("fullname",null);
         ppic=sharedPreferences.getString("profilepic",null);
@@ -120,6 +120,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .load(ppic)
                 .into(imageView);
         setupRecyclerViewContent("myads");
+
 
 
         /*tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -267,8 +268,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.myads:
+
                 if(myadsfrag==false){
                     myadsfrag=true;
+                    myads.setSelected(true);
+                    mywishlist.setSelected(false);
                     setupRecyclerViewContent("myads");
 
                 }
@@ -276,6 +280,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.mywishlist:
                 if(myadsfrag==true){
+                    myads.setSelected(false);
+                    mywishlist.setSelected(true);
                     myadsfrag=false;
                     setupRecyclerViewContent("mywishlist");
                 }
