@@ -3,8 +3,14 @@ package com.example.krishna.bukie;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,21 +18,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.vanniktech.emoji.EmojiButton;
+import com.example.krishna.bukie.Fragments.GPS;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiPopup;
@@ -38,6 +46,8 @@ import java.util.Date;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG ="helloo" ;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -48,9 +58,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String fullname, ppic,tmpuser,identity,username;
     private TextView username2;
     private MyChats myChats;
-    private View camera,attach,send,emoji,rootview,keyboard;
+    private View camera,attach,send,emoji,rootview,keyboard,sendbtn,camerabtn;
     EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
+    private final Handler handler = new Handler();
+    private boolean isNetworkLocation, isGPSLocation;
+    private boolean togglesend=false;
+    private String msg,date;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +108,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageItemList=new ArrayList<>();
-
+        //camerabtn=findViewById(R.id.camerabtn);
+        sendbtn=(View)findViewById(R.id.sendbtn);
         camera=findViewById(R.id.camera);
         attach=findViewById(R.id.attach);
         send=(View)findViewById(R.id.send);
@@ -103,9 +118,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         keyboard=findViewById(R.id.keyboard);
         keyboard.setOnClickListener(this);
         emoji.setOnClickListener(this);
-        camera.setOnClickListener(this);
+        //camerabtn.setOnClickListener(this);
         attach.setOnClickListener(this);
-        send.setOnClickListener(this);
+        sendbtn.setOnClickListener(this);
         emojiPopup = EmojiPopup.Builder.fromRootView(rootview).build((EmojiEditText) chatbox);
 
 
@@ -156,6 +171,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             super.onAnimationEnd(animation);
                             camera.setVisibility(View.INVISIBLE);
                             send.setVisibility(View.VISIBLE);
+                            togglesend=true;
                         }
                     });
 
@@ -174,6 +190,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             super.onAnimationEnd(animation);
                             send.setVisibility(View.INVISIBLE);
                             camera.setVisibility(View.VISIBLE);
+                            togglesend=false;
                         }
                     });
 
@@ -184,6 +201,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+        chatbox.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        chatbox.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
         chatbox.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -223,6 +242,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        chatbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    msg = chatbox.getText().toString().trim();
+                    if (TextUtils.isEmpty(msg) == false) {
+                        Date d = new Date();
+
+                        SimpleDateFormat ft =
+                                new SimpleDateFormat("hh:mm a");
+                        date = ft.format(d);
+                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "");
+                        fh.sendMessage(m);
+
+                        chatbox.setText("");
+                    }
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
 
 
 
@@ -236,7 +278,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_actions, menu);
+        getMenuInflater().inflate(R.menu.chatactivitymenu, menu);
 
 
         MenuItem searchItem = menu.findItem(R.id.share_location);
@@ -255,8 +297,33 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share_location:
-                //Toast.makeText(this, "search selected", Toast.LENGTH_SHORT)
-                        //.show();
+                /*Intent intent=new Intent(ChatActivity.this,MapActivity.class);
+                startActivity(intent);*/
+                LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if(mListener != null){
+                    isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
+                }
+                handler.postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        if(isGPSLocation){
+                            Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+                            intent.putExtra("provider", LocationManager.GPS_PROVIDER);
+                            startActivity(intent);
+                            finish();
+                        }else if(isNetworkLocation){
+                            Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+                            intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            //Device location is not set
+                            PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
+                        }
+                    }
+                }, 1500);
                 break;
 
             default:
@@ -264,28 +331,49 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
         return true;
     }
-    String msg,date;
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }*/
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.send:
+            case R.id.sendbtn:
+                if(togglesend==true) {
 
-                msg=chatbox.getText().toString().trim();
-                if(TextUtils.isEmpty(msg)==false) {
-                    Date d = new Date();
+                    msg = chatbox.getText().toString().trim();
+                    if (TextUtils.isEmpty(msg) == false) {
+                        Date d = new Date();
 
-                    SimpleDateFormat ft =
-                            new SimpleDateFormat("hh:mm a");
-                    date = ft.format(d);
-                    MessageItem m = new MessageItem(msg, date, username,d.getTime()+"");
-                    fh.sendMessage(m);
+                        SimpleDateFormat ft =
+                                new SimpleDateFormat("hh:mm a");
+                        date = ft.format(d);
+                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "");
+                        fh.sendMessage(m);
 
-                    chatbox.setText("");
+                        chatbox.setText("");
+                    }
                 }
                 //Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
 
-                break;
-            case R.id.camera:
                 break;
             case R.id.attach:
                 break;

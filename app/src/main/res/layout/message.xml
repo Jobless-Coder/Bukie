@@ -15,7 +15,7 @@
         android:layout_height="wrap_content">
 
 
-    <TextView
+    <com.vanniktech.emoji.EmojiTextView
         android:paddingBottom="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -25,9 +25,13 @@
         android:id="@+id/message_body1"
         android:textColor="#ffffff"
         android:minWidth="70dp"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:text="k"
         />
+        <!--com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/emojiTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/-->
 
     <TextView
 
@@ -53,7 +57,7 @@
         android:layout_height="wrap_content">
 
 
-        <TextView
+        <com.vanniktech.emoji.EmojiTextView
             android:paddingBottom="20dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
@@ -63,7 +67,7 @@
             android:id="@+id/message_body2"
             android:textColor="@color/white"
             android:minWidth="70dp"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:text="kkkk"
             />
 
