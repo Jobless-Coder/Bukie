@@ -5,5 +5,7 @@
     </string>
     <string name="facebook_app_id">999908260170527</string>
     <string name="fb_login_protocol_scheme">fb999908260170527</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
     <!--string name="default_web_client_id">743515921060-qb58ds2qtmq6mflbuejv23hrt8h4aa5j.apps.googleusercontent.com</1string-->
 </resources>

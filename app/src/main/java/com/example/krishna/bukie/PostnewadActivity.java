@@ -14,7 +14,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -67,6 +70,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private Uri coveruri;
     private FloatingActionButton floatingActionButton;
     private ProgressDialog progressDialog;
+    private DisplayMetrics metrics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +94,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
         rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
         rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
-        rowView.findViewById(R.id.addimg).setVisibility(View.VISIBLE);
+        rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
+        findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         linearLayout.addView(rowView);
 
 
 
+        setSizeOfSquareImageViews();
         firebaseStorage=FirebaseStorage.getInstance();
         firebaseFirestore=FirebaseFirestore.getInstance();
        storageReference=firebaseStorage.getReference();
@@ -124,6 +130,11 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     }
 
+    private void setSizeOfSquareImageViews() {
+        metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        //Toast.makeText(this, metrics.heightPixels+" "+metrics.widthPixels, Toast.LENGTH_SHORT).show();
+    }
 
 
     @Override
@@ -403,5 +414,11 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         imageView.setImageResource(0);
         this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         this.findViewById(R.id.addcoverimage).setVisibility(View.VISIBLE);
+    }
+
+    public void addNewSquareImage(View view) {
+        //TODO: Add imagepicker cropper and all necessary shit here
+
+        ((FlexboxLayout)findViewById(R.id.flexlayout)).addView(new SquareImageView(this, null, metrics),1);
     }
 }

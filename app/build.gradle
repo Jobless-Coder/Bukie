@@ -49,6 +49,10 @@ dependencies {
 
     implementation 'com.google.android:flexbox:1.0.0'
     implementation 'com.github.yalantis:ucrop:2.2.2'
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
+
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+    implementation 'com.google.firebase:firebase-iid:16.0.0'
     implementation 'com.google.firebase:firebase-messaging:11.8.0'
 
     testImplementation 'junit:junit:4.12'

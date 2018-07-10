@@ -20,6 +20,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +35,7 @@ import com.rd.draw.controller.DrawController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DisplayAdActivity extends AppCompatActivity implements DrawController.ClickListener, View.OnClickListener {
     private ViewPager viewPager;
@@ -38,7 +44,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private PageIndicatorView pageIndicatorView;
     Toolbar toolbar;
     ActionBar actionBar;
-    //private FloatingActionButton floatingActionButton;
     private BookAds bookAds;
     private LikeButton likeButton;
     private FirebaseFirestore firebaseFirestore;
@@ -81,6 +86,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         category.setText(bookAds.getBookcategory());
         //floatingActionButton.setOnClickListener(this);
 
+        if(getActionBar()!=null)
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager=findViewById(R.id.viewPager);
         gotoleft=findViewById(R.id.gotoleft);
         gotoright=findViewById(R.id.gotoright);
@@ -92,15 +99,27 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
         likeButton=findViewById(R.id.favourites);
+
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        username=sharedPreferences.getString("username",null);
+
+        if(username.equals(bookAds.seller))
+        {
+            findViewById(R.id.viewPagercard).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
+            findViewById(R.id.chatbutton).setVisibility(View.GONE);
+        }
+
+        setFavouriteButton();
+
         likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-
-
+                addToWishList();
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
+                removeFromWishList();
             }
         });
         viewPagerAdapter=new ViewPagerAdapter(this,bookAds);
@@ -126,6 +145,91 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             public void onPageScrollStateChanged(int state) {/*empty*/}
         });
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        //startActivity(new Intent(this, HomePageActivity.class));
+        finish();
+    }
+    private void setFavouriteButton() {
+        Log.e("Favourite", "inside fab setting function");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        dref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren())
+                {
+                    Log.e("Comparing", data.getValue().toString()+" And "+bookAds.getAdid());
+                    if(data.getValue().toString().equals(bookAds.getAdid()))
+                    {
+                        likeButton.setLiked(true);
+                        //Toast.makeText(DisplayAdActivity.this, bookAds.getAdid(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(DisplayAdActivity.this, "Liked before!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(DisplayAdActivity.this, "Cannot read data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void removeFromWishList() {
+        final ArrayList<Pair> wishList = new ArrayList<>();
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        dref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren())
+                {
+                    wishList.add(new Pair(data.getKey(), data.getValue().toString()));
+                }
+                removeIfAvailable(wishList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void removeIfAvailable(ArrayList<Pair> wishList) {
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        for(Pair adObject: wishList)
+        {
+            if(adObject.value.equals(bookAds.adid))
+            {
+                dref.child(adObject.key).removeValue();
+            }
+        }
+    }
+
+    public void shareAd(View view) {
+        Toast.makeText(this, "Call you friend and talk about this ad", Toast.LENGTH_SHORT).show();
+    }
+
+    class Pair
+    {
+        String key, value;
+        Pair(String k, String v){
+            key = k;
+            value = v;
+        }
+    }
+    private void addToWishList() {
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        dref.push().setValue(bookAds.adid);
     }
 
     @Override
