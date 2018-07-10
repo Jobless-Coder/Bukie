@@ -5,12 +5,17 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.ContactsContract;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,14 +37,25 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.krishna.bukie.Fragments.GPS;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.ios.IosEmojiProvider;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +64,8 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="helloo" ;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
+    private static final int RESULT_PICK_CONTACT = 0;
+    private static final int REQUEST_IMAGE_CAPTURE = 5;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -64,15 +82,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private final Handler handler = new Handler();
     private boolean isNetworkLocation, isGPSLocation;
     private boolean togglesend=false;
-    private String msg,date;
+    private String msg,date,name,phone;
+    private Bitmap mImageBitmap;
+    private String mCurrentPhotoPath,latitude,longitude,locality;
+    private ImageView mImageView;
+    private List<String> imagepaths=new ArrayList<>();
+    private List<String> imagefilenamelist=new ArrayList<>();
+    private StorageReference storageReference;
+    private FirebaseStorage firebaseStorage;
+    private FirebaseAuth firebaseAuth;
+    private Geopoint geopoint;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EmojiManager.install(new IosEmojiProvider());
         setContentView(R.layout.activity_chat);
+        firebaseAuth= FirebaseAuth.getInstance();
+        firebaseStorage=FirebaseStorage.getInstance();
+        storageReference=firebaseStorage.getReference();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         username=sharedPreferences.getString("username",null);
         Bundle bundle = getIntent().getExtras();
+        String isMap=bundle.getString("isMap");
+
         myChats = bundle.getParcelable("mychats");
         identity=bundle.getString("identity");
         if(identity.compareTo("buyer")==0){
@@ -87,6 +119,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             fullname=myChats.getBuyerfullname();
 
         }
+
+      //  imagefilenamelist=new ArrayList<>();
+       // Toast.makeText(getApplicationContext(), "buyer"+identity, Toast.LENGTH_SHORT).show();
 
         chatbox=(EditText)findViewById(R.id.chatbox);
 
@@ -146,6 +181,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });
+        if(isMap.compareTo("1")==0) {
+            geopoint=bundle.getParcelable("geopoint");
+            /*latitude = bundle.getString("latitude");
+            longitude = bundle.getString("longitude");
+            locality=bundle.getString("locality");
+            Log.i("latitude",latitude);
+            Log.i("latitude",longitude);
+            Log.i("latitude",locality);*/
+            sendMessage("location");
+        }
         chatbox.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -249,15 +294,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     msg = chatbox.getText().toString().trim();
                     if (TextUtils.isEmpty(msg) == false) {
-                        Date d = new Date();
+                        sendMessage("message");
+                        /*Date d = new Date();
 
                         SimpleDateFormat ft =
                                 new SimpleDateFormat("hh:mm a");
                         date = ft.format(d);
-                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "");
+                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
                         fh.sendMessage(m);
 
-                        chatbox.setText("");
+                        chatbox.setText("");*/
                     }
                     handled = true;
                 }
@@ -297,9 +343,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share_location:
+                shareLocation();
                 /*Intent intent=new Intent(ChatActivity.this,MapActivity.class);
                 startActivity(intent);*/
-                LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+               /* LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if(mListener != null){
                     isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
                     isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -311,11 +358,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         if(isGPSLocation){
                             Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                             intent.putExtra("provider", LocationManager.GPS_PROVIDER);
+                            intent.putExtra("mychats", myChats);
+                            intent.putExtra("identity", identity);
                             startActivity(intent);
                             finish();
                         }else if(isNetworkLocation){
                             Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                             intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
+                            intent.putExtra("mychats", myChats);
+                            intent.putExtra("identity", identity);
                             startActivity(intent);
                             finish();
                         }else{
@@ -323,7 +374,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
                         }
                     }
-                }, 1500);
+                }, 1500);*/
+                break;
+            case R.id.contact:
+                shareContact();
+
                 break;
 
             default:
@@ -331,27 +386,197 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
         return true;
     }
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
 
-            // other 'case' lines to check for other
-            // permissions this app might request.
+    private void shareContact() {
+        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+        startActivityForResult(contactPickerIntent, RESULT_PICK_CONTACT);
+    }
+
+    private void shareLocation() {
+        LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(mListener != null){
+            isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
         }
-    }*/
+        handler.postDelayed(new Runnable(){
+            @Override
+            public void run() {
+                if(isGPSLocation){
+                    Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+                    intent.putExtra("provider", LocationManager.GPS_PROVIDER);
+                    intent.putExtra("mychats", myChats);
+                    intent.putExtra("identity", identity);
+                    startActivity(intent);
+                    finish();
+                }else if(isNetworkLocation){
+                    Intent intent = new Intent(ChatActivity.this, MapActivity.class);
+                    intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
+                    intent.putExtra("mychats", myChats);
+                    intent.putExtra("identity", identity);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    //Device location is not set
+                    PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
+                }
+            }
+        }, 1000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // check whether the result is ok
+        if (resultCode == RESULT_OK) {
+            // Check for the request code, we might be usign multiple startActivityForReslut
+            switch (requestCode) {
+                case RESULT_PICK_CONTACT:
+                    contactPicked(data);
+                    break;
+                case REQUEST_IMAGE_CAPTURE:
+                   /* Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    mImageView.setImageBitmap(imageBitmap);*/
+                    uploadImage(mCurrentPhotoPath);
+
+                    break;
+            }
+        }
+
+    }
+
+    private void uploadImage(final String mCurrentPhotoPath) {
+       String path = "chatimages/" + myChats.getChatid()+"/"+imagefilenamelist.get(0) + ".png";
+       Log.e("nigga",path);
+        final StorageReference riversRef = storageReference.child(path);
+
+        UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                   // progressDialog.dismiss();                        //throw task.getException();
+                    Toast.makeText(ChatActivity.this, "Error uploading photo,checck internet connection", Toast.LENGTH_SHORT).show();
+                }
+
+
+                return riversRef.getDownloadUrl();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                imagepaths.add(uri+"");
+                //mImageView.setImageBitmap(mImageBitmap);
+                sendMessage("camera");
+
+
+
+            }
+        });
+    }
+
+    private void sendMessage(String type) {
+        //Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+        //imagepaths.add(mCurrentPhotoPath);
+        Date d = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("hh:mm a");
+        date = ft.format(d);
+        if(type.compareTo("camera")==0){
+
+            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths);
+            fh.sendMessage(m);
+        }
+        if(type.compareTo("message")==0){
+            MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
+            fh.sendMessage(m);
+            chatbox.setText("");
+        }
+        if(type.compareTo("location")==0){
+           //Geopoint geopoint=new Geopoint(latitude,longitude);
+            MessageItem m=new MessageItem(date,username,d.getTime()+"",geopoint,type);
+            fh.sendMessage(m);
+        }
+
+    }
+
+    private void contactPicked(Intent data) {
+        Cursor cursor = null;
+        try {
+            String phoneNo = null ;
+            String name = null;
+            // getData() method will have the Content Uri of the selected contact
+            Uri uri = data.getData();
+            //Query the content uri
+            cursor = getContentResolver().query(uri, null, null, null, null);
+            cursor.moveToFirst();
+            // column index of the phone number
+            int  phoneIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            // column index of the contact name
+            int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+            int photouti=cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI);
+            phoneNo = cursor.getString(phoneIndex);
+            name = cursor.getString(nameIndex);
+            String photouri=cursor.getString(photouti);
+            Toast.makeText(context, ""+photouri, Toast.LENGTH_SHORT).show();
+            Contact contact=new Contact(name,phoneNo);
+            Date d = new Date();
+
+            SimpleDateFormat ft =
+                    new SimpleDateFormat("hh:mm a");
+            date = ft.format(d);
+            //MessageItem m2 = new MessageItem(contact, date, username, d.getTime() + "","contact");
+            MessageItem m=new MessageItem(date,username,d.getTime() + "",contact,"contact");
+            fh.sendMessage(m);
+
+            // Set the value to the textviews
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void dispatchTakePictureIntent() {
+
+        Intent pictureIntent = new Intent(
+                MediaStore.ACTION_IMAGE_CAPTURE);
+        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+            //Create a file to store the image
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() +".provider", photoFile);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        photoURI);
+                startActivityForResult(pictureIntent,
+                        REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = username+timeStamp;
+        imagefilenamelist.add(imageFileName);
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:"+image.getAbsolutePath();
+        Log.e("location",mCurrentPhotoPath);
+        return image;
+    }
 
     @Override
     public void onClick(View v) {
@@ -360,19 +585,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if(togglesend==true) {
 
                     msg = chatbox.getText().toString().trim();
+
                     if (TextUtils.isEmpty(msg) == false) {
-                        Date d = new Date();
+                        sendMessage("message");
+                        /*Date d = new Date();
 
                         SimpleDateFormat ft =
                                 new SimpleDateFormat("hh:mm a");
                         date = ft.format(d);
-                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "");
+                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
                         fh.sendMessage(m);
 
-                        chatbox.setText("");
+                        chatbox.setText("");*/
                     }
                 }
-                //Toast.makeText(this, ""+date, Toast.LENGTH_SHORT).show();
+                if(togglesend==false){
+                   // Toast.makeText(context, "hkl", Toast.LENGTH_SHORT).show();
+                    dispatchTakePictureIntent();
+
+                }
 
                 break;
             case R.id.attach:

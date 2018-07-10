@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.Fragments;
+package com.example.krishna.bukie;
 
 import android.Manifest;
 import android.app.Activity;

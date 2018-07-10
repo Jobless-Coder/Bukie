@@ -196,6 +196,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                 intent.putExtra("mychats", myChats);
                                 intent.putExtra("identity", "buyer");
+                                intent.putExtra("isMap","0");
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getApplicationContext().startActivity(intent);
 
@@ -206,6 +207,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                 intent.putExtra("mychats", myChats);
                                 intent.putExtra("identity", "buyer");
+                                intent.putExtra("isMap","0");
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getApplicationContext().startActivity(intent);
                             }

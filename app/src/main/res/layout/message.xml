@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:foreground="@drawable/ripple_white"
+    android:clickable="true"
     android:id="@+id/rellayoutfather"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/rellayoutson1"
-
         android:layout_alignParentRight="true"
         android:background="@drawable/chat_bubbles1"
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <com.vanniktech.emoji.EmojiTextView
+        android:visibility="gone"
         android:paddingBottom="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -28,6 +34,29 @@
         android:textSize="18sp"
         android:text="k"
         />
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/contactview1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <include
+             layout="@layout/view_contact"></include>
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/cameraview1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <include layout="@layout/view_camera"></include>
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/locationview1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <include layout="@layout/view_location"></include>
+        </LinearLayout>
+    </LinearLayout>
         <!--com.vanniktech.emoji.EmojiTextView
             android:id="@+id/emojiTextView"
             android:layout_width="wrap_content"
@@ -38,8 +67,8 @@
         android:paddingRight="10dp"
         android:paddingBottom="5dp"
         android:textColor="@color/white"
-        android:layout_alignRight="@+id/message_body1"
-        android:layout_alignBottom="@+id/message_body1"
+        android:layout_alignRight="@+id/ll1"
+        android:layout_alignBottom="@+id/ll1"
         android:text="3:00 AM"
         android:id="@+id/time1"
         android:textSize="8sp"
@@ -50,15 +79,18 @@
     <RelativeLayout
         android:visibility="gone"
         android:id="@+id/rellayoutson2"
-
         android:background="@drawable/chat_bubbles3"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-
+        <LinearLayout
+            android:id="@+id/ll2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <com.vanniktech.emoji.EmojiTextView
             android:paddingBottom="20dp"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="5dp"
@@ -70,12 +102,36 @@
             android:textSize="18sp"
             android:text="kkkk"
             />
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/contactview2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <include
+                   layout="@layout/view_contact"></include>
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/cameraview2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <include layout="@layout/view_camera"></include>
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/locationview2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <include layout="@layout/view_location"></include>
+            </LinearLayout>
+        </LinearLayout>
+
 
         <TextView
             android:paddingRight="10dp"
             android:paddingBottom="5dp"
-            android:layout_alignBottom="@id/message_body2"
-            android:layout_alignRight="@id/message_body2"
+            android:layout_alignBottom="@id/ll2"
+            android:layout_alignRight="@id/ll2"
             android:text="3:00 AM"
             android:textColor="@color/white"
             android:id="@+id/time2"

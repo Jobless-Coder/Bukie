@@ -1,17 +1,22 @@
 package com.example.krishna.bukie;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +43,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.GeoPoint;
 
-public class MapActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class MapActivity extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * FusedLocationProviderApi Save request parameters
@@ -56,6 +67,8 @@ public class MapActivity extends AppCompatActivity {
      * An object representing the current location
      */
     private Location mCurrentLocation;
+    private MyChats myChats;
+    private String identity;
 
     //A client that handles connection / connection failures for Google locations
     // (changed from play-services 11.0.0)
@@ -63,11 +76,15 @@ public class MapActivity extends AppCompatActivity {
 
     private String provider;
     private GoogleMap mMap;
-
+    private View currentlocation;
+    private String latitude,longitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        Bundle bundle = getIntent().getExtras();
+        myChats = bundle.getParcelable("mychats");
+        identity=bundle.getString("identity");
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         TextView username2=(TextView)findViewById(R.id.username);
         username2.setText("Share Location");
@@ -75,6 +92,8 @@ public class MapActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         provider = getIntent().getStringExtra("provider");
+        currentlocation=findViewById(R.id.currentlocation);
+        currentlocation.setOnClickListener(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             checkMyPermissionLocation();
@@ -87,7 +106,7 @@ public class MapActivity extends AppCompatActivity {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                Toast.makeText(MapActivity.this, "ghk", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MapActivity.this, "ghk", Toast.LENGTH_SHORT).show();
                 /*if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     return;
@@ -130,13 +149,14 @@ public class MapActivity extends AppCompatActivity {
                 //mCurrentLocation = locationResult.getLastLocation();
                 mCurrentLocation = result.getLocations().get(0);
 
-                Toast.makeText(getApplicationContext(), "nope", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "nope", Toast.LENGTH_SHORT).show();
 
 
                 if(mCurrentLocation!=null)
                 {
                     Log.e("Location(Lat)==",""+mCurrentLocation.getLatitude());
                     Log.e("Location(Long)==",""+mCurrentLocation.getLongitude());
+
                 }
 
 
@@ -238,6 +258,41 @@ public class MapActivity extends AppCompatActivity {
         super.onStop();
         if (mFusedLocationClient != null) {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Geocoder geocoder = new Geocoder(MapActivity.this, Locale.getDefault());
+        String result = " ";
+        if (mCurrentLocation != null) {
+            List<Address> list = new ArrayList<>();
+            try {
+                list = geocoder.getFromLocation(mCurrentLocation
+                        .getLatitude(), mCurrentLocation.getLongitude(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (list != null & list.size() > 0) {
+                Address address = list.get(0);
+                result = address.getLocality();
+
+                //GeoPoint geoPoint=new GeoPoint(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
+
+
+            }
+            Geopoint geopoint = new Geopoint(mCurrentLocation.getLatitude() + "", mCurrentLocation.getLongitude() + "", result);
+            Intent intent = new Intent(MapActivity.this, ChatActivity.class);
+            intent.putExtra("mychats", myChats);
+            intent.putExtra("identity", identity);
+            intent.putExtra("isMap", "1");
+            intent.putExtra("geopoint", geopoint);
+        /*intent.putExtra("latitude", mCurrentLocation.getLatitude()+"");
+        intent.putExtra("longitude", mCurrentLocation.getLongitude()+"");
+        intent.putExtra("locality", result);*/
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 }

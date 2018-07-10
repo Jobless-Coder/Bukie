@@ -176,7 +176,7 @@ private CollectionReference collectionReference;
                     switch (dc.getType()) {
                         case ADDED:
                             MessageItem chat=dc.getDocument().toObject(MessageItem.class);;
-                            Log.i("MessageChati",chat.getMessage_body());
+                            //Log.i("MessageChati",chat.getMessage_body());
                             listener.receiveIncomingMessage(chat);
                             // Log.d(TAG, "New city: " + dc.getDocument().getData());
                             break;
