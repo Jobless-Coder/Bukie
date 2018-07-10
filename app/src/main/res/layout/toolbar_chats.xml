@@ -6,7 +6,7 @@
     android:layout_height="?android:actionBarSize">
 
 
-    <LinearLayout
+    <!--LinearLayout
         android:visibility="gone"
         android:id="@+id/image1"
         android:layout_width="wrap_content"
@@ -21,16 +21,14 @@
             android:id="@+id/share_location"
             android:layout_width="35.0dip"
             android:layout_height="35.0dip"
-            android:src="@drawable/boy"
             android:scaleType="fitCenter" />
 
-    </LinearLayout>
+    </LinearLayout-->
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/image1"
         android:orientation="vertical"
         android:paddingBottom="2.0dip"
         android:paddingLeft="4.0dip"

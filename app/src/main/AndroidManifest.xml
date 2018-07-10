@@ -2,18 +2,39 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.krishna.bukie">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
+
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCS9Y82F3MRQlTqdOx5iNL5ofQKiMUIFmU"/>
 
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -38,26 +59,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionTheme"/>
-
+            android:theme="@style/NoActionTheme" />
         <activity
             android:name=".FeedbackActivity"
             android:theme="@style/NoActionTheme" />
-        <!--activity android:name=".LoginActivity" /-->
-        <activity
-            android:name=".ChatActivity"
-            />
+        <!-- activity android:name=".LoginActivity" / -->
+        <activity android:name=".ChatActivity" />
         <activity android:name=".HomeActivity" />
-        <activity
-            android:name=".RegistrationActivity"
-           />
+        <activity android:name=".RegistrationActivity" />
         <activity android:name=".HomePageActivity" />
         <activity android:name=".PostnewadActivity" />
-        <activity android:name=".DisplayAdActivity"></activity>
+        <activity android:name=".DisplayAdActivity" />
+        <activity android:name=".MapActivity"></activity>
     </application>
 
 </manifest>

@@ -105,7 +105,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         ppview.setOnClickListener(this);
         imageView=findViewById(R.id.profile_pic);
 
-        /*
+
         pref=getSharedPreferences("UserInfo",MODE_PRIVATE);
         Bundle bundle = getIntent().getExtras();
         signinmethod=bundle.getString("signinmethod");
@@ -127,7 +127,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         fullnameid=firebaseUser.getDisplayName();
         Glide.with(getApplicationContext()).load(profilepicurl).into(imageView);
         fullname.setText(fullnameid);
-        */
+
 
 
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("interests");

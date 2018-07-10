@@ -140,12 +140,14 @@ public class ChatFragment extends Fragment {
                         identity = "buyer";
                         holder.username.setText(myChats.getSellerfullname());
                         Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+
                     }
                     else
                     {
                         identity = "seller";
                         holder.username.setText(myChats.getBuyerfullname());
                         Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
                     }
                     }
 
@@ -153,9 +155,16 @@ public class ChatFragment extends Fragment {
                     @Override
                     public void onClick(View v)
                     {
+                        if(myChats.getBuyer().compareTo(username)==0) {
+                            identity = "buyer";
+                        }
+                        else
+                            identity="seller";
+                        //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra("mychats", myChats);
                         intent.putExtra("identity", identity);
+                        intent.putExtra("isMap","0");
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
 
