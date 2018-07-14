@@ -1,19 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
-    android:id="@+id/ll3"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="20dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_height="150dp">
-    <ImageView
-        android:scaleType="centerCrop"
-        android:cropToPadding="true"
-        android:id="@+id/camerapic"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent" />
+<RelativeLayout
+android:foreground="@drawable/ripple_white"
+android:clickable="true"
+android:id="@+id/rellayoutfather"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginBottom="5dp"
+xmlns:android="http://schemas.android.com/apk/res/android">
+<RelativeLayout
+    android:visibility="visible"
+    android:id="@+id/rellayoutson1"
+    android:layout_alignParentRight="true"
+    android:background="@drawable/chat_bubbles1"
 
-</LinearLayout>
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="200dp"
+            android:id="@+id/cameraview1"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+            android:layout_height="150dp">
+            <ImageView
+                android:scaleType="centerCrop"
+                android:cropToPadding="true"
+                android:id="@+id/camerapic1"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/white"
+        android:layout_alignRight="@+id/ll1"
+        android:layout_alignBottom="@+id/ll1"
+        android:text="3:00 AM"
+        android:id="@+id/time1"
+        android:textSize="8sp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/rellayoutson2"
+    android:background="@drawable/chat_bubbles3"
+    android:layout_alignParentLeft="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll21"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="200dp"
+            android:id="@+id/cameraview2"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical"
+            android:layout_height="150dp">
+            <ImageView
+                android:scaleType="centerCrop"
+                android:cropToPadding="true"
+                android:id="@+id/camerapic2"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:layout_alignBottom="@id/ll21"
+        android:layout_alignRight="@id/ll21"
+        android:text="3:00 AM"
+        android:textColor="@color/white"
+        android:id="@+id/time2"
+        android:textSize="8sp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+
+</RelativeLayout>

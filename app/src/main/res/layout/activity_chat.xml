@@ -92,7 +92,7 @@
     <!--EditText
         android:backgroundTint="@android:color/transparent"
         android:id="@+id/chatbox"
-        android:hint="Type a message"
+        android:hint="Type a view_message"
         android:layout_weight="1"
         android:layout_gravity="center"
         android:layout_width="0dp"

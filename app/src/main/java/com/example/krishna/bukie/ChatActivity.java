@@ -120,8 +120,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         }
 
-      //  imagefilenamelist=new ArrayList<>();
-       // Toast.makeText(getApplicationContext(), "buyer"+identity, Toast.LENGTH_SHORT).show();
 
         chatbox=(EditText)findViewById(R.id.chatbox);
 
@@ -164,7 +162,44 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                  public void receiveIncomingMessage(MessageItem ch)
           {
               messageItemList.add(ch);
-              adapter=new MessageAdapter(messageItemList,context);
+              adapter=new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
+                  @Override
+                  public void onSaveContact(View view, int position) {
+                      //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
+                      Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                      intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                      intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
+                      intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
+                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
+                      getApplicationContext().startActivity(intent);
+
+                  }
+
+                  @Override
+                  public void onLocation(View view, int position) {
+                      Geopoint geoPoint=messageItemList.get(position).getGeopoint();
+                    /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
+                      //Log.e("geopoint",url);
+                      Uri gmmIntentUri = Uri.parse(url);
+                      // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+                      Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                      mapIntent.setPackage("com.google.android.apps.maps");
+                      mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      getApplicationContext().startActivity(mapIntent);
+                      /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
+                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
+                      startActivity(intent);*/
+                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude()  + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude()  + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
+                      startActivity(intent);
+
+                  }
+
+                  @Override
+                  public void onCameraImage(View view, int position) {
+
+                  }
+              });
               recyclerView.setAdapter(adapter);
               recyclerView.scrollToPosition(messageItemList.size()-1);
           }
@@ -183,12 +218,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         if(isMap.compareTo("1")==0) {
             geopoint=bundle.getParcelable("geopoint");
-            /*latitude = bundle.getString("latitude");
-            longitude = bundle.getString("longitude");
-            locality=bundle.getString("locality");
-            Log.i("latitude",latitude);
-            Log.i("latitude",longitude);
-            Log.i("latitude",locality);*/
+
             sendMessage("location");
         }
         chatbox.addTextChangedListener(new TextWatcher() {
@@ -295,15 +325,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     msg = chatbox.getText().toString().trim();
                     if (TextUtils.isEmpty(msg) == false) {
                         sendMessage("message");
-                        /*Date d = new Date();
 
-                        SimpleDateFormat ft =
-                                new SimpleDateFormat("hh:mm a");
-                        date = ft.format(d);
-                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
-                        fh.sendMessage(m);
-
-                        chatbox.setText("");*/
                     }
                     handled = true;
                 }
@@ -344,37 +366,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId()) {
             case R.id.share_location:
                 shareLocation();
-                /*Intent intent=new Intent(ChatActivity.this,MapActivity.class);
-                startActivity(intent);*/
-               /* LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                if(mListener != null){
-                    isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                    Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
-                }
-                handler.postDelayed(new Runnable(){
-                    @Override
-                    public void run() {
-                        if(isGPSLocation){
-                            Intent intent = new Intent(ChatActivity.this, MapActivity.class);
-                            intent.putExtra("provider", LocationManager.GPS_PROVIDER);
-                            intent.putExtra("mychats", myChats);
-                            intent.putExtra("identity", identity);
-                            startActivity(intent);
-                            finish();
-                        }else if(isNetworkLocation){
-                            Intent intent = new Intent(ChatActivity.this, MapActivity.class);
-                            intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
-                            intent.putExtra("mychats", myChats);
-                            intent.putExtra("identity", identity);
-                            startActivity(intent);
-                            finish();
-                        }else{
-                            //Device location is not set
-                            PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
-                        }
-                    }
-                }, 1500);*/
+
                 break;
             case R.id.contact:
                 shareContact();
@@ -398,7 +390,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if(mListener != null){
             isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
+           // Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
         }
         handler.postDelayed(new Runnable(){
             @Override
@@ -448,7 +440,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void uploadImage(final String mCurrentPhotoPath) {
        String path = "chatimages/" + myChats.getChatid()+"/"+imagefilenamelist.get(0) + ".png";
-       Log.e("nigga",path);
+       //Log.e("nigga",path);
         final StorageReference riversRef = storageReference.child(path);
 
         UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
@@ -588,15 +580,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (TextUtils.isEmpty(msg) == false) {
                         sendMessage("message");
-                        /*Date d = new Date();
 
-                        SimpleDateFormat ft =
-                                new SimpleDateFormat("hh:mm a");
-                        date = ft.format(d);
-                        MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
-                        fh.sendMessage(m);
-
-                        chatbox.setText("");*/
                     }
                 }
                 if(togglesend==false){

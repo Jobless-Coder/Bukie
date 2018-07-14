@@ -1,28 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
-    android:id="@+id/ll4"
-    android:gravity="center"
-    android:background="@color/grey"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="20dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_height="150dp">
-    <ImageView
-        android:layout_gravity="center"
-        android:src="@drawable/location"
-        android:id="@+id/location"
-        android:layout_width="70dp"
-        android:layout_height="70dp" />
+<RelativeLayout
+android:foreground="@drawable/ripple_white"
+android:clickable="true"
+android:id="@+id/rellayoutfather"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginBottom="5dp"
+xmlns:android="http://schemas.android.com/apk/res/android">
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/rellayoutson1"
+    android:layout_alignParentRight="true"
+    android:background="@drawable/chat_bubbles1"
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="200dp"
+            android:id="@+id/locationview1"
+            android:gravity="center"
+            android:background="@color/grey"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+            android:layout_height="150dp">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/location"
+                android:id="@+id/location1"
+                android:layout_width="70dp"
+                android:layout_height="70dp" />
+            <TextView
+                android:id="@+id/locationdesc1"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </android.support.design.widget.CoordinatorLayout>
+
+    </LinearLayout>
+
+
     <TextView
-        android:id="@+id/locationdesc"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-       android:layout_gravity="bottom"
+
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/white"
+        android:layout_alignRight="@+id/ll1"
+        android:layout_alignBottom="@+id/ll1"
+        android:text="3:00 AM"
+        android:id="@+id/time1"
+        android:textSize="8sp"
+        android:textStyle="italic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+</RelativeLayout>
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/rellayoutson2"
+    android:background="@drawable/chat_bubbles3"
+    android:layout_alignParentLeft="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-</android.support.design.widget.CoordinatorLayout>
+    <LinearLayout
+        android:id="@+id/ll21"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="200dp"
+            android:id="@+id/locationview2"
+            android:gravity="center"
+            android:background="@color/grey"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+            android:layout_height="150dp">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/location"
+                android:id="@+id/location2"
+                android:layout_width="70dp"
+                android:layout_height="70dp" />
+            <TextView
+                android:id="@+id/locationdesc2"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </android.support.design.widget.CoordinatorLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:layout_alignBottom="@id/ll21"
+        android:layout_alignRight="@id/ll21"
+        android:text="3:00 AM"
+        android:textColor="@color/white"
+        android:id="@+id/time2"
+        android:textSize="8sp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+
+</RelativeLayout>

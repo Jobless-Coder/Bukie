@@ -1,61 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
-    android:id="@+id/ll"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_height="150dp">
-<LinearLayout
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="100dp">
-    <android.support.v7.widget.CardView
-        android:layout_width="50dp"
-        app:cardElevation="0dp"
-        android:layout_marginLeft="10dp"
-        app:cardCornerRadius="25dp"
-        android:layout_height="50dp">
-        <ImageView
-            android:tint="@color/grey"
-            android:src="@drawable/profile"
-            android:id="@+id/photo"
-            android:scaleType="fitCenter"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </android.support.v7.widget.CardView>
-    <TextView
-        android:layout_marginLeft="10dp"
-        android:id="@+id/name"
-        android:textSize="16dp"
-        android:textColor="@color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+<RelativeLayout android:foreground="@drawable/ripple_white"
+    android:clickable="true"
+    android:id="@+id/rellayoutfather"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/rellayoutson1"
+    android:layout_alignParentRight="true"
+    android:background="@drawable/chat_bubbles1"
 
-
-</LinearLayout>
-    <View
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <TextView
-            android:layout_marginBottom="5dp"
-            android:id="@+id/savecontact"
-            android:textColor="@color/white"
-            android:layout_gravity="center"
-            android:text="Add to contacts"
-            android:textSize="16dp"
-            android:autoLink="web"
-            android:linksClickable="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        android:id="@+id/ll1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="200dp"
+        android:id="@+id/contactview1"
+        android:orientation="vertical"
+        android:layout_height="150dp">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+            <android.support.v7.widget.CardView
+                android:layout_width="50dp"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="10dp"
+                app:cardCornerRadius="25dp"
+                android:layout_height="50dp">
+                <ImageView
+                    android:tint="@color/grey"
+                    android:src="@drawable/profile"
+                    android:id="@+id/contactphoto1"
+                    android:scaleType="fitCenter"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+            </android.support.v7.widget.CardView>
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/contactname1"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+        <View
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/savecontact1"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:text="Add to contacts"
+                android:textSize="16dp"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+
+    </LinearLayout>
+<TextView
+
+    android:paddingRight="10dp"
+    android:paddingBottom="5dp"
+    android:textColor="@color/white"
+    android:layout_alignRight="@+id/ll1"
+    android:layout_alignBottom="@+id/ll1"
+    android:text="3:00 AM"
+    android:id="@+id/time1"
+    android:textSize="8sp"
+    android:textStyle="italic"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+
+</RelativeLayout>
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/rellayoutson2"
+    android:background="@drawable/chat_bubbles3"
+    android:layout_alignParentLeft="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/ll2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="200dp"
+        android:id="@+id/contactview2"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_height="150dp">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+            <android.support.v7.widget.CardView
+                android:layout_width="50dp"
+                app:cardElevation="0dp"
+                android:layout_marginLeft="10dp"
+                app:cardCornerRadius="25dp"
+                android:layout_height="50dp">
+                <ImageView
+                    android:tint="@color/grey"
+                    android:src="@drawable/profile"
+                    android:id="@+id/contactphoto2"
+                    android:scaleType="fitCenter"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+            </android.support.v7.widget.CardView>
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/contactname2"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+        <View
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <TextView
+                android:layout_marginBottom="5dp"
+                android:id="@+id/savecontact2"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:text="Add to contacts"
+                android:textSize="16dp"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+    </LinearLayout>
+
+
+
+
+    <TextView
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:layout_alignBottom="@id/ll2"
+        android:layout_alignRight="@id/ll2"
+        android:text="3:00 AM"
+        android:textColor="@color/white"
+        android:id="@+id/time2"
+        android:textSize="8sp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
+
+</RelativeLayout>

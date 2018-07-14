@@ -105,9 +105,9 @@ private CollectionReference collectionReference;
     public void sendMessage(MessageItem message)//add to recyclerview then send
     {
         //Log.i("hello","nigga");
-       // //MessageItem chat = new MessageItem(message, new Date().toString(),username);
+       // //MessageItem chat = new MessageItem(view_message, new Date().toString(),username);
        // DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
-       // dref.push().setValue(message);
+       // dref.push().setValue(view_message);
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

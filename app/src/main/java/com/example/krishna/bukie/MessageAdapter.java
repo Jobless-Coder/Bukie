@@ -1,10 +1,7 @@
 package com.example.krishna.bukie;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,29 +9,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> implements View.OnClickListener {
-   private List<MessageItem> messageItemList;
+public class MessageAdapter extends RecyclerView.Adapter {
+    private static final int TYPE_MESSAGE = 0 ;
+    private static final int TYPE_CONTACT = 1;
+    private static final int TYPE_CAMERA = 2;
+    private static final int TYPE_LOCATION = 3;
+    private List<MessageItem> messageItemList;
    private Context context;
    private View itemView2;
    String previous_user="-1",previous_user2;
    String current_user="";
    private String type;
-   private MessageItemClickListener messageItemClickListener;
+   private MessageItemClickListener onClickListener;
+
     private MessageItem messageItem;
 
-    public MessageAdapter(List<MessageItem> messageItemList, Context context) {
+    public MessageAdapter(List<MessageItem> messageItemList, Context context,MessageItemClickListener messageItemClickListener) {
         this.messageItemList = messageItemList;
         this.context = context;
+        this.onClickListener=messageItemClickListener;
         //Toast.makeText(context, ""+messageItemList.size(), Toast.LENGTH_SHORT).show();
     }
 
@@ -45,32 +45,78 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public int getItemViewType(int position) {
+        String type=messageItemList.get(position).getType();
+        if(type.compareTo("message")==0)
+            return TYPE_MESSAGE;
+        else if(type.compareTo("contact")==0)
 
-        return position;
+        return  TYPE_CONTACT;
+        else if (type.compareTo("camera")==0)
+            return TYPE_CAMERA;
+        else if(type.compareTo("location")==0)
+            return TYPE_LOCATION;
+        else
+            return -1;
     }
+
 
     @NonNull
     @Override
-    public MessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v= LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message,parent,false);
-        return  new ViewHolder(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+        switch (viewType){
+            case TYPE_MESSAGE:
+               view= LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.view_message,parent,false);
+        return  new MessageViewHolder(view);
 
+            case TYPE_CONTACT:
+                view= LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_contact,parent,false);
+                return new ContactViewHolder(view);
+
+            case TYPE_CAMERA:
+                view= LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_camera,parent,false);
+                return new CameraViewHolder(view);
+
+            case TYPE_LOCATION:
+                view= LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_location,parent,false);
+                return new LocationViewHolder(view);
+
+
+        }
+
+
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MessageAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
     messageItem=messageItemList.get(position);
     current_user=messageItem.getUsername();
+        MessageViewHolder messageViewHolder=null;
+        CameraViewHolder cameraViewHolder=null;
+        ContactViewHolder contactViewHolder=null;
+        LocationViewHolder locationViewHolder=null;
+    if (messageItem.getType().compareTo("message")==0)
+     messageViewHolder= (MessageViewHolder) holder;
+    if(messageItem.getType().equals("camera"))
+    cameraViewHolder= (CameraViewHolder) holder;
+    if(messageItem.getType().equals("contact"))
+    contactViewHolder= (ContactViewHolder) holder;
+    if(messageItem.getType().equals("location"))
+    locationViewHolder= (LocationViewHolder) holder;
+
        // Toast.makeText(context, ""+current_user, Toast.LENGTH_SHORT).show();
-    holder.rlfather.setTag(messageItem.getType()+"");
+  //  holder.rlfather.setTag(messageItem.getType()+"");
         SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         String username=sharedPreferences.getString("username",null);
-        //Log.d("username",username);
+
 
     if(position>0) {
         previous_user=messageItemList.get(position - 1).getUsername();
-        //previous_user2 = messageItemList.get(-1).getUsername();
     }
     else
         previous_user="-1";
@@ -79,55 +125,74 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     if(current_user.compareTo(username)==0&&current_user.compareTo(previous_user)==0)
     {
-        holder.rlson1.setVisibility(View.VISIBLE);
-        holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-        holder.time1.setText(messageItem.getTime());
-       // Toast.makeText(context, "jkl", Toast.LENGTH_SHORT).show();
         if(messageItem.getType().compareTo("message")==0) {
-            holder.message_body1.setVisibility(View.VISIBLE);
-            holder.message_body1.setText(messageItem.getMessage_body());
+
+            messageViewHolder.rlson1.setVisibility(View.VISIBLE);
+            messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
+            messageViewHolder.time1.setText(messageItem.getTime());
+            //messageViewHolder.messagebody1.setVisibility(View.VISIBLE);
+            messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
 
         }
         if(messageItem.getType().compareTo("contact")==0){
-            holder.contactview1.setVisibility(View.VISIBLE);
-            holder.name.setText(messageItem.getContact().getName());
+            contactViewHolder.rlson1.setVisibility(View.VISIBLE);
+            contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
+            contactViewHolder.time1.setText(messageItem.getTime());
+            //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
+            contactViewHolder.contactname1.setText(messageItem.getContact().getName());
 
         }
         if(messageItem.getType().compareTo("camera")==0){
-            holder.cameraview1.setVisibility(View.VISIBLE);
-            Glide.with(context).load(messageItem.getImageurl().get(0)).into(holder.camerapic);
+            cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
+            cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
+            cameraViewHolder.time1.setText(messageItem.getTime());
+            //holder.cameraview1.setVisibility(View.VISIBLE);
+            Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
             // holder.camerapic.setImageResource();
         }
         if(messageItem.getType().compareTo("location")==0){
-            holder.locationview1.setVisibility(View.VISIBLE);
-            holder.locationdesc.setText(messageItem.getGeopoint().getLocality());
+            locationViewHolder.rlson1.setVisibility(View.VISIBLE);
+            locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
+            locationViewHolder.time1.setText(messageItem.getTime());
+            locationViewHolder.locationview1.setVisibility(View.VISIBLE);
+            locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
 
 
 
     }
     else if(current_user.compareTo(username)==0&&(current_user.compareTo(previous_user)!=0)){
-        holder.rlson1.setVisibility(View.VISIBLE);
-        holder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-        holder.time1.setText(messageItem.getTime());
+
         if(messageItem.getType().compareTo("message")==0) {
-            holder.message_body1.setVisibility(View.VISIBLE);
-            holder.message_body1.setText(messageItem.getMessage_body());
+            messageViewHolder.rlson1.setVisibility(View.VISIBLE);
+            messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
+            messageViewHolder.time1.setText(messageItem.getTime());
+            //messageViewHolder.messagebody1.setVisibility(View.VISIBLE);
+            messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
         }
         if(messageItem.getType().compareTo("contact")==0){
-            holder.contactview1.setVisibility(View.VISIBLE);
-            holder.name.setText(messageItem.getContact().getName());
+            contactViewHolder.rlson1.setVisibility(View.VISIBLE);
+            contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
+            contactViewHolder.time1.setText(messageItem.getTime());
+            //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
+            contactViewHolder.contactname1.setText(messageItem.getContact().getName());
 
 
         }
         if(messageItem.getType().compareTo("camera")==0){
-            holder.cameraview1.setVisibility(View.VISIBLE);
-            Glide.with(context).load(messageItem.getImageurl().get(0)).into(holder.camerapic);
+            cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
+            cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
+            cameraViewHolder.time1.setText(messageItem.getTime());
+           // cameraViewHolder.cameraview1.setVisibility(View.VISIBLE);
+            Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
            // holder.camerapic.setImageResource();
         }
         if(messageItem.getType().compareTo("location")==0){
-            holder.locationview1.setVisibility(View.VISIBLE);
-            holder.locationdesc.setText(messageItem.getGeopoint().getLocality());
+            locationViewHolder.rlson1.setVisibility(View.VISIBLE);
+            locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
+            locationViewHolder.time1.setText(messageItem.getTime());
+            //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
+            locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
 
 
@@ -135,88 +200,82 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
     else if(current_user.compareTo(username)!=0&&(current_user.compareTo(previous_user)!=0)){
        // holder.rlson1.setVisibility(View.GONE);
-        holder.rlson2.setVisibility(View.VISIBLE);
-        //holder.rlson2.setp
-        holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
-        holder.time2.setText(messageItem.getTime());
+
         if(messageItem.getType().compareTo("message")==0) {
-            holder.message_body2.setVisibility(View.VISIBLE);
-            holder.message_body2.setText(messageItem.getMessage_body());
+            messageViewHolder.rlson2.setVisibility(View.VISIBLE);
+            messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+            messageViewHolder.time2.setText(messageItem.getTime());
+            //messageViewHolder.messagebody2.setVisibility(View.VISIBLE);
+            messageViewHolder.messagebody2.setText(messageItem.getMessage_body());
 
         }
         if(messageItem.getType().compareTo("contact")==0){
-            holder.contactview2.setVisibility(View.VISIBLE);
-            holder.name.setText(messageItem.getContact().getName());
-
-
-        }
-        if(messageItem.getType().compareTo("location")==0){
-            holder.locationview2.setVisibility(View.VISIBLE);
-            holder.locationdesc.setText(messageItem.getGeopoint().getLocality());
-        }
-
-    }
-    else if(current_user.compareTo(username)!=0&&current_user.compareTo(previous_user)==0){
-       // holder.rlson1.setVisibility(View.GONE);
-        holder.rlson2.setVisibility(View.VISIBLE);
-        holder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-        holder.time2.setText(messageItem.getTime());
-        if(messageItem.getType().compareTo("message")==0) {
-            holder.message_body2.setVisibility(View.VISIBLE);
-            holder.message_body2.setText(messageItem.getMessage_body());
-        }
-        if(messageItem.getType().compareTo("contact")==0){
-            holder.contactview2.setVisibility(View.VISIBLE);
-            holder.name.setText(messageItem.getContact().getName());
+            contactViewHolder.rlson2.setVisibility(View.VISIBLE);
+            contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+            contactViewHolder.time2.setText(messageItem.getTime());
+            //contactViewHolder.contactview2.setVisibility(View.VISIBLE);
+            contactViewHolder.contactname2.setText(messageItem.getContact().getName());
 
 
         }
         if(messageItem.getType().compareTo("camera")==0){
-            holder.cameraview2.setVisibility(View.VISIBLE);
-            Glide.with(context).load(messageItem.getImageurl().get(0)).into(holder.camerapic);
+            cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
+            cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+            cameraViewHolder.time2.setText(messageItem.getTime());
+            //cameraViewHolder.cameraview2.setVisibility(View.VISIBLE);
+            Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic2);
             // holder.camerapic.setImageResource();
 
 
         }
         if(messageItem.getType().compareTo("location")==0){
-            holder.locationview2.setVisibility(View.VISIBLE);
-            holder.locationdesc.setText(messageItem.getGeopoint().getLocality());
+            locationViewHolder.rlson2.setVisibility(View.VISIBLE);
+            locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+            locationViewHolder.time2.setText(messageItem.getTime());
+            //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
+            locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
+        }
+
+    }
+    else if(current_user.compareTo(username)!=0&&current_user.compareTo(previous_user)==0){
+       // holder.rlson1.setVisibility(View.GONE);
+
+        if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.rlson2.setVisibility(View.VISIBLE);
+            messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
+            messageViewHolder.time2.setText(messageItem.getTime());
+            //messageViewHolder.messagebody2.setVisibility(View.VISIBLE);
+            messageViewHolder.messagebody2.setText(messageItem.getMessage_body());
+        }
+        if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.rlson2.setVisibility(View.VISIBLE);
+            contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
+            contactViewHolder.time2.setText(messageItem.getTime());
+           // contactViewHolder.contactview2.setVisibility(View.VISIBLE);
+            contactViewHolder.contactname2.setText(messageItem.getContact().getName());
+
+
+        }
+        if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
+            cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
+            cameraViewHolder.time2.setText(messageItem.getTime());
+            //cameraViewHolder.cameraview2.setVisibility(View.VISIBLE);
+            Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic2);
+            // holder.camerapic.setImageResource();
+
+
+        }
+        if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.rlson2.setVisibility(View.VISIBLE);
+            locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
+            locationViewHolder.time2.setText(messageItem.getTime());
+            //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
+            locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
 
 
     }
-        holder.rlfather.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-
-                if(holder.rlfather.getTag().toString().compareTo("location")==0){
-                    // Creates an Intent that will load a map of San Francisco
-                    Geopoint geoPoint=messageItemList.get(position).getGeopoint();
-                    String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
-                    Log.e("geopoint",url);
-                    Uri gmmIntentUri = Uri.parse(url);
-                   // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
-                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                    mapIntent.setPackage("com.google.android.apps.maps");
-                    context.startActivity(mapIntent);
-                }
-
-            }
-        });
-       holder.savecontact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Log.i("jklk",messageItem.getType());
-                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-                intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
-                intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
-                //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
-                context.startActivity(intent);
-
-            }
-        });
 
     }
 
@@ -225,40 +284,125 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return messageItemList.size();
     }
 
-    @Override
-    public void onClick(View v) {
 
-
-    }
-
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView message_body1,time1,message_body2,time2,savecontact,name,locationdesc;
+    public class MessageViewHolder extends RecyclerView.ViewHolder{
+        public TextView messagebody1,messagebody2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public LinearLayout contactview1,contactview2,cameraview1,cameraview2,locationview1,locationview2;
-        public ImageView photo,camerapic;
+        public TextView time1,time2;
 
-        public ViewHolder(View itemView) {
-
+        public MessageViewHolder(View itemView) {
             super(itemView);
-            message_body1=(TextView)itemView.findViewById(R.id.message_body1);
-            time1=(TextView)itemView.findViewById(R.id.time1);
+            messagebody1=itemView.findViewById(R.id.message_body1);
+            messagebody2=itemView.findViewById(R.id.message_body2);
             rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
-            message_body2=(TextView)itemView.findViewById(R.id.message_body2);
-            time2=(TextView)itemView.findViewById(R.id.time2);
-            rlson2=(RelativeLayout) itemView.findViewById(R.id.rellayoutson2);
-           rlfather=(RelativeLayout) itemView.findViewById(R.id.rellayoutfather);
-           contactview1=itemView.findViewById(R.id.contactview1);
-            contactview2=itemView.findViewById(R.id.contactview2);
-            photo=itemView.findViewById(R.id.photo);
-            savecontact=itemView.findViewById(R.id.savecontact);
-            name=itemView.findViewById(R.id.name);
-            camerapic=itemView.findViewById(R.id.camerapic);
-            cameraview1=itemView.findViewById(R.id.cameraview1);
-            cameraview2=itemView.findViewById(R.id.cameraview2);
+            rlson2=itemView.findViewById(R.id.rellayoutson2);
+            rlfather=itemView.findViewById(R.id.rellayoutfather);
+            time1=itemView.findViewById(R.id.time1);
+            time2=itemView.findViewById(R.id.time2);
+
+
+
+        }
+    }
+    public class ContactViewHolder extends RecyclerView.ViewHolder{
+        public TextView contactname1,savecontact1,contactname2,savecontact2;
+        public ImageView contactphoto1,contactphoto2;
+        public RelativeLayout rlson1,rlson2,rlfather;
+        public TextView time1,time2;
+
+        public ContactViewHolder(View itemView) {
+            super(itemView);
+            savecontact1=itemView.findViewById(R.id.savecontact1);
+            contactname1=itemView.findViewById(R.id.contactname1);
+            contactphoto1=itemView.findViewById(R.id.contactphoto1);
+            savecontact2=itemView.findViewById(R.id.savecontact2);
+            contactname2=itemView.findViewById(R.id.contactname2);
+            contactphoto2=itemView.findViewById(R.id.contactphoto2);
+            rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
+            rlson2=itemView.findViewById(R.id.rellayoutson2);
+            rlfather=itemView.findViewById(R.id.rellayoutfather);
+            time1=itemView.findViewById(R.id.time1);
+            time2=itemView.findViewById(R.id.time2);
+
+            savecontact1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onSaveContact(v,getAdapterPosition());
+                }
+            });
+            savecontact2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onSaveContact(v,getAdapterPosition());
+                }
+            });
+
+
+        }
+    }
+    public class LocationViewHolder extends RecyclerView.ViewHolder{
+        public TextView locationdesc1;
+        public TextView locationdesc2;
+        public View locationview1,locationview2;
+        public RelativeLayout rlson1,rlson2,rlfather;
+        public TextView time1,time2;
+
+        public LocationViewHolder(View itemView) {
+            super(itemView);
+            locationdesc1=itemView.findViewById(R.id.locationdesc1);
+            locationdesc2=itemView.findViewById(R.id.locationdesc2);
             locationview1=itemView.findViewById(R.id.locationview1);
             locationview2=itemView.findViewById(R.id.locationview2);
-            locationdesc=itemView.findViewById(R.id.locationdesc);
+            rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
+            rlson2=itemView.findViewById(R.id.rellayoutson2);
+            rlfather=itemView.findViewById(R.id.rellayoutfather);
+            time1=itemView.findViewById(R.id.time1);
+            time2=itemView.findViewById(R.id.time2);
+
+            locationview1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onLocation(v,getAdapterPosition());
+                }
+            });
+            locationview2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onLocation(v,getAdapterPosition());
+                }
+            });
+
+
+        }
+    }
+    public class CameraViewHolder extends RecyclerView.ViewHolder{
+        public ImageView camerapic2,camerapic1;
+        public View cameraview1,cameraview2;
+        public RelativeLayout rlson1,rlson2,rlfather;
+        public TextView time1,time2;
+
+        public CameraViewHolder(View itemView) {
+            super(itemView);
+            camerapic2=itemView.findViewById(R.id.camerapic2);
+            camerapic1=itemView.findViewById(R.id.camerapic1);
+            rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
+            rlson2=itemView.findViewById(R.id.rellayoutson2);
+            rlfather=itemView.findViewById(R.id.rellayoutfather);
+            time1=itemView.findViewById(R.id.time1);
+            time2=itemView.findViewById(R.id.time2);
+
+            /*cameraview1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onCameraImage(v,getAdapterPosition());
+                }
+            });
+            cameraview2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onCameraImage(v,getAdapterPosition());
+                }
+            });*/
 
         }
     }
