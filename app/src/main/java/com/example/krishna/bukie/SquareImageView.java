@@ -12,26 +12,31 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+import java.io.IOException;
+
 public class SquareImageView extends LinearLayout {
 Uri imageLink;
 String imageId;
 DisplayMetrics metrics;
-Context context;
-    public SquareImageView(Context context) {
+PostnewadActivity context;
+    public SquareImageView(PostnewadActivity context) {
 
         super(context);
         this.context = context;
         init();
     }
 
-    public SquareImageView(Context context, @Nullable AttributeSet attrs) {
+    public SquareImageView(PostnewadActivity context, @Nullable AttributeSet attrs) {
 
         super(context);
         this.context = context;
         init();
     }
 
-    public SquareImageView(Context context, Uri image, DisplayMetrics metrics)
+    public SquareImageView(PostnewadActivity context, Uri image, DisplayMetrics metrics)
     {
         super(context);
         this.metrics = metrics;
@@ -40,7 +45,7 @@ Context context;
         init();
     }
 
-    public SquareImageView(Context context, Uri image, String id)
+    public SquareImageView(PostnewadActivity context, Uri image, String id)
     {
         super(context);
         imageId = id;
@@ -67,11 +72,18 @@ Context context;
                 //adapter.removeItem(imageId);//TODO: not done yet
                 //SquareImageView.this.setVisibility(GONE);
                 ((ViewGroup)SquareImageView.this.getParent()).removeView(SquareImageView.this);
+                try {
+                    FileUtil.from(context, imageLink).delete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                context.refreshFlex();
             }
         });
 
         if(imageLink!=null)
-            ((ImageView)this.findViewById(R.id.squareimage)).setImageURI(imageLink);
+            //((ImageView)this.findViewById(R.id.squareimage)).setImageURI(imageLink);
+            Glide.with(context).load(imageLink).into((ImageView) findViewById(R.id.squareimage));
 
         if(metrics!=null)
         {

@@ -46,6 +46,12 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <Button
+            android:textAllCaps="false"
+            android:text="pick image"
+            android:onClick="goToImageActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -96,6 +102,8 @@
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
+                    android:onClick="selectCoverImage"
+                    android:id="@+id/addcoverimage"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_margin="2dp"
@@ -121,39 +129,6 @@
                 app:alignItems="flex_start"
                 app:flexWrap="wrap"
                 app:justifyContent="center">
-                <android.support.design.widget.CoordinatorLayout
-                    android:visibility="gone"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content">
-                    <android.support.constraint.ConstraintLayout
-                        android:layout_margin="15dp"
-                        android:id="@+id/imgcon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            app:layout_constraintDimensionRatio="1:1"
-                            android:id="@+id/img"
-                            android:background="@color/grey"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            />
-                    </android.support.constraint.ConstraintLayout>
-                    <android.support.v7.widget.CardView
-                        android:layout_margin="2dp"
-                        app:layout_anchorGravity="top|end"
-                        app:layout_anchor="@id/imgcon"
-                        app:cardBackgroundColor="@color/brick_red"
-                        app:cardCornerRadius="9dp"
-                        android:rotation="45"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp">
-                        <ImageView
-                            android:src="@drawable/ic_action_add"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </android.support.v7.widget.CardView>
-                </android.support.design.widget.CoordinatorLayout>
 
                 <android.support.v7.widget.CardView
                     android:onClick="addNewSquareImage"
@@ -179,89 +154,8 @@
             </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
-        <android.support.v7.widget.CardView
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:layout_margin="10dp"
-            android:onClick="addcoverimage"
-            android:visibility="gone"
-            android:id="@+id/addcoverimage"
-
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.CardView
-                android:layout_margin="20dp"
 
 
-                app:cardCornerRadius="40dp"
-                app:cardElevation="10dp"
-                android:layout_centerInParent="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                android:tint="@color/red"
-                    android:cropToPadding="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/addimage"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp" />
-            </android.support.v7.widget.CardView>
-        </android.support.v7.widget.CardView>
-        <RelativeLayout
-            android:id="@+id/coverpicrl"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        <ImageView
-
-
-            android:id="@+id/coverpic"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:paddingRight="15dp"
-            android:paddingLeft="15dp"
-
-
-            android:layout_width="wrap_content"
-            android:layout_height="250dp" />
-        <android.support.v7.widget.CardView
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/deleteimg"
-            android:onClick="deleteCoverImageView"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="15dp"
-            android:layout_alignEnd="@+id/coverpic"
-            android:layout_width="30dp"
-            android:layout_height="30dp">
-            <ImageView
-
-                android:padding="1dp"
-                android:tint="@color/red"
-                android:src="@drawable/cross"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
-        </android.support.v7.widget.CardView>
-        </RelativeLayout>
-
-
-    <HorizontalScrollView
-
-
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:id="@+id/imgscroll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></LinearLayout>
-    </HorizontalScrollView>
     <LinearLayout
         android:layout_margin="10dp"
         android:orientation="vertical"
@@ -331,76 +225,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>
-        <LinearLayout
-            android:visibility="gone"
-            android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Title"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:backgroundTint="@color/deep_red"
-                android:layout_weight="4"
-                android:hint="Input title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginBottom="5dp"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Category"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:backgroundTint="@color/deep_red"
-                android:id="@+id/category"
-                android:hint="Input Category"
-                android:layout_weight="4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_marginBottom="5dp"
-
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Price"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-            <EditText
-                android:backgroundTint="@color/deep_red"
-                android:id="@+id/price"
-                android:hint="Input Price"
-                android:layout_weight="4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-
-
 
 </LinearLayout>
     </LinearLayout>

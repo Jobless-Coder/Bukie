@@ -57,6 +57,7 @@
 
             <LinearLayout
 
+                android:id="@+id/editprofilebutton"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:paddingRight="10dp"

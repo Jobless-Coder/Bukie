@@ -15,8 +15,14 @@ package com.example.krishna.bukie;
  * limitations under the License.
  */
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -56,6 +62,12 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
+        SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        String username=sharedPreferences.getString("username",null);
+        if(username!=null)
+        {
+            FirebaseDatabase.getInstance().getReference().child("user").child(username).child("token").setValue(token);
+        }
         Log.e("Token: ",token);
     }
 }

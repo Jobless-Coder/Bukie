@@ -199,6 +199,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                    // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                     mapIntent.setPackage("com.google.android.apps.maps");
+                    mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(mapIntent);
                 }
 
@@ -213,6 +214,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
                 intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
                 //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 
             }
