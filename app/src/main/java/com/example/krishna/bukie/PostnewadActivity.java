@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
@@ -88,6 +89,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private FlexboxLayout flex;
     private Uri coverImageUri;
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +101,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         progressDialog=new ProgressDialog(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-       linearLayout=findViewById(R.id.imgscroll);
+       //linearLayout=findViewById(R.id.imgscroll);
 
 
 
@@ -111,7 +113,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
         rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
         rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
-        findViewById(R.id.coverpicrl).setVisibility(View.GONE);
+        //findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         linearLayout.addView(rowView);
 
 
@@ -486,9 +488,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     public void deleteCoverImageView(View view) {
         coveruri=null;
-        ImageView imageView=this.findViewById(R.id.coverpic);
+        /*ImageView imageView=this.findViewById(R.id.coverpic);
         imageView.setImageResource(0);
-        this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);
+        this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);*/
         this.findViewById(R.id.addcoverimage).setVisibility(View.VISIBLE);
     }
 

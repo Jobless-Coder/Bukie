@@ -15,11 +15,32 @@ public String date;
 public String booktitle;
 public String price;
 public String bookcategory;
-
+public String bookcoverpic;
+public String bookpublisher;
+public String bookauthor;
+public String bookdesc;
 public  String seller;
 public String adid;
-private String sellerpic;
-private String sellerfullname;
+public String sellerpic;
+public String sellerfullname;
+
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String seller, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
+        this.date = date;
+        this.booktitle = booktitle;
+        this.price = price;
+        this.bookcategory = bookcategory;
+        this.bookcoverpic = bookcoverpic;
+        this.bookpublisher = bookpublisher;
+        this.bookauthor = bookauthor;
+        this.bookdesc = bookdesc;
+        this.seller = seller;
+        this.adid = adid;
+        this.sellerpic = sellerpic;
+        this.sellerfullname = sellerfullname;
+        this.bookpicslist = bookpicslist;
+    }
+
+
 
     public String getSellerfullname() {
         return sellerfullname;
@@ -75,8 +96,30 @@ public BookAds(){
         this.seller=in.readString();
         this.sellerpic=in.readString();
         this.sellerfullname=in.readString();
+        this.bookcoverpic=in.readString();
+        this.bookauthor=in.readString();
+        this.bookpublisher=in.readString();
+        this.bookdesc=in.readString();
+
 
     }
+
+    public String getBookcoverpic() {
+        return bookcoverpic;
+    }
+
+    public String getBookpublisher() {
+        return bookpublisher;
+    }
+
+    public String getBookauthor() {
+        return bookauthor;
+    }
+
+    public String getBookdesc() {
+        return bookdesc;
+    }
+
     public static final Creator<BookAds> CREATOR = new Creator<BookAds>() {
         @Override
         public BookAds createFromParcel(Parcel in) {
@@ -126,6 +169,14 @@ public BookAds(){
         dest.writeString(this.seller);
         dest.writeString(this.sellerpic);
         dest.writeString(this.sellerfullname);
+        dest.writeString(this.bookcoverpic);
+        dest.writeString(this.bookauthor);
+        dest.writeString(this.bookpublisher);
+        dest.writeString(this.bookdesc);
+       /* this.bookcoverpic=in.readString();
+        this.bookauthor=in.readString();
+        this.bookpublisher=in.readString();
+        this.bookdesc=in.readString();*/
 
     }
 }
