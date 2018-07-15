@@ -22,6 +22,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
 public class MessageAdapter extends RecyclerView.Adapter {
     private static final int TYPE_MESSAGE = 0 ;
     private static final int TYPE_CONTACT = 1;
@@ -42,6 +44,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
         this.messageItemList = messageItemList;
         this.context = context;
         this.onClickListener=messageItemClickListener;
+        setHasStableIds(true);
+
         //Toast.makeText(context, ""+messageItemList.size(), Toast.LENGTH_SHORT).show();
     }
   /*  @Override
@@ -52,7 +56,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public long getItemId(int position) {
-        return super.getItemId(position);
+        return messageItemList.get(position).hashCode();
     }
 
     @Override
@@ -67,10 +71,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             return TYPE_CAMERA;
         else if(type.compareTo("location")==0)
             return TYPE_LOCATION;
-        else if(type.compareTo("gallery")==0)
+        else /*if(type.compareTo("gallery")==0)*/
             return TYPE_GALLERY;
-        else
-            return -1;
+        /*else
+            return -1;*/
     }
 
 
@@ -159,7 +163,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     if(current_user.compareTo(username)==0&&current_user.compareTo(previous_user)==0)
     {
         if(messageItem.getType().compareTo("message")==0) {
-
+            messageViewHolder.rlson2.setVisibility(View.GONE);
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             messageViewHolder.time1.setText(messageItem.getTime());
@@ -167,7 +171,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
 
         }
+        /*else {
+            messageViewHolder.rlson1.setVisibility(View.GONE);
+        }*/
         if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.rlson2.setVisibility(View.GONE);
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
             contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             contactViewHolder.time1.setText(messageItem.getTime());
@@ -175,7 +183,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
 
         }
+
         if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.rlson2.setVisibility(View.GONE);
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             cameraViewHolder.time1.setText(messageItem.getTime());
@@ -183,26 +193,34 @@ public class MessageAdapter extends RecyclerView.Adapter {
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
             // holder.camerapic.setImageResource();
         }
+        /*else {
+            cameraViewHolder.rlson1.setVisibility(View.GONE);
+        }*/
         if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.rlson2.setVisibility(View.GONE);
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             locationViewHolder.time1.setText(messageItem.getTime());
             //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
+       /* else {
+            locationViewHolder.rlson1.setVisibility(View.GONE);
+        }*/
         if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson2.setVisibility(View.GONE);
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             galleryVieHolder.time1.setText(messageItem.getTime());
             if(messageItem.getImageurl().size()<3) {
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100*messageItem.getImageurl().size(), r.getDisplayMetrics());
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*messageItem.getImageurl().size(), r.getDisplayMetrics());
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
 
                 //galleryVieHolder.gridView1.setColumnWidth();
             }
             else {
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 315, r.getDisplayMetrics());
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView1.setNumColumns(3);
             }
@@ -212,6 +230,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
         }
+        /*else {
+            galleryVieHolder.rlson1.setVisibility(View.GONE);
+        }*/
 
 
 
@@ -219,6 +240,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     else if(current_user.compareTo(username)==0&&(current_user.compareTo(previous_user)!=0)){
 
         if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.rlson2.setVisibility(View.GONE);
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             messageViewHolder.time1.setText(messageItem.getTime());
@@ -226,6 +248,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
         }
         if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.rlson2.setVisibility(View.GONE);
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
             contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             contactViewHolder.time1.setText(messageItem.getTime());
@@ -235,6 +258,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.rlson2.setVisibility(View.GONE);
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             cameraViewHolder.time1.setText(messageItem.getTime());
@@ -243,6 +267,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
            // holder.camerapic.setImageResource();
         }
         if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.rlson2.setVisibility(View.GONE);
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             locationViewHolder.time1.setText(messageItem.getTime());
@@ -250,6 +275,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson2.setVisibility(View.GONE);
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             galleryVieHolder.time1.setText(messageItem.getTime());
@@ -265,6 +291,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
        // holder.rlson1.setVisibility(View.GONE);
 
         if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.rlson1.setVisibility(View.GONE);
             messageViewHolder.rlson2.setVisibility(View.VISIBLE);
             messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             messageViewHolder.time2.setText(messageItem.getTime());
@@ -273,6 +300,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.rlson1.setVisibility(View.GONE);
             contactViewHolder.rlson2.setVisibility(View.VISIBLE);
             contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             contactViewHolder.time2.setText(messageItem.getTime());
@@ -282,6 +310,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.rlson1.setVisibility(View.GONE);
             cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             cameraViewHolder.time2.setText(messageItem.getTime());
@@ -292,6 +321,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.rlson1.setVisibility(View.GONE);
             locationViewHolder.rlson2.setVisibility(View.VISIBLE);
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             locationViewHolder.time2.setText(messageItem.getTime());
@@ -299,6 +329,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson1.setVisibility(View.GONE);
             galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             galleryVieHolder.time2.setText(messageItem.getTime());
@@ -311,6 +342,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
        // holder.rlson1.setVisibility(View.GONE);
 
         if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.rlson1.setVisibility(View.GONE);
             messageViewHolder.rlson2.setVisibility(View.VISIBLE);
             messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             messageViewHolder.time2.setText(messageItem.getTime());
@@ -318,6 +350,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.messagebody2.setText(messageItem.getMessage_body());
         }
         if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.rlson1.setVisibility(View.GONE);
             contactViewHolder.rlson2.setVisibility(View.VISIBLE);
             contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             contactViewHolder.time2.setText(messageItem.getTime());
@@ -327,6 +360,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.rlson1.setVisibility(View.GONE);
             cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             cameraViewHolder.time2.setText(messageItem.getTime());
@@ -337,6 +371,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
         if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.rlson1.setVisibility(View.GONE);
             locationViewHolder.rlson2.setVisibility(View.VISIBLE);
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             locationViewHolder.time2.setText(messageItem.getTime());
@@ -344,6 +379,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson1.setVisibility(View.GONE);
             galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             galleryVieHolder.time2.setText(messageItem.getTime());
@@ -363,7 +399,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
-        public TextView messagebody1,messagebody2;
+        public EmojiconTextView messagebody1,messagebody2;
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2;
 

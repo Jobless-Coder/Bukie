@@ -3,55 +3,120 @@
     android:layout_width="150dp"
     android:id="@+id/popup"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="25dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    android:layout_height="50dp">
+    android:layout_height="40dp">
     <LinearLayout
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent">
+        <android.support.v7.widget.CardView
+            app:cardElevation="0dp"
+
+            android:clickable="true"
+            android:id="@+id/emoji"
+            android:visibility="visible"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            app:cardCornerRadius="15dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp">
 
         <ImageView
+            android:layout_gravity="center"
+            android:layout_width="20dp"
             android:tint="@color/violet"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
             android:id="@+id/popupcamera"
-            android:padding="10dp"
-            android:src="@drawable/camera"
+            android:src="@drawable/camera2"
+
+            android:layout_height="20dp" />
+        </android.support.v7.widget.CardView>
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp" />
-        <ImageView
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:id="@+id/popupgallery"
-            android:padding="10dp"
-            android:src="@drawable/gallery"
+            android:layout_height="fill_parent">
+            <android.support.v7.widget.CardView
+                app:cardElevation="0dp"
+                android:id="@+id/popupgallery"
+                android:clickable="true"
+                android:visibility="visible"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="15dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_width="20dp"
+                    android:tint="@color/violet"
+
+                    android:src="@drawable/gallery"
+
+                    android:layout_height="20dp" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp" />
-        <ImageView
-            android:tint="@color/deep_orange"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:id="@+id/popupcontact"
-            android:padding="10dp"
-            android:src="@drawable/profile"
+            android:layout_height="fill_parent">
+            <android.support.v7.widget.CardView
+                app:cardElevation="0dp"
+                android:id="@+id/popupcontact"
+                android:clickable="true"
+                android:visibility="visible"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="15dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_width="20dp"
+                    android:tint="@color/violet"
+
+                    android:src="@drawable/profile"
+
+                    android:layout_height="20dp" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp" />
-        <ImageView
-            android:tint="@color/deep_blue"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:id="@+id/popuplocation"
-            android:padding="10dp"
-            android:src="@drawable/location"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="50dp" />
+            android:layout_height="fill_parent">
+            <android.support.v7.widget.CardView
+                app:cardElevation="0dp"
+                android:id="@+id/popuplocation"
+                android:clickable="true"
+                android:visibility="visible"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="15dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:layout_width="20dp"
+                    android:tint="@color/violet"
+
+                    android:src="@drawable/location"
+
+                    android:layout_height="20dp" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
 
 
     </LinearLayout>

@@ -2,6 +2,7 @@ package com.example.krishna.bukie;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -72,6 +73,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="helloo" ;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
@@ -83,12 +87,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessageItem> messageItemList;
     private  FirebaseHelper fh;
     private Context context;
-    private EditText chatbox;
+    private EmojiconEditText chatbox;
     private int count;
     private String fullname, ppic,tmpuser,identity,username;
     private TextView username2;
     private MyChats myChats;
-    private View camera,attach,send,emoji,rootview,keyboard,sendbtn,camerabtn;
+    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
     EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
     private final Handler handler = new Handler();
@@ -97,7 +101,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String msg,date,name,phone;
     private Bitmap mImageBitmap;
     private String mCurrentPhotoPath,latitude,longitude,locality;
-    private ImageView mImageView;
+    private ImageView mImageView,emoji;
     private List<String> imagepaths=new ArrayList<>();
     private List<String> imagefilenamelist=new ArrayList<>();
     private StorageReference storageReference;
@@ -108,92 +112,105 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private  List<String> imagesEncodedList;
     private List<Uri> pathsurilist=new ArrayList<>();
     private Point point;
+    private PopupWindow popup=new PopupWindow();
+    private EmojIconActions emojIcon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EmojiManager.install(new IosEmojiProvider());
+       // EmojiManager.install(new IosEmojiProvider());
         setContentView(R.layout.activity_chat);
-        firebaseAuth= FirebaseAuth.getInstance();
-        firebaseStorage=FirebaseStorage.getInstance();
-        storageReference=firebaseStorage.getReference();
-        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
+        SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
+        username = sharedPreferences.getString("username", null);
         Bundle bundle = getIntent().getExtras();
-        String isMap=bundle.getString("isMap");
+        String isMap = bundle.getString("isMap");
 
         myChats = bundle.getParcelable("mychats");
-        identity=bundle.getString("identity");
-        if(identity.compareTo("buyer")==0){
-            tmpuser=myChats.getSeller();
-            ppic=myChats.getSellerpic();
-            fullname=myChats.getSellerfullname();
-        }
-
-        else{
-            tmpuser=myChats.getBuyer();
-            ppic=myChats.getBuyerpic();
-            fullname=myChats.getBuyerfullname();
+        identity = bundle.getString("identity");
+        if (identity.compareTo("buyer") == 0) {
+            tmpuser = myChats.getSeller();
+            ppic = myChats.getSellerpic();
+            fullname = myChats.getSellerfullname();
+        } else {
+            tmpuser = myChats.getBuyer();
+            ppic = myChats.getBuyerpic();
+            fullname = myChats.getBuyerfullname();
 
         }
 
 
-        chatbox=(EditText)findViewById(R.id.chatbox);
-
+        chatbox = findViewById(R.id.chatbox);
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
-        TextView username2=(TextView)findViewById(R.id.username);
-        ImageView pp=(ImageView)findViewById(R.id.profile_pic);
+        TextView username2 = (TextView) findViewById(R.id.username);
+        ImageView pp = (ImageView) findViewById(R.id.profile_pic);
         username2.setText(fullname);
         Glide.with(getApplicationContext()).load(ppic).into(pp);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        context=getApplicationContext();
+        context = getApplicationContext();
 
 
-        recyclerView=(RecyclerView)findViewById(R.id.reyclerview);
+        recyclerView = (RecyclerView) findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        messageItemList=new ArrayList<>();
+        //recyclerView.setR
+        messageItemList = new ArrayList<>();
         //camerabtn=findViewById(R.id.camerabtn);
-        sendbtn=(View)findViewById(R.id.sendbtn);
-        camera=findViewById(R.id.camera);
-        attach=findViewById(R.id.attach);
-        send=(View)findViewById(R.id.send);
-        emoji=findViewById(R.id.emoji);
-        rootview=findViewById(R.id.root);
-        keyboard=findViewById(R.id.keyboard);
+        sendbtn = (View) findViewById(R.id.sendbtn);
+        camera = findViewById(R.id.camera);
+        attach = findViewById(R.id.attach);
+        send = (View) findViewById(R.id.send);
+        emoji = (ImageView)findViewById(R.id.emoji);
+        rootview = findViewById(R.id.root);
+        keyboard = findViewById(R.id.keyboard);
         keyboard.setOnClickListener(this);
-        emoji.setOnClickListener(this);
+       // emoji.setOnClickListener(this);
         //camerabtn.setOnClickListener(this);
         attach.setOnClickListener(this);
         sendbtn.setOnClickListener(this);
-        emojiPopup = EmojiPopup.Builder.fromRootView(rootview).build((EmojiEditText) chatbox);
+        //emojiPopup = EmojiPopup.Builder.fromRootView(rootview).build((EmojiEditText) chatbox);
+        //Emoji
+        emojIcon=new EmojIconActions(this,rootview,chatbox,emoji);
+        emojIcon.ShowEmojIcon();
+        emojIcon.setIconsIds(R.drawable.keyboard, R.drawable.emoji);
+        emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
+            @Override
+            public void onKeyboardOpen() {
+                Log.e(TAG, "Keyboard opened!");
+            }
+
+            @Override
+            public void onKeyboardClose() {
+                Log.e(TAG, "Keyboard closed");
+            }
+        });
 
 
+        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener() {
+            public void receiveIncomingMessage(MessageItem ch) {
+                messageItemList.add(ch);
+                adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
+                    @Override
+                    public void onSaveContact(View view, int position) {
+                        //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                        intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
+                        intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
+                        getApplicationContext().startActivity(intent);
 
-        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener(){
-                 public void receiveIncomingMessage(MessageItem ch)
-          {
-              messageItemList.add(ch);
-              adapter=new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
-                  @Override
-                  public void onSaveContact(View view, int position) {
-                      //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
-                      Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-                      intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-                      intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
-                      intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
-                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                      //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
-                      getApplicationContext().startActivity(intent);
+                    }
 
-                  }
-
-                  @Override
-                  public void onLocation(View view, int position) {
-                      Geopoint geoPoint=messageItemList.get(position).getGeopoint();
+                    @Override
+                    public void onLocation(View view, int position) {
+                        Geopoint geoPoint = messageItemList.get(position).getGeopoint();
                     /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
                       //Log.e("geopoint",url);
                       Uri gmmIntentUri = Uri.parse(url);
@@ -205,41 +222,41 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                       /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
                       startActivity(intent);*/
-                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude()  + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude()  + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
-                      startActivity(intent);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
+                        startActivity(intent);
 
-                  }
+                    }
 
-                  @Override
-                  public void onCameraImage(View view, int position) {
+                    @Override
+                    public void onCameraImage(View view, int position) {
 
-                  }
-              });
-              recyclerView.setAdapter(adapter);
-              recyclerView.scrollToPosition(messageItemList.size()-1);
-          }
+                    }
+                });
+                recyclerView.setAdapter(adapter);
+                recyclerView.scrollToPosition(messageItemList.size() - 1);
+            }
 
-              });
+        });
         //fh.getPreviousTexts();
         fh.startListening();
         recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right,int bottom, int oldLeft, int oldTop,int oldRight, int oldBottom)
-            {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 //if(messageItemList!=null)
-                recyclerView.scrollToPosition(messageItemList.size()-1);
+                recyclerView.scrollToPosition(messageItemList.size() - 1);
                 //Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });
-        if(isMap.compareTo("1")==0) {
-            geopoint=bundle.getParcelable("geopoint");
+        if (isMap.compareTo("1") == 0) {
+            geopoint = bundle.getParcelable("geopoint");
 
             sendMessage("location");
         }
         chatbox.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start,
@@ -250,7 +267,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(before ==0 && s.length()>0){
+                if (before == 0 && s.length() > 0) {
                     int cx = camera.getWidth() / 2;
                     int cy = camera.getHeight() / 2;
                     float initialRadius = (float) Math.hypot(cx, cy);
@@ -261,7 +278,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             super.onAnimationEnd(animation);
                             camera.setVisibility(View.INVISIBLE);
                             send.setVisibility(View.VISIBLE);
-                            togglesend=true;
+                            togglesend = true;
                         }
                     });
 
@@ -269,7 +286,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     anim.start();
 
                 }
-                if(before >0 && s.length()==0){
+                if (before > 0 && s.length() == 0) {
                     int cx = send.getWidth() / 2;
                     int cy = send.getHeight() / 2;
                     float initialRadius = (float) Math.hypot(cx, cy);
@@ -280,7 +297,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             super.onAnimationEnd(animation);
                             send.setVisibility(View.INVISIBLE);
                             camera.setVisibility(View.VISIBLE);
-                            togglesend=false;
+                            togglesend = false;
                         }
                     });
 
@@ -294,7 +311,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatbox.setImeOptions(EditorInfo.IME_ACTION_SEND);
         chatbox.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
-        chatbox.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+       /* chatbox.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 Rect r = new Rect();
@@ -303,8 +320,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 int heightDiff = chatbox.getRootView().getHeight() - (r.bottom - r.top);
                 if (heightDiff > 100) {
-                    if(emojikeyboard==true&&keyboard.getVisibility()==View.VISIBLE)
-                    {
+                    if (emojikeyboard == true && keyboard.getVisibility() == View.VISIBLE) {
                         //Toast.makeText(context, "ghk", Toast.LENGTH_SHORT).show();
                         //emojiPopup.dismiss();
                         int cx2 = keyboard.getWidth() / 2;
@@ -322,15 +338,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
                         anim2.start();
-                        emojikeyboard=true;
+                        emojikeyboard = true;
                     }
 
                     //enter your code here
-                }else{
+                } else {
                     //enter code for hid
                 }
             }
-        });
+        });*/
 
         chatbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -349,9 +365,32 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
+        if (popup.isShowing()) {
+            popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
 
 
+
+                }
+            });
+        }
+        rootview.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                    //@SuppressLint("NewApi")
+                    @Override
+                    public void onGlobalLayout() {
+                        if(popup.isShowing()){
+                            popup.dismiss();
+                        }
+
+
+                    }
+                });
     }
+
+
 
     public void onDestroy() {
         super.onDestroy();
@@ -388,17 +427,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.picture:
-                Intent intent = new Intent();
+                shareGallery();
+                /*Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);*/
                 break;
 
             default:
                 break;
         }
         return true;
+    }
+
+    private void shareGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
     }
 
     private void shareContact() {
@@ -719,7 +767,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 showPopup( point,v);
                 break;
             case R.id.emoji:
-                emojiPopup.toggle(); // Toggles visibility of the Popup.
+                /*emojiPopup.toggle(); // Toggles visibility of the Popup.
                     int cx = emoji.getWidth() / 2;
                     int cy = emoji.getHeight() / 2;
                     float initialRadius = (float) Math.hypot(cx, cy);
@@ -735,7 +783,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
                     anim.start();
-                    emojikeyboard=true;
+                    emojikeyboard=true;*/
 
 
                 break;
@@ -762,6 +810,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 break;
+            case R.id.popupcamera:
+                popup.dismiss();
+                dispatchTakePictureIntent();
+                break;
+            case R.id.popupcontact:
+                popup.dismiss();
+                shareContact();
+
+                break;
+            case R.id.popupgallery:
+                popup.dismiss();
+                shareGallery();
+                break;
+            case R.id.popuplocation:
+                popup.dismiss();
+                shareLocation();
+                break;
 
             default:
                 break;
@@ -783,40 +848,56 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         point.y = location[1];
     }
 
+
+   /* public void onWindowFocusChanged() {
+
+        int[] location = new int[2];
+        View attach = (View) findViewById(R.id.attach);
+
+        // Get the x, y location and store it in the location[] array
+        // location[0] = x, location[1] = y.
+        attach.getLocationOnScreen(location);
+
+        //Initialize the Point with x, and y positions
+        point = new Point();
+        point.x = location[0];
+        point.y = location[1];
+    }*/
+
     private void showPopup(Point point, View v) {
+        //popupstate=true;
         Resources r=getResources();
         int popupWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
-        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
+        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, r.getDisplayMetrics());
         Context context=getApplicationContext();
-        // Inflate the popup_layout.xml
         LinearLayout viewGroup = (LinearLayout)findViewById(R.id.popup);
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_popup, viewGroup);
-
-        // Creating the PopupWindow
-        final PopupWindow popup = new PopupWindow(context);
+        popup = new PopupWindow(context);
         popup.setContentView(layout);
         popup.setWidth(popupWidth);
         popup.setHeight(popupHeight);
         popup.setFocusable(true);
 
-        // Some offset to align the popup a bit to the right, and a bit down, relative to button's position.
 
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, r.getDisplayMetrics());
-        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics());
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
         int OFFSET_X = width;
         int OFFSET_Y = 1500;
         OFFSET_Y=point.y-height;
-        Toast.makeText(context, ""+point.y+"kl"+height, Toast.LENGTH_SHORT).show();
-
-        // Clear the default translucent background
-        //popup.setBackgroundDrawable(new BitmapDrawable());
+        //Toast.makeText(context, ""+point.y+"kl"+height, Toast.LENGTH_SHORT).show();
         popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        // Displaying the popup at the specified location, + offsets.
-        //popup.showAsDropDown(layout, 0, -point.y);
-        //popup.showAsDropDown(layout, Gravity.BOTTOM, point.x, point.y );
-       popup.showAtLocation(v, Gravity.TOP|Gravity.LEFT, OFFSET_X,OFFSET_Y);
+        popup.showAtLocation(v, Gravity.TOP|Gravity.LEFT, OFFSET_X,OFFSET_Y);
+        View popupcamera,popupgallery,popupcontact,popuplocation;
+        popupcamera=layout.findViewById(R.id.popupcamera);
+        popupcontact=layout.findViewById(R.id.popupcontact);
+        popupgallery=layout.findViewById(R.id.popupgallery);
+        popuplocation=layout.findViewById(R.id.popuplocation);
+        popupcamera.setOnClickListener(this);
+        popupcontact.setOnClickListener(this);
+        popupgallery.setOnClickListener(this);
+        popuplocation.setOnClickListener(this);
         //popup.showAsDropDown(v);
         //popup.showAsDropDown(v, OFFSET_X, OFFSET_Y, Gravity.TOP);
         // Getting a reference to Close button, and close the popup when clicked.
@@ -828,6 +909,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 popup.dismiss();
             }
         });*/
+    }
+    @Override
+    public void onBackPressed()
+    {
+        if(popup.isShowing())
+            popup.dismiss();
+        else
+        super.onBackPressed();
     }
 }
 

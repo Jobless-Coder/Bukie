@@ -8,7 +8,7 @@
     android:layout_marginBottom="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/rellayoutson1"
         android:layout_alignParentRight="true"
         android:background="@drawable/chat_bubbles1"
@@ -20,7 +20,7 @@
         android:id="@+id/ll1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-    <com.vanniktech.emoji.EmojiTextView
+    <!--com.vanniktech.emoji.EmojiTextView
         android:visibility="visible"
         android:paddingBottom="20dp"
         android:paddingLeft="10dp"
@@ -32,7 +32,20 @@
         android:textColor="#ffffff"
         android:minWidth="70dp"
         android:textSize="14sp"
-        />
+        /-->
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+            android:visibility="visible"
+            android:paddingBottom="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/message_body1"
+            android:textColor="#ffffff"
+            android:minWidth="70dp"
+            android:textSize="14sp"
+            />
 
     </LinearLayout>
 
@@ -62,7 +75,7 @@
             android:id="@+id/ll21"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <com.vanniktech.emoji.EmojiTextView
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
             android:paddingBottom="20dp"
             android:visibility="visible"
             android:paddingLeft="10dp"
