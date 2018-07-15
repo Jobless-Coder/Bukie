@@ -2,13 +2,19 @@ package com.example.krishna.bukie;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +27,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private static final int TYPE_CONTACT = 1;
     private static final int TYPE_CAMERA = 2;
     private static final int TYPE_LOCATION = 3;
+    private static final int TYPE_GALLERY = 4;
     private List<MessageItem> messageItemList;
    private Context context;
    private View itemView2;
@@ -37,6 +44,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
         this.onClickListener=messageItemClickListener;
         //Toast.makeText(context, ""+messageItemList.size(), Toast.LENGTH_SHORT).show();
     }
+  /*  @Override
+    public int getViewTypeCount() {
+        return getCount();
+    }*/
+
 
     @Override
     public long getItemId(int position) {
@@ -55,6 +67,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             return TYPE_CAMERA;
         else if(type.compareTo("location")==0)
             return TYPE_LOCATION;
+        else if(type.compareTo("gallery")==0)
+            return TYPE_GALLERY;
         else
             return -1;
     }
@@ -84,6 +98,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 view= LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.view_location,parent,false);
                 return new LocationViewHolder(view);
+            case TYPE_GALLERY:
+                view= LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_gallery,parent,false);
+                return new GalleryVieHolder(view);
+
 
 
         }
@@ -91,6 +110,14 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         return null;
     }
+    /*private void resizeGridView(GridView gridView, int items, int columns) {
+        ViewGroup.LayoutParams params = gridView.getLayoutParams();
+        int oneRowHeight = gridView.getHeight();
+        int rows = (int) (items / columns);
+        params.height = oneRowHeight * rows;
+        params.width=100;
+        gridView.setLayoutParams(params);
+    }*/
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
@@ -100,6 +127,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         CameraViewHolder cameraViewHolder=null;
         ContactViewHolder contactViewHolder=null;
         LocationViewHolder locationViewHolder=null;
+        GalleryVieHolder galleryVieHolder=null;
     if (messageItem.getType().compareTo("message")==0)
      messageViewHolder= (MessageViewHolder) holder;
     if(messageItem.getType().equals("camera"))
@@ -108,11 +136,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
     contactViewHolder= (ContactViewHolder) holder;
     if(messageItem.getType().equals("location"))
     locationViewHolder= (LocationViewHolder) holder;
+        if(messageItem.getType().equals("gallery"))
+            galleryVieHolder= (GalleryVieHolder) holder;
 
-       // Toast.makeText(context, ""+current_user, Toast.LENGTH_SHORT).show();
-  //  holder.rlfather.setTag(messageItem.getType()+"");
+
         SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         String username=sharedPreferences.getString("username",null);
+        Resources r = context.getResources();
+
+       // float set= (float) Math.ceil(messageItem.getImageurl().size()/3);
+       // float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100*set, r.getDisplayMetrics());
 
 
     if(position>0) {
@@ -154,8 +187,30 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             locationViewHolder.time1.setText(messageItem.getTime());
-            locationViewHolder.locationview1.setVisibility(View.VISIBLE);
+            //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
+        }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
+            galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
+            galleryVieHolder.time1.setText(messageItem.getTime());
+            if(messageItem.getImageurl().size()<3) {
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100*messageItem.getImageurl().size(), r.getDisplayMetrics());
+                galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
+
+                //galleryVieHolder.gridView1.setColumnWidth();
+            }
+            else {
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
+                galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                galleryVieHolder.gridView1.setNumColumns(3);
+            }
+            galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
+
+
+
+
         }
 
 
@@ -193,6 +248,14 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.time1.setText(messageItem.getTime());
             //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
+        }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
+            galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
+            galleryVieHolder.time1.setText(messageItem.getTime());
+            galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
+
+
         }
 
 
@@ -235,6 +298,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
             //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
+            galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+            galleryVieHolder.time2.setText(messageItem.getTime());
+            galleryVieHolder.gridView2.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
+
+        }
 
     }
     else if(current_user.compareTo(username)!=0&&current_user.compareTo(previous_user)==0){
@@ -272,6 +342,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.time2.setText(messageItem.getTime());
             //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
+        }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
+            galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
+            galleryVieHolder.time2.setText(messageItem.getTime());
+            galleryVieHolder.gridView2.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
+
         }
 
 
@@ -406,4 +483,29 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         }
     }
+    public class GalleryVieHolder extends RecyclerView.ViewHolder{
+        public StaticGridView gridView1,gridView2;
+        public RelativeLayout rlson1,rlson2,rlfather;
+        public TextView time1,time2;
+        public LinearLayout ll1,ll21;
+        private boolean gridresized;
+        public GalleryVieHolder(View itemView) {
+            super(itemView);
+            rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
+            rlson2=itemView.findViewById(R.id.rellayoutson2);
+            rlfather=itemView.findViewById(R.id.rellayoutfather);
+            time1=itemView.findViewById(R.id.time1);
+            time2=itemView.findViewById(R.id.time2);
+           gridView1 =  itemView.findViewById(R.id.gridview1);
+           gridView2 =  itemView.findViewById(R.id.gridview1);
+           gridresized=false;
+           ll1=itemView.findViewById(R.id.ll1);
+            //ll1=itemView.findViewById(R.id.ll1);
+            //gridView1.setAdapter(new ImageAdapter(context));
+            //gridView2.se
+
+        }
+
+    }
+
 }

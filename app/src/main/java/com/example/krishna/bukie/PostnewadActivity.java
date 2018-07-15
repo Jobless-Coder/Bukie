@@ -232,7 +232,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
 
-    public void addImageView(View v){Intent intent = new Intent();
+    public void addImageView(View v){
+        Intent intent = new Intent();
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setAction(Intent.ACTION_GET_CONTENT);

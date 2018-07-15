@@ -42,16 +42,16 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 <LinearLayout
-    android:background="@color/light_grey"
+    android:background="@color/colorPrimary"
     android:id="@+id/layout_chatbox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:minHeight="55dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginLeft="5dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginRight="5dp"
+    android:paddingTop="5dp"
+    android:paddingLeft="5dp"
+    android:paddingBottom="10dp"
+    android:paddingRight="5dp"
 
 
     >

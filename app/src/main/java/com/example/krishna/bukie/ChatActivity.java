@@ -2,12 +2,17 @@ package com.example.krishna.bukie;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Environment;
@@ -27,7 +32,10 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +44,8 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,12 +70,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="helloo" ;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
     private static final int RESULT_PICK_CONTACT = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 5;
+    private static final int PICK_IMAGE_MULTIPLE = 14;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -92,6 +104,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseStorage firebaseStorage;
     private FirebaseAuth firebaseAuth;
     private Geopoint geopoint;
+    private  String imageEncoded;
+    private  List<String> imagesEncodedList;
+    private List<Uri> pathsurilist=new ArrayList<>();
+    private Point point;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +139,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         chatbox=(EditText)findViewById(R.id.chatbox);
 
-       //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
@@ -349,12 +364,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.chatactivitymenu, menu);
 
 
-        MenuItem searchItem = menu.findItem(R.id.share_location);
+       /* MenuItem searchItem = menu.findItem(R.id.share_location);
         searchItem = menu.findItem(R.id.delete_chat);
         searchItem = menu.findItem(R.id.block_user);
 
         SearchView searchView =
-                (SearchView) searchItem.getActionView();
+                (SearchView) searchItem.getActionView();*/
 
 
 
@@ -371,6 +386,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.contact:
                 shareContact();
 
+                break;
+            case R.id.picture:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
                 break;
 
             default:
@@ -390,7 +412,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if(mListener != null){
             isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-           // Log.e("gps, network", String.valueOf(isGPSLocation + "," + isNetworkLocation));
         }
         handler.postDelayed(new Runnable(){
             @Override
@@ -433,13 +454,111 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     uploadImage(mCurrentPhotoPath);
 
                     break;
+                case PICK_IMAGE_MULTIPLE:
+
+                    String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                    imagesEncodedList = new ArrayList<String>();
+                    if(data.getData()!=null){
+
+                        Uri uri=data.getData();
+                        pathsurilist.add(uri);
+                        /*hset.add(uri);
+                        LayoutInflater inflater = getLayoutInflater();;
+                        View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
+
+                        ImageView v2=rowView.findViewById(R.id.bookpic);
+                        v2.setImageURI(uri);
+                        v2.setTag(uri.toString());
+                        linearLayout.addView(rowView);*/
+                        //mArrayUri.add(mImageUri);
+                        //Toast.makeText(this, ""+mArrayUri.size(), Toast.LENGTH_SHORT).show();
+
+                        // Get the cursor
+                        Cursor cursor = getContentResolver().query(uri,
+                                filePathColumn, null, null, null);
+                        // Move to first row
+                        cursor.moveToFirst();
+
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        imageEncoded  = cursor.getString(columnIndex);
+                        cursor.close();
+                        uploadImages(pathsurilist);
+
+                    } else {
+                        if (data.getClipData() != null) {
+                            ClipData mClipData = data.getClipData();
+
+                            for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                                ClipData.Item item = mClipData.getItemAt(i);
+                                Uri uri = item.getUri();
+                                pathsurilist.add(uri);
+                                //hset.add(uri);
+                                //mArrayUri.add(uri);
+                               /* LayoutInflater inflater = getLayoutInflater();;
+                                View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
+
+                                ImageView v2=rowView.findViewById(R.id.bookpic);
+                                v2.setImageURI(uri);
+                                v2.setTag(uri.toString());*/
+                                //v2.setImageResource(R.drawable.bookpic);
+                                // Get the cursor
+                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                                // Move to first row
+                                cursor.moveToFirst();
+
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                imageEncoded  = cursor.getString(columnIndex);
+                                imagesEncodedList.add(imageEncoded);
+                                cursor.close();
+
+                            }
+                            uploadImages(pathsurilist);
+
+                        }
+
+                    }
+                    break;
             }
         }
 
     }
+    private void uploadImages(final List<Uri> photoPaths) {
+        imagepaths=new ArrayList<>();
+        for(Uri photo:photoPaths) {
+            String path = "chatimages/" + myChats.getChatid() + "/" + UUID.randomUUID() + ".png";
+            //Log.e("nigga",path);
+            final StorageReference riversRef = storageReference.child(path);
+
+            UploadTask uploadTask = riversRef.putFile(photo);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        // progressDialog.dismiss();                        //throw task.getException();
+                        Toast.makeText(ChatActivity.this, "Error uploading photo,checck internet connection", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                    return riversRef.getDownloadUrl();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
+                    imagepaths.add(uri + "");
+                    //mImageView.setImageBitmap(mImageBitmap);
+                    if(photoPaths.size()==imagepaths.size())
+                    sendMessage("gallery");
+
+
+                }
+            });
+        }
+    }
 
     private void uploadImage(final String mCurrentPhotoPath) {
-       String path = "chatimages/" + myChats.getChatid()+"/"+imagefilenamelist.get(0) + ".png";
+       String path = "chatimages/" + myChats.getChatid()+"/"+ UUID.randomUUID() + ".png";
        //Log.e("nigga",path);
         final StorageReference riversRef = storageReference.child(path);
 
@@ -488,6 +607,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if(type.compareTo("location")==0){
            //Geopoint geopoint=new Geopoint(latitude,longitude);
             MessageItem m=new MessageItem(date,username,d.getTime()+"",geopoint,type);
+            fh.sendMessage(m);
+        }
+        if(type.compareTo("gallery")==0){
+
+            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths);
             fh.sendMessage(m);
         }
 
@@ -591,6 +715,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.attach:
+                onWindowFocusChanged();
+                showPopup( point,v);
                 break;
             case R.id.emoji:
                 emojiPopup.toggle(); // Toggles visibility of the Popup.
@@ -640,6 +766,68 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    public void onWindowFocusChanged() {
+
+        int[] location = new int[2];
+        View attach = (View) findViewById(R.id.attach);
+
+        // Get the x, y location and store it in the location[] array
+        // location[0] = x, location[1] = y.
+        attach.getLocationOnScreen(location);
+
+        //Initialize the Point with x, and y positions
+        point = new Point();
+        point.x = location[0];
+        point.y = location[1];
+    }
+
+    private void showPopup(Point point, View v) {
+        Resources r=getResources();
+        int popupWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
+        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
+        Context context=getApplicationContext();
+        // Inflate the popup_layout.xml
+        LinearLayout viewGroup = (LinearLayout)findViewById(R.id.popup);
+        LayoutInflater layoutInflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.layout_popup, viewGroup);
+
+        // Creating the PopupWindow
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(layout);
+        popup.setWidth(popupWidth);
+        popup.setHeight(popupHeight);
+        popup.setFocusable(true);
+
+        // Some offset to align the popup a bit to the right, and a bit down, relative to button's position.
+
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, r.getDisplayMetrics());
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics());
+        int OFFSET_X = width;
+        int OFFSET_Y = 1500;
+        OFFSET_Y=point.y-height;
+        Toast.makeText(context, ""+point.y+"kl"+height, Toast.LENGTH_SHORT).show();
+
+        // Clear the default translucent background
+        //popup.setBackgroundDrawable(new BitmapDrawable());
+        popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        // Displaying the popup at the specified location, + offsets.
+        //popup.showAsDropDown(layout, 0, -point.y);
+        //popup.showAsDropDown(layout, Gravity.BOTTOM, point.x, point.y );
+       popup.showAtLocation(v, Gravity.TOP|Gravity.LEFT, OFFSET_X,OFFSET_Y);
+        //popup.showAsDropDown(v);
+        //popup.showAsDropDown(v, OFFSET_X, OFFSET_Y, Gravity.TOP);
+        // Getting a reference to Close button, and close the popup when clicked.
+        /*Button close = (Button) layout.findViewById(R.id.close);
+        close.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                popup.dismiss();
+            }
+        });*/
     }
 }
 
