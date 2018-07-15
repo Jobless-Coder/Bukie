@@ -226,7 +226,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                  e.printStackTrace();
              }
 
-
          }
         else {
             Toast.makeText(this, "You haven't picked Image",
@@ -266,10 +265,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         });
-
-
-
-
     }
 
     private void createNewUser() {

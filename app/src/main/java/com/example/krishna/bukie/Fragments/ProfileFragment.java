@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,7 @@ import com.example.krishna.bukie.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +70,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String token = FirebaseInstanceId.getInstance().getToken();
 
+        // Log and toast
+        String msg = getString(R.string.msg_token_fmt, token);
+        Log.e("token", msg);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        username=sharedPreferences.getString("username",null);
+
+        if(username!=null)
+        {
+            FirebaseDatabase.getInstance().getReference().child("user").child(username).child("token").setValue(token);
+        }
+        else {
+            Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
+        }
         setHasOptionsMenu(true);
     }
     private void replaceFragment(Fragment fragment) {

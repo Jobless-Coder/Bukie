@@ -5,16 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/violet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </android.support.v7.widget.Toolbar>
 
     <android.support.v4.widget.NestedScrollView
         android:background="@color/light_grey"
@@ -125,7 +115,6 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     app:cardCornerRadius="10dp"
-                    android:elevation="6dp"
                     android:layout_gravity="center"
                     android:id="@+id/detailscard"
                     android:layout_width="match_parent"
@@ -218,10 +207,12 @@
                 android:layout_height="60dp">
 
                 <com.like.LikeButton
+                    android:paddingTop="2dp"
+                    android:layout_gravity="center"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     app:icon_type="heart"
-                    app:icon_size="30dp"
+                    app:icon_size="24dp"
                     android:id="@+id/favourites"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -231,6 +222,15 @@
         </android.support.design.widget.CoordinatorLayout>
     </android.support.v4.widget.NestedScrollView>
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:id="@+id/bottompanel"
         android:layout_width="match_parent"
@@ -241,16 +241,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
+            android:onClick="shareAd"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center"
+            android:textStyle="bold"
             android:text="Share"
             android:textAllCaps="false"
             android:textColor="@color/brick_red" />
 
         <TextView
+            android:id="@+id/chatbutton"
             android:clickable="true"
             android:onClick="goToChat"
             android:layout_width="0dp"

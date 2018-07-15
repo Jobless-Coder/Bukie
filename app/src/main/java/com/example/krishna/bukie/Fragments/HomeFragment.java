@@ -168,7 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);
-                        getActivity().finish();
+                        //getActivity().finish();
                     }
                 });
             }
@@ -289,7 +289,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Intent intent=new Intent(getContext(), PostnewadActivity.class);
         startActivity(intent);
-        getActivity().finish();
+        //getActivity().finish();
 
     }
 }

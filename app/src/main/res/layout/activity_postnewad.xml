@@ -46,179 +46,185 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@color/red"
-            android:textStyle="bold"
-            android:layout_margin="10dp"
-            android:text="Choose cover image"
+        <Button
+            android:textAllCaps="false"
+            android:text="pick image"
+            android:onClick="goToImageActivity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <android.support.v7.widget.CardView
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:layout_margin="10dp"
-            android:onClick="addcoverimage"
-            android:visibility="visible"
-            android:id="@+id/addcoverimage"
-
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.CardView
-                android:layout_margin="20dp"
-
-
-                app:cardCornerRadius="40dp"
-                app:cardElevation="10dp"
-                android:layout_centerInParent="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                android:tint="@color/red"
-                    android:cropToPadding="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/addimage"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp" />
-            </android.support.v7.widget.CardView>
-        </android.support.v7.widget.CardView>
-        <RelativeLayout
-            android:id="@+id/coverpicrl"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        <ImageView
-
-
-            android:id="@+id/coverpic"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:paddingRight="15dp"
-            android:paddingLeft="15dp"
-
-
-            android:layout_width="wrap_content"
-            android:layout_height="250dp" />
-        <android.support.v7.widget.CardView
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/deleteimg"
-            android:onClick="deleteCoverImageView"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="15dp"
-            android:layout_alignEnd="@+id/coverpic"
-            android:layout_width="30dp"
-            android:layout_height="30dp">
-            <ImageView
-
-                android:padding="1dp"
-                android:tint="@color/red"
-                android:src="@drawable/cross"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
-        </android.support.v7.widget.CardView>
-        </RelativeLayout>
-
-
-        <TextView
-            android:textColor="@color/red"
-            android:textStyle="bold"
-            android:layout_margin="10dp"
-            android:text="Choose other images (Maximum seven)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    <HorizontalScrollView
-
-
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
         <LinearLayout
             android:orientation="horizontal"
-            android:id="@+id/imgscroll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></LinearLayout>
-    </HorizontalScrollView>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/brick_red"
+                android:layout_weight="1"
+                android:text="Cover image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/brick_red"
+                android:layout_weight="2"
+                android:text="Extra images (upto 5 images)"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    app:cardCornerRadius="3dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:background="@drawable/border_bg"
+                        android:id="@+id/coverimage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:onClick="selectCoverImage"
+                    android:id="@+id/addcoverimage"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="2dp"
+                    app:cardBackgroundColor="@color/brick_red"
+                    app:cardCornerRadius="15dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_action_add" />
+                </android.support.v7.widget.CardView>
+            </android.support.constraint.ConstraintLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:animateLayoutChanges="true"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/flexlayout"
+                android:layout_marginTop="10dp"
+                app:alignItems="flex_start"
+                app:flexWrap="wrap"
+                app:justifyContent="center">
+
+                <android.support.v7.widget.CardView
+                    android:onClick="addNewSquareImage"
+                    android:id="@+id/adnewimagebutton"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp">
+                    <ImageView
+                        android:src="@drawable/border_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <android.support.v7.widget.CardView
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="@color/brick_red"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp">
+                        <ImageView
+                            android:src="@drawable/ic_action_add"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </android.support.v7.widget.CardView>
+                </android.support.v7.widget.CardView>
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </LinearLayout>
+
+
     <LinearLayout
         android:layout_margin="10dp"
-
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_marginBottom="5dp"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Title"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
             <EditText
-                android:backgroundTint="@color/deep_red"
                 android:id="@+id/title"
-                android:layout_weight="4"
-                android:hint="Input title"
-                android:layout_width="0dp"
+                android:hint="Book Name"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginBottom="5dp"
-
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Category"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
             <EditText
-                android:backgroundTint="@color/deep_red"
-                android:id="@+id/category"
-                android:hint="Input Category"
-                android:layout_weight="4"
-                android:layout_width="0dp"
+                android:id="@+id/author"
+                android:hint="Author (may be blank)"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/publisher"
+                android:hint="Publisher (may be blank)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
-            android:layout_marginBottom="5dp"
-
-            android:layout_width="match_parent"
             android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_marginRight="10dp"
-                android:textSize="16sp"
-                android:textColor="@color/deep_red"
-                android:text="Price"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:textSize="30sp"
+                android:text="\u20B9"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <EditText
-                android:backgroundTint="@color/deep_red"
-                android:id="@+id/price"
-                android:hint="Input Price"
-                android:layout_weight="4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:hint="price"
+                    android:inputType="number"
+                    android:ems="5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </android.support.design.widget.TextInputLayout>
+
         </LinearLayout>
 
-
-
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:gravity="top"
+                android:hint="enter additional details"
+                android:background="@drawable/border_bg"
+                android:lines="4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>
     </LinearLayout>

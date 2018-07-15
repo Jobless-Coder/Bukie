@@ -746,16 +746,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.sendbtn:
-                if(togglesend==true) {
+                if(togglesend) {
 
                     msg = chatbox.getText().toString().trim();
 
-                    if (TextUtils.isEmpty(msg) == false) {
+                    if (!TextUtils.isEmpty(msg)) {
                         sendMessage("message");
 
                     }
                 }
-                if(togglesend==false){
+                if(!togglesend){
                    // Toast.makeText(context, "hkl", Toast.LENGTH_SHORT).show();
                     dispatchTakePictureIntent();
 

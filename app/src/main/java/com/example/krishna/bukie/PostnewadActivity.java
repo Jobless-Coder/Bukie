@@ -1,12 +1,16 @@
 package com.example.krishna.bukie;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,16 +18,23 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.facebook.internal.Utility;
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.gms.common.images.internal.ImageUtils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,7 +45,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -47,6 +60,8 @@ import java.util.UUID;
 
 public class PostnewadActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SELECT_PHOTO = 21;
+    private static final int EXTRA_PHOTO = 32;
+    private static final int PROFILE_IMAGE = 11;
     private int PICK_IMAGE_MULTIPLE = 1;
     private  String imageEncoded;
     private  List<String> imagesEncodedList;
@@ -65,8 +80,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private LinearLayout linearLayout;
     private HashSet<Uri> hset;
     private Uri coveruri;
+    private int random = 0;
     private FloatingActionButton floatingActionButton;
     private ProgressDialog progressDialog;
+    private DisplayMetrics metrics;
+    private ArrayList<SquareImageView> extraImages;
+    private FlexboxLayout flex;
+    private Uri coverImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +110,15 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
         rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
         rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
-        rowView.findViewById(R.id.addimg).setVisibility(View.VISIBLE);
+        rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
+        findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         linearLayout.addView(rowView);
 
 
 
+        setSizeOfSquareImageViews();
+        extraImages = new ArrayList<>();
+        flex = findViewById(R.id.flexlayout);
         firebaseStorage=FirebaseStorage.getInstance();
         firebaseFirestore=FirebaseFirestore.getInstance();
        storageReference=firebaseStorage.getReference();
@@ -121,9 +145,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         });
 
 
-
     }
 
+    private void setSizeOfSquareImageViews() {
+        metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        //Toast.makeText(this, metrics.heightPixels+" "+metrics.widthPixels, Toast.LENGTH_SHORT).show();
+    }
 
 
     @Override
@@ -134,7 +162,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
             // When an Image is picked
-            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
+        /*
+        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
                     && null != data) {
                 // Get the Image from data
 
@@ -199,24 +228,43 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     }
                 }
             }
+            else
+             */
+             if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK
+                && null != data) {
+                sendToUCrop(data.getData(), UCrop.REQUEST_CROP);
+            }
+            else if(requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK && data != null)
+            {
+                try {
+                    Uri imageUri = UCrop.getOutput(data);
+                    imageUri = ImageCompressor.compressFromUri(this,imageUri);
+                    SquareImageView sq = new SquareImageView(this, imageUri, metrics);
+                    extraImages.add(sq);
+                    flex.addView(sq,1);
+                    refreshFlex();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "null....", Toast.LENGTH_SHORT).show();
+                }
+            }
+
             else if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
                     && null != data){
-                //Toast.makeText(this, "kkll", Toast.LENGTH_SHORT).show();
+                sendToUCrop(data.getData(), PROFILE_IMAGE);
+            }
 
-                    try {
-                        final Uri imageUri = data.getData();
-                        coveruri=imageUri;
+            else if(requestCode == PROFILE_IMAGE && resultCode == RESULT_OK && data != null)
+            {
+                try {
+                    coverImageUri = UCrop.getOutput(data);
+                    coverImageUri = ImageCompressor.compressFromUri(this,coverImageUri);
+                    Glide.with(this).load(coverImageUri).into((ImageView)findViewById(R.id.coverimage));
 
-                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                        this.findViewById(R.id.addcoverimage).setVisibility(View.GONE);
-                        this.findViewById(R.id.coverpicrl).setVisibility(View.VISIBLE);
-                        ImageView imageView=this.findViewById(R.id.coverpic);
-                        //imageView.setVisibility(View.VISIBLE);
-                        imageView.setImageBitmap(selectedImage);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "null....", Toast.LENGTH_SHORT).show();
+                }
 
             }
                 else {
@@ -228,46 +276,90 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void sendToUCrop(Uri uri, int tag)
+    {
+        try
+        {
+            String destinationFileName = "temp_"+(new Date().getTime())+".png";
+            UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)))
+                    .withAspectRatio(1,1);
+            uCrop.start(this, tag);
 
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(this, "Error cropping the image!", Toast.LENGTH_SHORT).show();
+            Log.e("UCrop error", e.getLocalizedMessage());
+        }
+    }
 
-
-
+    public void refreshFlex(){
+        if(flex.getChildCount()>6)
+        {
+            findViewById(R.id.adnewimagebutton).setVisibility(View.GONE);
+        }
+        else
+        {
+            findViewById(R.id.adnewimagebutton).setVisibility(View.VISIBLE);
+        }
+    }
     public void addImageView(View v){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
-
     }
 
 
     public void deleteImageView(View v){
-
-
-
         ViewGroup parent = ((ViewGroup) v.getParent().getParent());
         ImageView v22=parent.findViewById(R.id.bookpic);
         String path=v22.getTag().toString();
         Uri myUri = Uri.parse(path);
         hset.remove(myUri);
-        //Toast.makeText(this, ""+myUri, Toast.LENGTH_SHORT).show();
 
         linearLayout.removeView(parent);
 
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+        trimCache(this);
+        finish();
+    }
+
+    public static void trimCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        Log.e("file found",dir.getName());
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
-           /* case R.id.chooseimg:
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
-
-                break;*/
 
             case R.id.fabpostad:
 
@@ -291,11 +383,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     uploadFile(hset);
 
                 }
-
                 break;
 
-                default:
-                    break;
+                default: break;
         }
 
     }
@@ -385,8 +475,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             }
 
         }
-
-
     }
 
     public void addcoverimage(View view) {
@@ -394,8 +482,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PHOTO);
-
-
     }
 
     public void deleteCoverImageView(View view) {
@@ -404,5 +490,64 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         imageView.setImageResource(0);
         this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         this.findViewById(R.id.addcoverimage).setVisibility(View.VISIBLE);
+    }
+
+    public void addNewSquareImage(View view) {
+        //TODO: Add imagepicker cropper and all necessary shit here
+        selectImage(EXTRA_PHOTO);
+    }
+
+
+    public void goToImageActivity(View view) {
+        startActivity(new Intent(this, ImageCompressorTestActivity.class));
+    }
+
+
+    private void selectImage(final int tag) {
+        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Select an image");
+
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+
+            @Override
+
+            public void onClick(DialogInterface dialog, int item) {
+                //TODO: add permissions
+                //boolean result= Utility.checkPermission(this);
+
+                if (items[item].equals("Take Photo")) {
+                    //userChoosenTask ="Take Photo";
+                    //if(result)
+                        cameraIntent();
+                } else if (items[item].equals("Choose from Library")) {
+                    //userChoosenTask ="Choose from Library";
+                    //if(result)
+                        galleryIntent(tag);
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    private void galleryIntent(int tag) {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), tag);
+    }
+
+    private void cameraIntent() {
+
+    }
+
+    public void selectCoverImage(View view) {
+        selectImage(SELECT_PHOTO);
     }
 }
