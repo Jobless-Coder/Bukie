@@ -205,6 +205,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <EditText
+                    android:id="@+id/price"
                     android:hint="price"
                     android:inputType="number"
                     android:ems="5"

@@ -99,7 +99,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         progressDialog=new ProgressDialog(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-       linearLayout=findViewById(R.id.imgscroll);
+       //linearLayout=findViewById(R.id.imgscroll);
 
 
 
@@ -108,10 +108,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LayoutInflater inflater = getLayoutInflater();;
         View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
-        rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
-        rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
-        rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
-        findViewById(R.id.coverpicrl).setVisibility(View.GONE);
+        //rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
+        //rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
+        //rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
+        //findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         linearLayout.addView(rowView);
 
 
@@ -128,7 +128,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         //chooseimg=findViewById(R.id.chooseimg);
         floatingActionButton=findViewById(R.id.fabpostad);
         title=findViewById(R.id.title);
-        category=findViewById(R.id.category);
+        //category=findViewById(R.id.category);
         price=findViewById(R.id.price);
         //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
@@ -143,8 +143,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
-
-
     }
 
     private void setSizeOfSquareImageViews() {
@@ -159,8 +157,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
         //mArrayUri = new ArrayList<Uri>();
         hset = new HashSet<Uri>();
-
-
             // When an Image is picked
         /*
         if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
@@ -424,15 +420,12 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
                            Uri uri2 = task.getResult();
-
                         } else {
-
                         }
                     }
                 }).*/.addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-
                             downloadurl.add(uri + "");
                             //Toast.makeText(PostnewadActivity.this, "images added ", Toast.LENGTH_SHORT).show();
                         /*}
@@ -486,9 +479,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     public void deleteCoverImageView(View view) {
         coveruri=null;
-        ImageView imageView=this.findViewById(R.id.coverpic);
-        imageView.setImageResource(0);
-        this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);
+        //ImageView imageView=this.findViewById(R.id.coverpic);
+        //imageView.setImageResource(0);
+        //this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);
         this.findViewById(R.id.addcoverimage).setVisibility(View.VISIBLE);
     }
 
