@@ -158,8 +158,51 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         //recyclerView.setR
         messageItemList = new ArrayList<>();
+        adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
+            @Override
+            public void onSaveContact(View view, int position) {
+                //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+                intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+                intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
+                intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
+                getApplicationContext().startActivity(intent);
+
+            }
+
+            @Override
+            public void onLocation(View view, int position) {
+                Geopoint geoPoint = messageItemList.get(position).getGeopoint();
+                    /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
+                      //Log.e("geopoint",url);
+                      Uri gmmIntentUri = Uri.parse(url);
+                      // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+                      Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                      mapIntent.setPackage("com.google.android.apps.maps");
+                      mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      getApplicationContext().startActivity(mapIntent);
+                      /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
+                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
+                      startActivity(intent);*/
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onCameraImage(View view, int position) {
+
+            }
+        });
+        adapter.setHasStableIds(true);
+        recyclerView.setAdapter(adapter);
+        recyclerView.getItemAnimator().setChangeDuration(0);
+        recyclerView.scrollToPosition(messageItemList.size() - 1);
         //camerabtn=findViewById(R.id.camerabtn);
         sendbtn = (View) findViewById(R.id.sendbtn);
         camera = findViewById(R.id.camera);
@@ -194,7 +237,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener() {
             public void receiveIncomingMessage(MessageItem ch) {
                 messageItemList.add(ch);
-                adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
+                /*adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
                     @Override
                     public void onSaveContact(View view, int position) {
                         //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
@@ -221,7 +264,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                       getApplicationContext().startActivity(mapIntent);
                       /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
-                      startActivity(intent);*/
+                      startActivity(intent);
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
                         startActivity(intent);
 
@@ -231,8 +274,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     public void onCameraImage(View view, int position) {
 
                     }
-                });
-                recyclerView.setAdapter(adapter);
+                });*/
+
+               // adapter.setHasStableIds(true);
+
+                adapter.notifyDataSetChanged();
+                //recyclerView.setAdapter(adapter);
+               // recyclerView.getItemAnimator().setChangeDuration(0);
                 recyclerView.scrollToPosition(messageItemList.size() - 1);
             }
 
@@ -488,6 +536,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        pathsurilist=new ArrayList<>();
         // check whether the result is ok
         if (resultCode == RESULT_OK) {
             // Check for the request code, we might be usign multiple startActivityForReslut
@@ -596,8 +645,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
                     imagepaths.add(uri + "");
                     //mImageView.setImageBitmap(mImageBitmap);
-                    if(photoPaths.size()==imagepaths.size())
+                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()!=1)
                     sendMessage("gallery");
+                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1)
+                        sendMessage("camera");
 
 
                 }
@@ -609,6 +660,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
        String path = "chatimages/" + myChats.getChatid()+"/"+ UUID.randomUUID() + ".png";
        //Log.e("nigga",path);
         final StorageReference riversRef = storageReference.child(path);
+        imagepaths=new ArrayList<>();
 
         UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -868,7 +920,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //popupstate=true;
         Resources r=getResources();
         int popupWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
-        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, r.getDisplayMetrics());
+        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55, r.getDisplayMetrics());
         Context context=getApplicationContext();
         LinearLayout viewGroup = (LinearLayout)findViewById(R.id.popup);
         LayoutInflater layoutInflater = (LayoutInflater) context
@@ -881,7 +933,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         popup.setFocusable(true);
 
 
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65, r.getDisplayMetrics());
         int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
         int OFFSET_X = width;
         int OFFSET_Y = 1500;

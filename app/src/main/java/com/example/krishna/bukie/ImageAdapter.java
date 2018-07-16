@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -53,7 +54,9 @@ public class ImageAdapter extends BaseAdapter {
             grid = inflater.inflate(R.layout.view_single_grid, null);
 
             ImageView imageView = (ImageView)grid.findViewById(R.id.image);
+
             //imageView.setImageResource(Imageid[position]);
+           // Glide.clear(imageView);
             Glide.with(mContext).load(images.get(position)).into(imageView);
             // imageView.setImageResource(images[position]);
         }
