@@ -466,7 +466,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.share_location:
+            /*case R.id.share_location:
                 shareLocation();
 
                 break;
@@ -480,8 +480,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);*/
-                break;
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
+                break;*/
 
             default:
                 break;
@@ -518,14 +518,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     intent.putExtra("mychats", myChats);
                     intent.putExtra("identity", identity);
                     startActivity(intent);
-                    finish();
+                   // finish();
                 }else if(isNetworkLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
                     intent.putExtra("mychats", myChats);
                     intent.putExtra("identity", identity);
                     startActivity(intent);
-                    finish();
+                    //finish();
                 }else{
                     //Device location is not set
                     PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
@@ -920,7 +920,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //popupstate=true;
         Resources r=getResources();
         int popupWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
-        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55, r.getDisplayMetrics());
+        int popupHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56, r.getDisplayMetrics());
         Context context=getApplicationContext();
         LinearLayout viewGroup = (LinearLayout)findViewById(R.id.popup);
         LayoutInflater layoutInflater = (LayoutInflater) context
@@ -938,6 +938,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         int OFFSET_X = width;
         int OFFSET_Y = 1500;
         OFFSET_Y=point.y-height;
+
+
         //Toast.makeText(context, ""+point.y+"kl"+height, Toast.LENGTH_SHORT).show();
         popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         popup.showAtLocation(v, Gravity.TOP|Gravity.LEFT, OFFSET_X,OFFSET_Y);
@@ -946,10 +948,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         popupcontact=layout.findViewById(R.id.popupcontact);
         popupgallery=layout.findViewById(R.id.popupgallery);
         popuplocation=layout.findViewById(R.id.popuplocation);
+        if(togglesend==false)
+           layout.findViewById(R.id.popupcameraview).setVisibility(View.GONE);
         popupcamera.setOnClickListener(this);
         popupcontact.setOnClickListener(this);
         popupgallery.setOnClickListener(this);
         popuplocation.setOnClickListener(this);
+
         //popup.showAsDropDown(v);
         //popup.showAsDropDown(v, OFFSET_X, OFFSET_Y, Gravity.TOP);
         // Getting a reference to Close button, and close the popup when clicked.

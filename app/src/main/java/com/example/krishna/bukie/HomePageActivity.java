@@ -3,8 +3,8 @@ package com.example.krishna.bukie;
 import android.graphics.Color;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +30,7 @@ public class HomePageActivity extends AppCompatActivity {
     ViewGroup toolbargroup;
     private DrawerLayout mDrawerLayout;
     ActionBar actionbar;
+    private int mposition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,7 @@ public class HomePageActivity extends AppCompatActivity {
                     }
                 });*/
 
-
+        mposition=0;
         loadFragment(new HomeFragment());
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
 
@@ -105,6 +106,7 @@ public class HomePageActivity extends AppCompatActivity {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
                 Fragment fragment = null;
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
                 switch (position){
 
@@ -113,15 +115,25 @@ public class HomePageActivity extends AppCompatActivity {
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
                         toolbargroup.addView(toolbarview);*/
                         fragment = new HomeFragment();
+                        mposition=0;
+                      //  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        /*transaction.replace(R.id.frame, fragment, "new fragment");
+                        transaction.addToBackStack(null);
+                        transaction.commit();*/
 
 
 
                         break;
                     case 1:
                        toolbargroup.removeAllViews();
-                        toolbarview=getLayoutInflater().inflate(R.layout.toolbar_chats,toolbargroup,false);
+                        toolbarview=getLayoutInflater().inflate(R.layout.toolbar_mychats,toolbargroup,false);
                         toolbargroup.addView(toolbarview);
                         fragment = new ChatFragment();
+                        mposition=1;
+                        /*transaction.replace(R.id.frame, fragment, "new fragment");
+                        transaction.addToBackStack(null);
+                        transaction.commit();*/
+
 
                         break;
                     case 2:
@@ -129,6 +141,11 @@ public class HomePageActivity extends AppCompatActivity {
                        toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myprofile,toolbargroup,false);
                         toolbargroup.addView(toolbarview);
                         fragment = new ProfileFragment();
+                        mposition=2;
+                        /*transaction.replace(R.id.frame, fragment, "new fragment");
+                        transaction.addToBackStack(null);
+                        transaction.commit()*/;
+
 
                         break;
                         default:
@@ -146,5 +163,17 @@ public class HomePageActivity extends AppCompatActivity {
 
     private int fetchColor(@ColorRes int color) {
         return ContextCompat.getColor(this, color);
+    }
+    @Override
+    public void onBackPressed() {
+        if (mposition>0) {
+            Fragment fragment = new HomeFragment();
+            bottomNavigation.setCurrentItem(0);
+            loadFragment(fragment);
+
+
+        } else {
+            super.onBackPressed();
+        }
     }
 }

@@ -295,4 +295,32 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             finish();
         }
     }
+    @Override
+    public void onBackPressed()
+    {
+       /* Intent intent = new Intent(MapActivity.this, ChatActivity.class);
+        intent.putExtra("mychats", myChats);
+        intent.putExtra("identity", identity);
+        intent.putExtra("isMap", "0");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);*/
+       // finish();
+        super.onBackPressed();
+
+    }
+    @Override
+    public boolean onSupportNavigateUp(){
+        /*Intent intent = new Intent(MapActivity.this, ChatActivity.class);
+        intent.putExtra("mychats", myChats);
+        intent.putExtra("identity", identity);
+        intent.putExtra("isMap", "0");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);*/
+        //finish();
+        onBackPressed();
+
+        //finish();
+        return true;
+    }
+
 }

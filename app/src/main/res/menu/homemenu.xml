@@ -8,12 +8,12 @@
         android:orderInCategory="1"
         app:actionViewClass="true"
         app:showAsAction="always" />
-    <!--item
+    <item
         android:id="@+id/filter"
         android:icon="@drawable/filter"
 
         android:title="Filter"
         android:orderInCategory="2"
-        app:showAsAction="always" /-->
+        app:showAsAction="always" />
 
 </menu>

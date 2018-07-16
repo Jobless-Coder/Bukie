@@ -62,6 +62,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private View v,myads,mywishlist;
     private boolean myadsfrag=true;
     private String username,ppic,fullname;
+    private Myadswishadapter adapter;
 
     public ProfileFragment() {
     }
@@ -105,7 +106,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         myads.setOnClickListener(this);
         mywishlist.setOnClickListener(this);
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
+
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -140,48 +141,37 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
 
 
-        /*tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    replaceFragment(new MyAdsFragment());
-                } else{
-                    replaceFragment(new MyWishlistFragment());
-                }
-
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
 
 
         return v;
     }
 
     private void setupRecyclerViewContent(String s) {
+        recyclerView.setHasFixedSize(true);
        myadslist=new ArrayList<BookAds>();
-       myadspathlist=new ArrayList<String>();
-
+      // myadspathlist=new ArrayList<String>();
+        adapter=new Myadswishadapter(myadslist,getContext());
+        recyclerView.setAdapter(adapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
         mDatabase.child("user").child(username).child(s).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {
                     //String path=dataSnapshot1.getValue().toString();
+                    String adid=dataSnapshot1.getValue().toString();
+                    getAds(adid);
+                   // getAds(adid);
+                   // getAds(adid);
+                    //getAds(adid);
+
+                   /*myadspathlist.add(dataSnapshot1.getValue().toString());
+
                    myadspathlist.add(dataSnapshot1.getValue().toString());
                    myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
+                   myadspathlist.add(dataSnapshot1.getValue().toString());*/
                     // Log.i("hello2",dataSnapshot1.getValue().toString());
-                    getAds(myadspathlist);
+                    //getAds(myadspathlist);
                     /*getAds(path);
                     getAds(path);*/
                 }
@@ -197,8 +187,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getAds(final List<String> myadspathlist) {
-        for (String path:myadspathlist){
+    public void getAds(/*final List<String> myadspathlist*/String path) {
+        /*adapter=new Myadswishadapter(myadslist,getContext());
+        recyclerView.setAdapter(adapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);*/
+       // for (String path:myadspathlist){
             DocumentReference book=firebaseFirestore.collection("bookads").document(path);
             book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -208,18 +202,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         DocumentSnapshot snapshot = task.getResult();
                         BookAds bookAds=snapshot.toObject(BookAds.class);
                         myadslist.add(bookAds);
+                        adapter.notifyDataSetChanged();
                         //Toast.makeText(getContext(), ""+myadslist.size(), Toast.LENGTH_SHORT).show();
-                        if (myadspathlist.size()==myadslist.size())
+                        /*if (myadspathlist.size()==myadslist.size())
                         {
                             Myadswishadapter adapter=new Myadswishadapter(myadslist,getContext());
                             recyclerView.setAdapter(adapter);
                             GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
                             recyclerView.setLayoutManager(manager);
-                        }
+                        }*/
                     }
                 }
             });
-        }
+       // }
 
 
     }
@@ -290,6 +285,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     myadsfrag=true;
                     myads.setSelected(true);
                     mywishlist.setSelected(false);
+                    myadslist.clear();
+                    adapter.notifyDataSetChanged();
                     setupRecyclerViewContent("myads");
 
                 }
@@ -300,6 +297,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     myads.setSelected(false);
                     mywishlist.setSelected(true);
                     myadsfrag=false;
+                    myadslist.clear();
+                    adapter.notifyDataSetChanged();
                     setupRecyclerViewContent("mywishlist");
                 }
 
