@@ -292,10 +292,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             galleryVieHolder.time1.setText(messageItem.getTime());
             if(messageItem.getImageurl().size()==2) {
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*messageItem.getImageurl().size(), r.getDisplayMetrics());
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*2, r.getDisplayMetrics());
 
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
+                galleryVieHolder.gridView1.setNumColumns(2);
 
                 //galleryVieHolder.gridView1.setColumnWidth();
             }
@@ -438,9 +438,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             galleryVieHolder.time2.setText(messageItem.getTime());
             if(messageItem.getImageurl().size()==2) {
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*messageItem.getImageurl().size(), r.getDisplayMetrics());
+                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110*2, r.getDisplayMetrics());
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                galleryVieHolder.gridView2.setNumColumns(messageItem.getImageurl().size());
+                galleryVieHolder.gridView2.setNumColumns(2);
 
                 //galleryVieHolder.gridView1.setColumnWidth();
             }
