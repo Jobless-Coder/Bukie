@@ -74,7 +74,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private FirebaseFirestore firebaseFirestore;
     private HomeBookAdsAdapter homeBookAdsAdapter;
     private ListenerRegistration listenerRegistration;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private CollectionReference db;
 
 
 
@@ -103,6 +104,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         toolbargroup.removeAllViews();
         toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
         toolbargroup.addView(toolbarview);
+
         //mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
 
@@ -127,8 +129,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     }
                 },3000);
-
-                bookAdsList=new ArrayList<>();
+                bookAdsList.clear();
+               // bookAdsList=new ArrayList<>();
                 getadvertisements();
 
 
@@ -157,7 +159,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void getadvertisements() {
 
-        CollectionReference db = firebaseFirestore.collection("bookads");
+        db = firebaseFirestore.collection("bookads");
 
         db.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
