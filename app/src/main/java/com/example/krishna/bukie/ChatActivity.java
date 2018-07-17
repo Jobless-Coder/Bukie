@@ -60,10 +60,10 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.vanniktech.emoji.EmojiEditText;
+/*import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiPopup;
-import com.vanniktech.emoji.ios.IosEmojiProvider;
+import com.vanniktech.emoji.ios.IosEmojiProvider;*/
 
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private TextView username2;
     private MyChats myChats;
     private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
-    EmojiPopup emojiPopup;
+   // EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
     private final Handler handler = new Handler();
     private boolean isNetworkLocation, isGPSLocation;
@@ -158,6 +158,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+       // recyclerView.getLayoutManager().set
 
         //recyclerView.setR
         messageItemList = new ArrayList<>();
@@ -178,6 +179,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onLocation(View view, int position) {
                 Geopoint geoPoint = messageItemList.get(position).getGeopoint();
+                //TODO:Dont fuckin delete this
                     /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
                       //Log.e("geopoint",url);
                       Uri gmmIntentUri = Uri.parse(url);
@@ -201,8 +203,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
-        recyclerView.getItemAnimator().setChangeDuration(0);
-        recyclerView.scrollToPosition(messageItemList.size() - 1);
+        //recyclerView.getItemAnimator().setChangeDuration(0);
+       // recyclerView.scrollToPosition(messageItemList.size() - 1);
         //camerabtn=findViewById(R.id.camerabtn);
         sendbtn = (View) findViewById(R.id.sendbtn);
         camera = findViewById(R.id.camera);
@@ -224,11 +226,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
             @Override
             public void onKeyboardOpen() {
+                recyclerView.scrollToPosition(messageItemList.size() - 1);
                 Log.e(TAG, "Keyboard opened!");
             }
 
             @Override
             public void onKeyboardClose() {
+                //recyclerView.scrollToPosition(messageItemList.size() - 1);
                 Log.e(TAG, "Keyboard closed");
             }
         });
@@ -237,64 +241,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener() {
             public void receiveIncomingMessage(MessageItem ch) {
                 messageItemList.add(ch);
-                /*adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
-                    @Override
-                    public void onSaveContact(View view, int position) {
-                        //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-                        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-                        intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
-                        intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
-                        getApplicationContext().startActivity(intent);
 
-                    }
-
-                    @Override
-                    public void onLocation(View view, int position) {
-                        Geopoint geoPoint = messageItemList.get(position).getGeopoint();
-                    /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
-                      //Log.e("geopoint",url);
-                      Uri gmmIntentUri = Uri.parse(url);
-                      // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
-                      Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                      mapIntent.setPackage("com.google.android.apps.maps");
-                      mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                      getApplicationContext().startActivity(mapIntent);
-                      /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
-                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
-                      startActivity(intent);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
-                        startActivity(intent);
-
-                    }
-
-                    @Override
-                    public void onCameraImage(View view, int position) {
-
-                    }
-                });*/
-
-               // adapter.setHasStableIds(true);
 
                 adapter.notifyDataSetChanged();
-                //recyclerView.setAdapter(adapter);
-               // recyclerView.getItemAnimator().setChangeDuration(0);
+
+
                 recyclerView.scrollToPosition(messageItemList.size() - 1);
             }
 
         });
         //fh.getPreviousTexts();
         fh.startListening();
-        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        //TODO :this too
+        /*recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 //if(messageItemList!=null)
-                recyclerView.scrollToPosition(messageItemList.size() - 1);
+               // recyclerView.scrollToPosition(messageItemList.size() - 1);
                 //Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
         if (isMap.compareTo("1") == 0) {
             geopoint = bundle.getParcelable("geopoint");
 
@@ -359,42 +325,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatbox.setImeOptions(EditorInfo.IME_ACTION_SEND);
         chatbox.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
-       /* chatbox.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
 
-                chatbox.getWindowVisibleDisplayFrame(r);
-
-                int heightDiff = chatbox.getRootView().getHeight() - (r.bottom - r.top);
-                if (heightDiff > 100) {
-                    if (emojikeyboard == true && keyboard.getVisibility() == View.VISIBLE) {
-                        //Toast.makeText(context, "ghk", Toast.LENGTH_SHORT).show();
-                        //emojiPopup.dismiss();
-                        int cx2 = keyboard.getWidth() / 2;
-                        int cy2 = keyboard.getHeight() / 2;
-                        float initialRadius2 = (float) Math.hypot(cx2, cy2);
-                        Animator anim2 = ViewAnimationUtils.createCircularReveal(keyboard, cx2, cy2, initialRadius2, 0);
-                        anim2.addListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                keyboard.setVisibility(View.INVISIBLE);
-                                emoji.setVisibility(View.VISIBLE);
-                            }
-                        });
-
-
-                        anim2.start();
-                        emojikeyboard = true;
-                    }
-
-                    //enter your code here
-                } else {
-                    //enter code for hid
-                }
-            }
-        });*/
 
         chatbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -451,12 +382,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.chatactivitymenu, menu);
 
 
-       /* MenuItem searchItem = menu.findItem(R.id.share_location);
-        searchItem = menu.findItem(R.id.delete_chat);
-        searchItem = menu.findItem(R.id.block_user);
-
-        SearchView searchView =
-                (SearchView) searchItem.getActionView();*/
 
 
 
@@ -466,22 +391,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.share_location:
-                shareLocation();
-
-                break;
-            case R.id.contact:
-                shareContact();
-
-                break;
-            case R.id.picture:
-                shareGallery();
-                /*Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
-                break;*/
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
             default:
                 break;
@@ -545,9 +457,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     contactPicked(data);
                     break;
                 case REQUEST_IMAGE_CAPTURE:
-                   /* Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    mImageView.setImageBitmap(imageBitmap);*/
+
                     uploadImage(mCurrentPhotoPath);
 
                     break;
@@ -559,18 +469,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                         Uri uri=data.getData();
                         pathsurilist.add(uri);
-                        /*hset.add(uri);
-                        LayoutInflater inflater = getLayoutInflater();;
-                        View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
 
-                        ImageView v2=rowView.findViewById(R.id.bookpic);
-                        v2.setImageURI(uri);
-                        v2.setTag(uri.toString());
-                        linearLayout.addView(rowView);*/
-                        //mArrayUri.add(mImageUri);
-                        //Toast.makeText(this, ""+mArrayUri.size(), Toast.LENGTH_SHORT).show();
-
-                        // Get the cursor
                         Cursor cursor = getContentResolver().query(uri,
                                 filePathColumn, null, null, null);
                         // Move to first row
@@ -590,16 +489,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 ClipData.Item item = mClipData.getItemAt(i);
                                 Uri uri = item.getUri();
                                 pathsurilist.add(uri);
-                                //hset.add(uri);
-                                //mArrayUri.add(uri);
-                               /* LayoutInflater inflater = getLayoutInflater();;
-                                View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
 
-                                ImageView v2=rowView.findViewById(R.id.bookpic);
-                                v2.setImageURI(uri);
-                                v2.setTag(uri.toString());*/
-                                //v2.setImageResource(R.drawable.bookpic);
-                                // Get the cursor
                                 Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
                                 // Move to first row
                                 cursor.moveToFirst();
@@ -840,7 +730,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.keyboard:
-                if(emojiPopup.isShowing()){
+                /*if(emojiPopup.isShowing()){
                     emojiPopup.dismiss();
                     int cx2 = keyboard.getWidth() / 2;
                     int cy2 = keyboard.getHeight() / 2;
@@ -859,7 +749,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     anim2.start();
                     emojikeyboard=true;
 
-                }
+                }*/
 
                 break;
             case R.id.popupcamera:
@@ -901,20 +791,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-   /* public void onWindowFocusChanged() {
-
-        int[] location = new int[2];
-        View attach = (View) findViewById(R.id.attach);
-
-        // Get the x, y location and store it in the location[] array
-        // location[0] = x, location[1] = y.
-        attach.getLocationOnScreen(location);
-
-        //Initialize the Point with x, and y positions
-        point = new Point();
-        point.x = location[0];
-        point.y = location[1];
-    }*/
 
     private void showPopup(Point point, View v) {
         //popupstate=true;
@@ -955,17 +831,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         popupgallery.setOnClickListener(this);
         popuplocation.setOnClickListener(this);
 
-        //popup.showAsDropDown(v);
-        //popup.showAsDropDown(v, OFFSET_X, OFFSET_Y, Gravity.TOP);
-        // Getting a reference to Close button, and close the popup when clicked.
-        /*Button close = (Button) layout.findViewById(R.id.close);
-        close.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });*/
     }
     @Override
     public void onBackPressed()
@@ -974,6 +840,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             popup.dismiss();
         else
         super.onBackPressed();
+    }
+    @Override
+    public boolean onSupportNavigateUp(){
+
+       finish();
+        return true;
     }
 }
 

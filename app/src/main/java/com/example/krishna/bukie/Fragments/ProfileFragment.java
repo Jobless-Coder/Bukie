@@ -88,19 +88,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
         setHasOptionsMenu(true);
     }
-    private void replaceFragment(Fragment fragment) {
+    /*private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frame, fragment);
 
         transaction.commit();
-    }
+    }*/
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View v=inflater.inflate(R.layout.fragment_profile, container,false);
+        View tabsview=getActivity().findViewById(R.id.header);
+        tabsview.setVisibility(View.GONE);
         myads=v.findViewById(R.id.myads);
         mywishlist=v.findViewById(R.id.mywishlist);
         myads.setOnClickListener(this);
@@ -112,17 +114,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-       // viewPager = (ViewPager) v.findViewById(R.id.viewpager);
-       /* tabLayout = (TabLayout) v.findViewById(R.id.tabs);
-        //mFragmentPagerAdapter adapter = new mFragmentPagerAdapter(getChildFragmentManager());
-        //viewPager.setAdapter(adapter);
-        //tabLayout.setupWithViewPager(viewPager);
-        //new setAdapterTask().execute();
-        //viewPager.setAdapter(adapter);
-        tabLayout.addTab(tabLayout.newTab().setText("My ads"));
-        tabLayout.addTab(tabLayout.newTab().setText("My wishlist"));
-        //tabLayout.addTab(tabLayout.newTab().setText("Games"));
-        replaceFragment(new MyAdsFragment());*/
 
         myads.setSelected(true);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
@@ -158,22 +149,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {
-                    //String path=dataSnapshot1.getValue().toString();
                     String adid=dataSnapshot1.getValue().toString();
                     getAds(adid);
-                   // getAds(adid);
-                   // getAds(adid);
-                    //getAds(adid);
 
-                   /*myadspathlist.add(dataSnapshot1.getValue().toString());
-
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());*/
-                    // Log.i("hello2",dataSnapshot1.getValue().toString());
-                    //getAds(myadspathlist);
-                    /*getAds(path);
-                    getAds(path);*/
                 }
 
 
@@ -258,8 +236,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.settings:
-                Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
-                        .show();
+                //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
+                   //     .show();
                 break;
 
             default:

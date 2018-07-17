@@ -13,6 +13,7 @@ public class MyChats implements Parcelable{
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
+    //private int i;
 
     public String getSellerfullname() {
         return sellerfullname;
@@ -124,5 +125,14 @@ public class MyChats implements Parcelable{
         dest.writeString(sellerpic);
         dest.writeString(sellerfullname);
         dest.writeString(buyerfullname);
+    }
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof MyChats)) return false;
+        MyChats o = (MyChats) obj;
+        return this.getChatid() .equals(o.getChatid());
+       // o.buyerfullname=this.buyerfullname;
+
     }
 }

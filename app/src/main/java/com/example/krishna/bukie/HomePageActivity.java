@@ -25,7 +25,7 @@ public class HomePageActivity extends AppCompatActivity {
     AHBottomNavigation bottomNavigation;
     AHBottomNavigationItem item1,item2,item3;
     FrameLayout frameLayout;
-    View toolbarview;
+    View toolbarview,tabsview;
     Toolbar toolbar;
     ViewGroup toolbargroup;
     private DrawerLayout mDrawerLayout;
@@ -36,7 +36,7 @@ public class HomePageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-        
+        tabsview=findViewById(R.id.header);
 
 
 
@@ -111,6 +111,7 @@ public class HomePageActivity extends AppCompatActivity {
                 switch (position){
 
                     case 0:
+                      // tabsview.setVisibility(View.GONE);
                         /*toolbargroup.removeAllViews();
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
                         toolbargroup.addView(toolbarview);*/
@@ -125,9 +126,9 @@ public class HomePageActivity extends AppCompatActivity {
 
                         break;
                     case 1:
-                       toolbargroup.removeAllViews();
+                       /*toolbargroup.removeAllViews();
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_mychats,toolbargroup,false);
-                        toolbargroup.addView(toolbarview);
+                        toolbargroup.addView(toolbarview);*/
                         fragment = new ChatFragment();
                         mposition=1;
                         /*transaction.replace(R.id.frame, fragment, "new fragment");
@@ -137,6 +138,8 @@ public class HomePageActivity extends AppCompatActivity {
 
                         break;
                     case 2:
+                       // tabsview=findViewById(R.id.header);
+                        //tabsview.setVisibility(View.GONE);
                         toolbargroup.removeAllViews();
                        toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myprofile,toolbargroup,false);
                         toolbargroup.addView(toolbarview);
@@ -176,4 +179,6 @@ public class HomePageActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+
 }

@@ -41,6 +41,7 @@ private DatabaseReference ddref;
 private ChildEventListener childEventListener;
 private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
 private CollectionReference collectionReference;
+    ListenerRegistration listenerRegistration;
 
 
     public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
@@ -115,7 +116,7 @@ private CollectionReference collectionReference;
                     public void onSuccess(DocumentReference documentReference) {
                         //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
                        // restUi();
-                        Log.i("hello","nigga");
+                        //Log.i("hello","nigga");
 
                     }
                 })
@@ -164,7 +165,7 @@ private CollectionReference collectionReference;
         isListening = true;*/
         if (isListening) return;
       Query query=firebaseFirestore.collection("allchats").document("chats").collection(refID).orderBy("timestamp");
-      query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+      listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -192,13 +193,13 @@ private CollectionReference collectionReference;
             }
         });
 
-        isListening = true;
+       // isListening = true;
     }
 
     public void stopListening()
     {
         if(!isListening) return;
-        Query query = firebaseFirestore.collection("allchats").document("chats").collection(refID);
+       /* Query query = firebaseFirestore.collection("allchats").document("chats").collection(refID);
         ListenerRegistration registration = query.addSnapshotListener(
                 new EventListener<QuerySnapshot>() {
                     @Override
@@ -206,12 +207,12 @@ private CollectionReference collectionReference;
 
                     }
                     // ...
-                });
+                });*/
 
 // ...
 
 // Stop listening to changes
-        registration.remove();
+        listenerRegistration.remove();
         //collectionReference.
                 /*ListenerRegistration registration = query.addSnapshotListener(
                 new EventListener<QuerySnapshot>() {
@@ -223,6 +224,6 @@ private CollectionReference collectionReference;
 // Stop listening to changes
        // registration.remove();
        // ddref.removeEventListener(childEventListener);
-        isListening = false;
+       isListening = false;
     }
 }

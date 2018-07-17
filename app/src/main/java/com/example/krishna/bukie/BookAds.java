@@ -179,4 +179,13 @@ public BookAds(){
         this.bookdesc=in.readString();*/
 
     }
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof BookAds)) return false;
+        BookAds o = (BookAds) obj;
+        return this.getAdid() .equals(o.getAdid());
+        // o.buyerfullname=this.buyerfullname;
+
+    }
 }
