@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private boolean myadsfrag=true;
     private String uid,ppic,fullname;
     private Myadswishadapter adapter;
+    private ListenerRegistration listenerRegistration;
 
     public ProfileFragment() {
     }
@@ -128,7 +130,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Glide.with(getActivity())
                 .load(ppic)
                 .into(imageView);
+        myadsfrag=true;
         setupRecyclerViewContent("myads");
+
 
 
 
@@ -137,7 +141,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
-    private void setupRecyclerViewContent(String s) {
+    private void setupRecyclerViewContent(final String s) {
         recyclerView.setHasFixedSize(true);
        myadslist=new ArrayList<BookAds>();
       // myadspathlist=new ArrayList<String>();
@@ -150,7 +154,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {
                     String adid=dataSnapshot1.getValue().toString();
-                    getAds(adid);
+                    getAds(adid,s);
 
                 }
 
@@ -165,7 +169,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getAds(/*final List<String> myadspathlist*/String path) {
+    public void getAds(/*final List<String> myadspathlist*/final String path, final String s) {
         /*adapter=new Myadswishadapter(myadslist,getContext());
         recyclerView.setAdapter(adapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
@@ -177,22 +181,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 public void onComplete(@NonNull Task< DocumentSnapshot > task) {
 
                     if (task.isSuccessful()) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        BookAds bookAds=snapshot.toObject(BookAds.class);
-                        myadslist.add(bookAds);
-                        adapter.notifyDataSetChanged();
-                        //Toast.makeText(getContext(), ""+myadslist.size(), Toast.LENGTH_SHORT).show();
-                        /*if (myadspathlist.size()==myadslist.size())
-                        {
-                            Myadswishadapter adapter=new Myadswishadapter(myadslist,getContext());
-                            recyclerView.setAdapter(adapter);
-                            GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
-                            recyclerView.setLayoutManager(manager);
-                        }*/
+                       // Toast.makeText(getContext(), ""+path.equals("myads")+s, Toast.LENGTH_SHORT).show();
+                        if(s.equals("myads")&&myadsfrag==true||s.equals("mywishlist")&&myadsfrag==false) {
+                            DocumentSnapshot snapshot = task.getResult();
+                            BookAds bookAds = snapshot.toObject(BookAds.class);
+                            myadslist.add(bookAds);
+                            adapter.notifyDataSetChanged();
+                        }
+
                     }
                 }
             });
-       // }
+     /* listenerRegistration=book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+          @Override
+          public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+          }
+      });*/
+
 
 
     }

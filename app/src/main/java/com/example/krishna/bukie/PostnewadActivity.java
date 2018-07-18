@@ -88,6 +88,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         mprofilepic=sharedPreferences.getString("profilepic",null);
         mfullname=sharedPreferences.getString("fullname",null);
         progressDialog=new ProgressDialog(this);
+        madid= muid +"%"+UUID.randomUUID();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
@@ -148,7 +149,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public void addToMyAds(){
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(muid).child("myads").setValue(madid)
+        mDatabase.child("users").child(muid).child("myads").child(madid).setValue(madid)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -343,7 +344,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
             if (r != null) {
-                path = "adimages/" + UUID.randomUUID() + ".png";
+                path = "adimages/" + madid+"/"+UUID.randomUUID() + ".png";
                 final StorageReference riversRef = storageReference.child(path);
 
                 UploadTask uploadTask = riversRef.putFile(r);
@@ -387,7 +388,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         desc.setText("");
         category.setText("");
 
-        madid= muid +"%"+UUID.randomUUID();
+
         BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl);
        // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
         // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)

@@ -64,7 +64,7 @@ android:layout_height="match_parent">
                         android:layout_height="0dp">
                         <ImageView
                             android:tint="@color/selector_chat1"
-                            android:src="@drawable/arrowdown"
+                            android:src="@drawable/arrowup"
                             android:layout_width="20dp"
                             android:layout_height="fill_parent" />
                         <ImageView
@@ -115,7 +115,7 @@ android:layout_height="match_parent">
                         android:layout_height="0dp">
                         <ImageView
                             android:tint="@color/selector_chat2"
-                            android:src="@drawable/arrowup"
+                            android:src="@drawable/arrowdown"
                             android:layout_width="20dp"
                             android:layout_height="fill_parent" />
                         <ImageView

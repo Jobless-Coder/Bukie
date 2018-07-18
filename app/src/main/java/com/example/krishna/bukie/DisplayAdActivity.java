@@ -76,7 +76,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         firebaseFirestore=FirebaseFirestore.getInstance();
         TextView price,title,category,date,desc,fullname,author,publisher;
         price= findViewById(R.id.price);
-        price.setText("₹ "+bookAds.getPrice());
+        price.setText(bookAds.getPrice());
         title=findViewById(R.id.title);
         desc=findViewById(R.id.desc);
         author=findViewById(R.id.author);
@@ -129,6 +129,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
             @Override
             public void unLiked(LikeButton likeButton) {
+
                 removeFromWishList();
             }
         });
@@ -173,12 +174,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         finish();
     }
     private void setFavouriteButton() {
-        Log.e("Favourite", "inside fab setting function");
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
+       // Log.e("Favourite", "inside fab setting function");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist").child(bookAds.getAdid());
+
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data: dataSnapshot.getChildren())
+                /*for(DataSnapshot data: dataSnapshot.getChildren())
                 {
                     Log.e("Comparing", data.getValue().toString()+" And "+bookAds.getAdid());
                     if(data.getValue().toString().equals(bookAds.getAdid()))
@@ -187,6 +189,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                         //Toast.makeText(DisplayAdActivity.this, bookAds.getAdid(), Toast.LENGTH_SHORT).show();
                         //Toast.makeText(DisplayAdActivity.this, "Liked before!", Toast.LENGTH_SHORT).show();
                     }
+                }*/
+                if(dataSnapshot.exists()){
+                    likeButton.setLiked(true);
                 }
             }
 
@@ -198,9 +203,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void removeFromWishList() {
-        final ArrayList<Pair> wishList = new ArrayList<>();
+       // final ArrayList<Pair> wishList = new ArrayList<>();
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
-        dref.addListenerForSingleValueEvent(new ValueEventListener() {
+       /* dref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot data: dataSnapshot.getChildren())
@@ -214,10 +219,16 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
+       dref.child(bookAds.getAdid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+           @Override
+           public void onSuccess(Void aVoid) {
+
+           }
+       });
     }
 
-    private void removeIfAvailable(ArrayList<Pair> wishList) {
+    /*private void removeIfAvailable(ArrayList<Pair> wishList) {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         for(Pair adObject: wishList)
         {
@@ -226,7 +237,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 dref.child(adObject.key).removeValue();
             }
         }
-    }
+    }*/
 
     public void shareAd(View view) {
         Toast.makeText(this, "Call your friend and talk about this ad", Toast.LENGTH_SHORT).show();
@@ -242,7 +253,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
     private void addToWishList() {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
-        dref.push().setValue(bookAds.adid);
+        dref.child(bookAds.getAdid()).setValue(bookAds.getAdid());
     }
 
     @Override

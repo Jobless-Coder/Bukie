@@ -66,7 +66,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
                     holder.bookprice.setBackground(null);
 
                     holder.booktitle.setText(bookAds.getBooktitle());
-                    holder.bookprice.setText("₹"+bookAds.getPrice());
+                    holder.bookprice.setText(bookAds.getPrice());
                     holder.bookdate.setText(bookAds.getDate());
                     holder.bookcategory.setText(bookAds.getBookcategory());
                     return false;
@@ -99,7 +99,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
                     .load(bookAds.getBookcoverpic())
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getBooktitle());
-            holder.bookprice.setText("₹"+bookAds.getPrice());
+            holder.bookprice.setText(bookAds.getPrice());
             holder.bookdate.setText(bookAds.getDate());
             holder.bookcategory.setText(bookAds.getBookcategory());
 

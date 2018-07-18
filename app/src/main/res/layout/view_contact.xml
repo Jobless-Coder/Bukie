@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/dayll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <include layout="@layout/view_date"></include>
+    </LinearLayout>
 <RelativeLayout android:foreground="@drawable/ripple_white"
     android:clickable="true"
     android:id="@+id/rellayoutfather"
@@ -187,3 +198,4 @@
 </RelativeLayout>
 
 </RelativeLayout>
+</LinearLayout>

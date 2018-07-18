@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
@@ -31,10 +35,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
    private View itemView2;
    String previous_user="-1",previous_user2;
    String current_user="";
-   private String type;
+   private String type,daydetails;
    private MessageItemClickListener onClickListener;
+   private SimpleDateFormat formatter;
 
     private MessageItem messageItem;
+    private Date current_date,previous_date=null;
 
     public MessageAdapter(List<MessageItem> messageItemList, Context context,MessageItemClickListener messageItemClickListener) {
         this.messageItemList = messageItemList;
@@ -124,13 +130,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
+        Timestamp timestamp;
     messageItem=messageItemList.get(position);
     current_user=messageItem.getUid();
-        MessageViewHolder messageViewHolder=null;
-        CameraViewHolder cameraViewHolder=null;
-        ContactViewHolder contactViewHolder=null;
-        LocationViewHolder locationViewHolder=null;
-        GalleryVieHolder galleryVieHolder=null;
+    timestamp=new Timestamp(Long.parseLong(messageItem.getTimestamp()));
+    current_date=new Date(timestamp.getTime());
+    MessageViewHolder messageViewHolder=null;
+    CameraViewHolder cameraViewHolder=null;
+    ContactViewHolder contactViewHolder=null;
+    LocationViewHolder locationViewHolder=null;
+    GalleryVieHolder galleryVieHolder=null;
     if (messageItem.getType().compareTo("message")==0)
      messageViewHolder= (MessageViewHolder) holder;
     if(messageItem.getType().equals("camera"))
@@ -153,9 +162,77 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     if(position>0) {
         previous_user=messageItemList.get(position - 1).getUid();
+         timestamp=new Timestamp(Long.parseLong(messageItemList.get(position-1).getTimestamp()));
+        previous_date=new Date(timestamp.getTime());
     }
-    else
-        previous_user="-1";
+    else {
+        previous_user = "-1";
+        previous_date=new Date(0);
+
+    }
+    String daydetails2;
+        formatter = new SimpleDateFormat("dd MMMM yy");
+        daydetails = formatter.format(current_date);
+        daydetails2=formatter.format(previous_date);
+       // boolean samedate = DateUtils.is(current_date, previous_date);
+    if(daydetails2.compareTo(daydetails)!=0){
+
+
+        if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.dayll.setVisibility(View.VISIBLE);
+            messageViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.dayll.setVisibility(View.VISIBLE);
+            contactViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.dayll.setVisibility(View.VISIBLE);
+            locationViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.dayll.setVisibility(View.VISIBLE);
+            galleryVieHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.dayll.setVisibility(View.VISIBLE);
+            cameraViewHolder.day.setText(daydetails);
+
+        }
+
+    }
+    else {
+        if(messageItem.getType().compareTo("message")==0) {
+            messageViewHolder.dayll.setVisibility(View.GONE);
+            //messageViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("contact")==0){
+            contactViewHolder.dayll.setVisibility(View.GONE);
+         //   contactViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("location")==0){
+            locationViewHolder.dayll.setVisibility(View.GONE);
+           // locationViewHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("gallery")==0){
+            galleryVieHolder.dayll.setVisibility(View.GONE);
+           // galleryVieHolder.day.setText(daydetails);
+
+        }
+        if(messageItem.getType().compareTo("camera")==0){
+            cameraViewHolder.dayll.setVisibility(View.GONE);
+           // cameraViewHolder.day.setText(daydetails);
+
+        }
+
+    }
 
 
 
@@ -344,9 +421,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             cameraViewHolder.time2.setText(messageItem.getTime());
-            //cameraViewHolder.cameraview2.setVisibility(View.VISIBLE);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic2);
-            // holder.camerapic.setImageResource();
+
 
 
         }
@@ -471,7 +547,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public class MessageViewHolder extends RecyclerView.ViewHolder{
         public EmojiconTextView messagebody1,messagebody2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2;
+        public TextView time1,time2,day;
+        public View dayll;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
@@ -482,16 +559,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
             rlfather=itemView.findViewById(R.id.rellayoutfather);
             time1=itemView.findViewById(R.id.time1);
             time2=itemView.findViewById(R.id.time2);
-
-
-
+            dayll=itemView.findViewById(R.id.dayll);
+            day=itemView.findViewById(R.id.day);
         }
     }
     public class ContactViewHolder extends RecyclerView.ViewHolder{
         public TextView contactname1,savecontact1,contactname2,savecontact2;
         public ImageView contactphoto1,contactphoto2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2;
+        public TextView time1,time2,day;
+        public View dayll;
 
         public ContactViewHolder(View itemView) {
             super(itemView);
@@ -506,6 +583,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             rlfather=itemView.findViewById(R.id.rellayoutfather);
             time1=itemView.findViewById(R.id.time1);
             time2=itemView.findViewById(R.id.time2);
+            dayll=itemView.findViewById(R.id.dayll);
+            day=itemView.findViewById(R.id.day);
 
             savecontact1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -519,16 +598,14 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     onClickListener.onSaveContact(v,getAdapterPosition());
                 }
             });
-
-
         }
     }
     public class LocationViewHolder extends RecyclerView.ViewHolder{
         public TextView locationdesc1;
         public TextView locationdesc2;
-        public View locationview1,locationview2;
+        public View locationview1,locationview2,dayll;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2;
+        public TextView time1,time2,day;
 
         public LocationViewHolder(View itemView) {
             super(itemView);
@@ -541,6 +618,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             rlfather=itemView.findViewById(R.id.rellayoutfather);
             time1=itemView.findViewById(R.id.time1);
             time2=itemView.findViewById(R.id.time2);
+            dayll=itemView.findViewById(R.id.dayll);
+            day=itemView.findViewById(R.id.day);
 
             locationview1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -554,15 +633,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     onClickListener.onLocation(v,getAdapterPosition());
                 }
             });
-
-
         }
     }
     public class CameraViewHolder extends RecyclerView.ViewHolder{
         public ImageView camerapic2,camerapic1;
-        public View cameraview1,cameraview2;
+        public View cameraview1,cameraview2,dayll;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2;
+        public TextView time1,time2,day;
 
         public CameraViewHolder(View itemView) {
             super(itemView);
@@ -573,6 +650,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             rlfather=itemView.findViewById(R.id.rellayoutfather);
             time1=itemView.findViewById(R.id.time1);
             time2=itemView.findViewById(R.id.time2);
+            dayll=itemView.findViewById(R.id.dayll);
+            day=itemView.findViewById(R.id.day);
 
             /*cameraview1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -592,9 +671,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public class GalleryVieHolder extends RecyclerView.ViewHolder{
         public StaticGridView gridView1,gridView2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2;
-        public LinearLayout ll1,ll21;
-        //private boolean gridresized;
+        public TextView time1,time2,day;
+        public LinearLayout ll1,ll21,dayll;
         public GalleryVieHolder(View itemView) {
             super(itemView);
             rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
@@ -602,14 +680,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
             rlfather=itemView.findViewById(R.id.rellayoutfather);
             time1=itemView.findViewById(R.id.time1);
             time2=itemView.findViewById(R.id.time2);
+            day=itemView.findViewById(R.id.day);
+            dayll=itemView.findViewById(R.id.dayll);
            gridView1 =  itemView.findViewById(R.id.gridview1);
            gridView2 =  itemView.findViewById(R.id.gridview2);
-          // gridresized=false;
            ll1=itemView.findViewById(R.id.ll1);
            ll21=itemView.findViewById(R.id.ll21);
-            //ll1=itemView.findViewById(R.id.ll1);
-            //gridView1.setAdapter(new ImageAdapter(context));
-            //gridView2.se
+
 
         }
 
