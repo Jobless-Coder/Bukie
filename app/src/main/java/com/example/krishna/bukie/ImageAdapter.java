@@ -37,7 +37,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
-    // create a new ImageView for each item referenced by the Adapter
+
     public View getView(int position, View convertView, ViewGroup parent) {
         View grid;
 
@@ -46,19 +46,14 @@ public class ImageAdapter extends BaseAdapter {
 
         if (convertView == null) {
 
-            /*imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(200,200));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);*/
-            //imageView.setPadding(8, 8, 8, 8);
-            //grid = new View(mContext);
+
             grid = inflater.inflate(R.layout.view_single_grid, null);
 
             ImageView imageView = (ImageView)grid.findViewById(R.id.image);
 
-            //imageView.setImageResource(Imageid[position]);
-           // Glide.clear(imageView);
+
             Glide.with(mContext).load(images.get(position)).into(imageView);
-            // imageView.setImageResource(images[position]);
+
         }
         else
         {
@@ -69,6 +64,6 @@ public class ImageAdapter extends BaseAdapter {
     }
 
 
-    // Keep all Images in array
+
 
 }

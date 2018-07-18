@@ -77,11 +77,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onCreate(savedInstanceState);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        String username=sharedPreferences.getString("username",null);
+        String userid=sharedPreferences.getString("uid",null);
 
 
-     //   Toast.makeText(this, ""+username, Toast.LENGTH_SHORT).show();
-        if(username!=null){
+     //   Toast.makeText(this, ""+uid, Toast.LENGTH_SHORT).show();
+        if(userid!=null){
             Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
             startActivity(intent);
             finish();
@@ -95,7 +95,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        signOut();
+        //signOut();
 
 
         setContentView(R.layout.activity_auth);
@@ -137,14 +137,17 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         // Handle success
                         handleFacebookAccessToken(loginResult.getAccessToken());
 
+
                     }
 
                     @Override
                     public void onCancel() {
+                        progressDialog.dismiss();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        progressDialog.dismiss();
                     }
                 }
         );
@@ -243,6 +246,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
     //google sign in
     private void signIn() {
+        progressDialog.setMessage("Signing in ...");
+        progressDialog.show();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -285,6 +290,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
                             if(isNew)
                             {
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","google");
                                 startActivity(intent);
@@ -303,7 +309,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                                         SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("username",document.getData().get("username").toString());
+                                                        editor.putString("uid",document.getData().get("uid").toString());
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
@@ -315,6 +321,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -323,6 +330,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
                         } else {
+                            progressDialog.dismiss();
                             Toast.makeText(AuthActivity.this, "Sign in failure , please try again",
                                     Toast.LENGTH_SHORT).show();
 
@@ -435,7 +443,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                     Toast.makeText(AuthActivity.this, ""+UID, Toast.LENGTH_SHORT).show();
                                                     SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putString("username",document.getData().get("username").toString());
+                                                    editor.putString("uid",document.getData().get("uid").toString());
                                                     editor.putString("fullname",document.getData().get("fullname").toString());
                                                     editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                     editor.commit();
@@ -477,6 +485,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
                             if(isNew)
                             {
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","facebook");
                                 startActivity(intent);
@@ -495,7 +504,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                         Toast.makeText(AuthActivity.this, ""+UID, Toast.LENGTH_SHORT).show();
                                                         SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("username",document.getData().get("username").toString());
+                                                        editor.putString("uid",document.getData().get("uid").toString());
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
@@ -507,12 +516,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
 
                         } else {
+                            progressDialog.dismiss();
 
                             Toast.makeText(AuthActivity.this, "Sign in failure,please try again",
                                     Toast.LENGTH_SHORT).show();
@@ -538,6 +549,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 signIn();
                 break;
             case R.id.facebookbtn:
+                progressDialog.setMessage("Signing up ...");
+                progressDialog.show();
                 LoginManager.getInstance().logInWithReadPermissions(
                         this,
                         Arrays.asList("email", "public_profile")

@@ -182,11 +182,11 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             }
         };
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
         //To get location information only once here
         mLocationRequest.setNumUpdates(3);
-        Log.i("kll",provider+"");
+      ///  Log.i("kll",provider+"");
         //Toast.makeText(this, ""+provider, Toast.LENGTH_SHORT).show();
         if (provider.equalsIgnoreCase(LocationManager.NETWORK_PROVIDER)) {
             //Accuracy is a top priority regardless of battery consumption
@@ -304,8 +304,8 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         intent.putExtra("isMap", "0");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);*/
-       // finish();
-        super.onBackPressed();
+        finish();
+        //super.onBackPressed();
 
     }
     @Override
@@ -317,7 +317,7 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);*/
         //finish();
-        onBackPressed();
+        finish();
 
         //finish();
         return true;

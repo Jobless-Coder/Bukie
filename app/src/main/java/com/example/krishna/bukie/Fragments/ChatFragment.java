@@ -56,7 +56,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private List<BookAds> bookAdsList;
     private View v;
     private MyChatItemClickListener myChatItemClickListener;
-    private String chatid,identity,username;
+    private String chatid,identity,uid;
     private boolean buyfrag=true;
     private ViewGroup toolbargroup;
     private View toolbarview,buy,sell,tabsview;
@@ -107,9 +107,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
 
-        getMyChats("buyer");
+        getMyChats("buyerid");
         //firebaseFirestore=context.FirebaseFirestore.getInstance();
 
         setHasOptionsMenu(true);
@@ -121,9 +121,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private void getMyChats(final String identityuser) {
         if(myChatsList!=null)
         myChatsList.clear();
-        myChatsAdapter=new MyChatsAdapter(myChatsList,context,username);
+        myChatsAdapter=new MyChatsAdapter(myChatsList,context,uid);
         recyclerView.setAdapter(myChatsAdapter);
-        Query query = firebaseFirestore.collection("users").document(username).collection("mychats").whereEqualTo(identityuser,username);
+        Query query = firebaseFirestore.collection("users").document(uid).collection("mychats").whereEqualTo(identityuser,uid);
 
        listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
            @Override
@@ -174,7 +174,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
             {
 
                 final MyChats myChats=model;
-                Toast.makeText(context, "hello"+myChats.getBuyer()+identityuser, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
                 if(holder.username.getBackground()!=null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Glide.with(context)
@@ -192,14 +192,14 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                     holder.ppcard2.setCardBackgroundColor(Color.WHITE);
                                     holder.username.setBackground(null);
 
-                                    if(myChats.getBuyer().compareTo(username)==0) {
+                                    if(myChats.getBuyerid().compareTo(username)==0) {
                                         identity = "buyer";
                                         holder.username.setText(myChats.getSellerfullname());
                                         Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
                                     }
                                     else
                                     {
-                                        identity = "seller";
+                                        identity = "sellerid";
                                         holder.username.setText(myChats.getBuyerfullname());
                                         Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
                                     }
@@ -216,7 +216,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     Glide.with(context)
                             .load(myChats.getCoverpic())
                             .into(holder.adpic);
-                    if(myChats.getBuyer().compareTo(username)==0) {
+                    if(myChats.getBuyerid().compareTo(username)==0) {
                         identity = "buyer";
                         holder.username.setText(myChats.getSellerfullname());
                         Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
@@ -224,7 +224,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     }
                     else
                     {
-                        identity = "seller";
+                        identity = "sellerid";
                         holder.username.setText(myChats.getBuyerfullname());
                         Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
 
@@ -235,11 +235,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v)
                     {
-                        if(myChats.getBuyer().compareTo(username)==0) {
+                        if(myChats.getBuyerid().compareTo(username)==0) {
                             identity = "buyer";
                         }
                         else
-                            identity="seller";
+                            identity="sellerid";
                         //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra("mychats", myChats);
@@ -326,7 +326,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     sell.setSelected(false);
                    listenerRegistration.remove();
 
-                   getMyChats("buyer");
+                   getMyChats("buyerid");
 
                 }
 
@@ -337,7 +337,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     sell.setSelected(true);
                     buyfrag=false;
                    listenerRegistration.remove();
-                   getMyChats("seller");
+                   getMyChats("sellerid");
                 }
 
 

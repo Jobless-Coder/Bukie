@@ -1,45 +1,34 @@
 package com.example.krishna.bukie;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.facebook.internal.Utility;
 import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.gms.common.images.internal.ImageUtils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,13 +38,10 @@ import com.google.firebase.storage.UploadTask;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,17 +52,17 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private int PICK_IMAGE_MULTIPLE = 1;
     private  String imageEncoded;
     private  List<String> imagesEncodedList;
-    private EditText title,category,price;
+    private EditText title,category,price,author,publisher,desc;
     private View chooseimg,postad;
     //private ArrayList<Uri> mArrayUri;
     private FirebaseStorage firebaseStorage;
-    private String path, coverurl="";
+    private String path, coverurl;
     private  StorageReference storageReference;
     private List<String> downloadurl;
     private List<String> imagesPathList;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
-    private String mtitle,mcategory,mprice,mdate,madid,musername,mprofilepic,mfullname;
+    private String mtitle,mcategory,mprice,mdate,madid, muid,mprofilepic,mfullname,mpublisher,mauthor,mdesc;
     private CollectionReference bookadscollection;
     private LinearLayout linearLayout;
     private HashSet<Uri> hset;
@@ -88,33 +74,29 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<SquareImageView> extraImages;
     private FlexboxLayout flex;
     private Uri coverImageUri;
+    private boolean coverimage=false;
+    private int count;
+    private DatabaseReference mDatabase;
 
-    @SuppressLint("WrongViewCast")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_postnewad);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        musername=sharedPreferences.getString("username",null);
+        muid =sharedPreferences.getString("uid",null);
         mprofilepic=sharedPreferences.getString("profilepic",null);
         mfullname=sharedPreferences.getString("fullname",null);
         progressDialog=new ProgressDialog(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-       //linearLayout=findViewById(R.id.imgscroll);
 
 
 
+        count=0;
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        LayoutInflater inflater = getLayoutInflater();;
-        View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
-        rowView.findViewById(R.id.deleteimg).setVisibility(View.GONE);
-        rowView.findViewById(R.id.bookpic).setVisibility(View.GONE);
-        rowView.findViewById(R.id.addimg).setVisibility(View.GONE);
-        //findViewById(R.id.coverpicrl).setVisibility(View.GONE);
-        linearLayout.addView(rowView);
 
 
 
@@ -132,6 +114,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         title=findViewById(R.id.title);
         category=findViewById(R.id.category);
         price=findViewById(R.id.price);
+        publisher=findViewById(R.id.publisher);
+        author=findViewById(R.id.author);
+        desc=findViewById(R.id.desc);
         //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
@@ -145,93 +130,52 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
+        desc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    floatingActionButton.hide();
+                   // Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_LONG).show();
+                } else {
+                    floatingActionButton.show();
+                    //Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
+
+    }
+    public void addToMyAds(){
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(muid).child("myads").setValue(madid)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Write was successful!
+                        // ...
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Write failed
+                        // ...
+                    }
+                });
 
     }
 
     private void setSizeOfSquareImageViews() {
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        //Toast.makeText(this, metrics.heightPixels+" "+metrics.widthPixels, Toast.LENGTH_SHORT).show();
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        //mArrayUri = new ArrayList<Uri>();
-        hset = new HashSet<Uri>();
 
-
-            // When an Image is picked
-        /*
-        if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
-                    && null != data) {
-                // Get the Image from data
-
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-                imagesEncodedList = new ArrayList<String>();
-                if(data.getData()!=null){
-
-                    Uri uri=data.getData();
-                    hset.add(uri);
-                    LayoutInflater inflater = getLayoutInflater();;
-                    View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
-
-                    ImageView v2=rowView.findViewById(R.id.bookpic);
-                    v2.setImageURI(uri);
-                    v2.setTag(uri.toString());
-                    linearLayout.addView(rowView);
-                    //mArrayUri.add(mImageUri);
-                    //Toast.makeText(this, ""+mArrayUri.size(), Toast.LENGTH_SHORT).show();
-
-                    // Get the cursor
-                    Cursor cursor = getContentResolver().query(uri,
-                            filePathColumn, null, null, null);
-                    // Move to first row
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    imageEncoded  = cursor.getString(columnIndex);
-                    cursor.close();
-
-                } else {
-                    if (data.getClipData() != null) {
-                        ClipData mClipData = data.getClipData();
-
-                        for (int i = 0; i < mClipData.getItemCount(); i++) {
-
-                            ClipData.Item item = mClipData.getItemAt(i);
-                            Uri uri = item.getUri();
-                            hset.add(uri);
-                            //mArrayUri.add(uri);
-                            LayoutInflater inflater = getLayoutInflater();;
-                            View rowView = inflater.inflate(R.layout.postnewad_bookimageview, linearLayout,false);
-
-                            ImageView v2=rowView.findViewById(R.id.bookpic);
-                            v2.setImageURI(uri);
-                            v2.setTag(uri.toString());
-                            //v2.setImageResource(R.drawable.bookpic);
-
-
-                            linearLayout.addView(rowView);
-                            // Get the cursor
-                            Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-                            // Move to first row
-                            cursor.moveToFirst();
-
-                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                            imageEncoded  = cursor.getString(columnIndex);
-                            imagesEncodedList.add(imageEncoded);
-                            cursor.close();
-
-                        }
-
-                    }
-                }
-            }
-            else
-             */
              if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK
                 && null != data) {
                 sendToUCrop(data.getData(), UCrop.REQUEST_CROP);
@@ -296,7 +240,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     public void refreshFlex(){
-        if(flex.getChildCount()>6)
+        if(flex.getChildCount()>5)
         {
             findViewById(R.id.adnewimagebutton).setVisibility(View.GONE);
         }
@@ -314,16 +258,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    public void deleteImageView(View v){
-        ViewGroup parent = ((ViewGroup) v.getParent().getParent());
-        ImageView v22=parent.findViewById(R.id.bookpic);
-        String path=v22.getTag().toString();
-        Uri myUri = Uri.parse(path);
-        hset.remove(myUri);
-
-        linearLayout.removeView(parent);
-
-    }
 
     @Override
     public void onDestroy(){
@@ -366,10 +300,14 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             case R.id.fabpostad:
 
                 downloadurl=new ArrayList<String>();
-
+                coverurl=null;
                 mtitle=title.getText().toString();
                 mcategory=category.getText().toString();
-                mprice=price.getText().toString();
+                mprice="₹ "+price.getText().toString();
+                mauthor=author.getText().toString();
+                mdesc=desc.getText().toString();
+                mpublisher=publisher.getText().toString();
+
                 Date d = new Date();
 
                 SimpleDateFormat ft =
@@ -381,8 +319,16 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 if(mprice.isEmpty()||mtitle.isEmpty()||mcategory.isEmpty()/*||mArrayUri!=null*/)
                     Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
                 else {
+                    progressDialog.setMessage("Posting ad ...");
+                    progressDialog.show();
+                    uploadImage(coverImageUri,true);
+                    for(SquareImageView squareImageView:extraImages){
+                        uploadImage(squareImageView.getImageLink(), false);
+                        count++;
+                    }
 
-                    uploadFile(hset);
+
+
 
                 }
                 break;
@@ -392,18 +338,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    private void uploadFile(final HashSet<Uri> hset) {
-        //Toast.makeText(this, "lll"+hset, Toast.LENGTH_SHORT).show();
-        progressDialog.setMessage("Posting ad ...");
-        progressDialog.show();
-        hset.add(coveruri);
-        Iterator iterator = hset.iterator();
+    private void uploadImage(Uri r, final boolean b) {
 
-        // check values
-        while (iterator.hasNext()) {
-            Uri r= (Uri) iterator.next();
-            //Toast.makeText(this, ""+r, Toast.LENGTH_SHORT).show();
-       // for (Uri r : mArrayUri) {
 
 
             if (r != null) {
@@ -421,53 +357,18 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
                         return riversRef.getDownloadUrl();
                     }
-                })/*.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                           Uri uri2 = task.getResult();
-
-                        } else {
-
-                        }
-                    }
-                }).*/.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                }).addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-
+                            if (b==false)
                             downloadurl.add(uri + "");
-                            //Toast.makeText(PostnewadActivity.this, "images added ", Toast.LENGTH_SHORT).show();
-                        /*}
-                        else {
-                            Toast.makeText(PostnewadActivity.this, ""+uri, Toast.LENGTH_SHORT).show();
-                            coverurl = uri + "";
-                        }*/
-                        //Toast.makeText(PostnewadActivity.this, ""+uri, Toast.LENGTH_SHORT).show();
-                        if(downloadurl.size()==hset.size())
+                            else
+                                coverurl=uri+"";
+                        if(downloadurl.size()==extraImages.size()&&coverurl!=null)
+
                        {
-                            //Log.e("hello","error");
-                           madid=musername+"%"+UUID.randomUUID();
-                            BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,musername,madid,mprofilepic,mfullname,downloadurl);
-                           // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
-                           firebaseFirestore.collection("bookads").document(madid).set(bookAds)
-                                   .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                       @Override
-                                       public void onSuccess(Void aVoid) {
-                                           progressDialog.dismiss();
+                            postAd();
 
-
-                                           Toast.makeText(PostnewadActivity.this, "Ad posted successfully", Toast.LENGTH_SHORT).show();
-                                           startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
-                                       }
-                                   })
-                                   .addOnFailureListener(new OnFailureListener() {
-                                       @Override
-                                       public void onFailure(@NonNull Exception e) {
-                                           progressDialog.dismiss();
-                                           Toast.makeText(PostnewadActivity.this, "Error posting ad,pls try again later", Toast.LENGTH_SHORT).show();
-
-                                       }
-                                   });
 
                         }
 
@@ -476,36 +377,58 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
             }
 
-        }
+
+    }
+    public void  postAd(){
+        title.setText("");
+        price.setText("");
+        publisher.setText("");
+        author.setText("");
+        desc.setText("");
+        category.setText("");
+
+        madid= muid +"%"+UUID.randomUUID();
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl);
+       // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
+        // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
+        firebaseFirestore.collection("bookads").document(madid).set(bookAds)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        progressDialog.dismiss();
+                        addToMyAds();
+
+                        Toast.makeText(PostnewadActivity.this, "Ad posted successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getApplicationContext(), HomePageActivity.class));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+
+                        Toast.makeText(PostnewadActivity.this, "Error posting ad,pls try again later", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
     }
 
-    public void addcoverimage(View view) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PHOTO);
-    }
 
-    public void deleteCoverImageView(View view) {
-        coveruri=null;
-        /*ImageView imageView=this.findViewById(R.id.coverpic);
-        imageView.setImageResource(0);
-        this.findViewById(R.id.coverpicrl).setVisibility(View.GONE);*/
-        this.findViewById(R.id.addcoverimage).setVisibility(View.VISIBLE);
-    }
 
     public void addNewSquareImage(View view) {
+        coverimage=false;
         //TODO: Add imagepicker cropper and all necessary shit here
         selectImage(EXTRA_PHOTO);
     }
 
 
-    public void goToImageActivity(View view) {
+    /*public void goToImageActivity(View view) {
         startActivity(new Intent(this, ImageCompressorTestActivity.class));
-    }
+    }*/
 
 
-    private void selectImage(final int tag) {
+    private void selectImage(final int tag) {//1
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -537,7 +460,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         builder.show();
     }
 
-    private void galleryIntent(int tag) {
+    private void galleryIntent(int tag) {//2
 
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -550,6 +473,14 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     public void selectCoverImage(View view) {
+        coverimage=true;
         selectImage(SELECT_PHOTO);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+
+        return true;
     }
 }

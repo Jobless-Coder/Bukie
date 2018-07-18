@@ -50,7 +50,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
         if(holder.bookprice.getBackground()!=null) {
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
-                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1)).listener(new RequestListener<String, GlideDrawable>() {
+                    .load(bookAds.getBookcoverpic()).listener(new RequestListener<String, GlideDrawable>() {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                     return false;
@@ -66,7 +66,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
                     holder.bookprice.setBackground(null);
 
                     holder.booktitle.setText(bookAds.getBooktitle());
-                    holder.bookprice.setText(bookAds.getPrice());
+                    holder.bookprice.setText("₹"+bookAds.getPrice());
                     holder.bookdate.setText(bookAds.getDate());
                     holder.bookcategory.setText(bookAds.getBookcategory());
                     return false;
@@ -96,10 +96,10 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
         else{
 
             Glide.with(context)
-                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
+                    .load(bookAds.getBookcoverpic())
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getBooktitle());
-            holder.bookprice.setText(bookAds.getPrice());
+            holder.bookprice.setText("₹"+bookAds.getPrice());
             holder.bookdate.setText(bookAds.getDate());
             holder.bookcategory.setText(bookAds.getBookcategory());
 

@@ -64,7 +64,7 @@ private CollectionReference collectionReference;
 
     public ArrayList<MessageItem> getPreviousTexts()
     {
-        Log.d("MyApp","I am here");
+        //Log.d("MyApp","I am here");
         final ArrayList<MessageItem> chats = new ArrayList<>();
        /* FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -105,28 +105,20 @@ private CollectionReference collectionReference;
 
     public void sendMessage(MessageItem message)//add to recyclerview then send
     {
-        //Log.i("hello","nigga");
-       // //MessageItem chat = new MessageItem(view_message, new Date().toString(),username);
-       // DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
-       // dref.push().setValue(view_message);
+
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        //Toast.makeText(, "", Toast.LENGTH_SHORT).show();
-                       // restUi();
-                        //Log.i("hello","nigga");
+
 
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                       // Log.w(TAG, "Error adding event document", e);
-                        /*Toast.makeText(getActivity(),
-                                "Event document could not be added",
-                                Toast.LENGTH_SHORT).show();*/
+
                     }
                 });
     }
@@ -193,37 +185,15 @@ private CollectionReference collectionReference;
             }
         });
 
-       // isListening = true;
+        isListening = true;
     }
 
     public void stopListening()
     {
         if(!isListening) return;
-       /* Query query = firebaseFirestore.collection("allchats").document("chats").collection(refID);
-        ListenerRegistration registration = query.addSnapshotListener(
-                new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                    }
-                    // ...
-                });*/
-
-// ...
-
-// Stop listening to changes
         listenerRegistration.remove();
-        //collectionReference.
-                /*ListenerRegistration registration = query.addSnapshotListener(
-                new EventListener<QuerySnapshot>() {
-                    // ...
-                });*/
 
-// ...
-
-// Stop listening to changes
-       // registration.remove();
-       // ddref.removeEventListener(childEventListener);
        isListening = false;
     }
 }

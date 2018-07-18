@@ -121,14 +121,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Handler handler=new Handler();
+               /* Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
 
                     }
-                },3000);
+                },3000);*/
                 bookAdsList.clear();
                // bookAdsList=new ArrayList<>();
                 getadvertisements();
@@ -173,7 +173,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                                 // Log.d(TAG, document.getId() + " => " + document.getData());
                             }
+                            swipeRefreshLayout.setRefreshing(false);
                         } else {
+                            swipeRefreshLayout.setRefreshing(false);
                             // Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }

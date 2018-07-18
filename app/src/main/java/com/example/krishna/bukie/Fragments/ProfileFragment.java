@@ -61,7 +61,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private List<String> myadspathlist;
     private View v,myads,mywishlist;
     private boolean myadsfrag=true;
-    private String username,ppic,fullname;
+    private String uid,ppic,fullname;
     private Myadswishadapter adapter;
 
     public ProfileFragment() {
@@ -77,11 +77,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         String msg = getString(R.string.msg_token_fmt, token);
         Log.e("token", msg);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
 
-        if(username!=null)
+        if(uid!=null)
         {
-            FirebaseDatabase.getInstance().getReference().child("user").child(username).child("token").setValue(token);
+            FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
         }
         else {
             Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
@@ -119,7 +119,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         fullname=sharedPreferences.getString("fullname",null);
         ppic=sharedPreferences.getString("profilepic",null);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
         ImageView imageView=v.findViewById(R.id.profilepic);
         TextView textView=v.findViewById(R.id.fullname);
         textView.setBackground(null);
@@ -145,7 +145,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(adapter);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
-        mDatabase.child("user").child(username).child(s).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("users").child(uid).child(s).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {

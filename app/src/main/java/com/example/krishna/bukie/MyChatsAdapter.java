@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -26,13 +25,13 @@ import java.util.List;
 public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHolder> {
     List<MyChats> myChatsList;
     Context context;
-    String identity,username;
+    String identity, uid;
     MyChatItemClickListener myChatItemClickListener;
 
-    public MyChatsAdapter(List<MyChats> myChatsList, Context context,String username) {
+    public MyChatsAdapter(List<MyChats> myChatsList, Context context,String uid) {
         this.myChatsList =myChatsList ;
         this.context = context;
-        this.username=username;
+        this.uid = uid;
 
     }
 
@@ -51,7 +50,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
     public void onBindViewHolder(@NonNull final MyChatHolder holder, int position) {
         final MyChats myChats=myChatsList.get(position);
 
-        //Toast.makeText(context, "hello"+myChats.getBuyer()+identityuser, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
         if(holder.username.getBackground()!=null) {
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
@@ -69,7 +68,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                             holder.ppcard2.setCardBackgroundColor(Color.WHITE);
                             holder.username.setBackground(null);
 
-                            if(myChats.getBuyer().compareTo(username)==0) {
+                            if(myChats.getBuyerid().compareTo(uid)==0) {
                                 identity = "buyer";
                                 holder.username.setText(myChats.getSellerfullname());
                                 Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
@@ -93,7 +92,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
             Glide.with(context)
                     .load(myChats.getCoverpic())
                     .into(holder.adpic);
-            if(myChats.getBuyer().compareTo(username)==0) {
+            if(myChats.getBuyerid().compareTo(uid)==0) {
                 identity = "buyer";
                 holder.username.setText(myChats.getSellerfullname());
                 Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
@@ -112,7 +111,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
             @Override
             public void onClick(View v)
             {
-                if(myChats.getBuyer().compareTo(username)==0) {
+                if(myChats.getBuyerid().compareTo(uid)==0) {
                     identity = "buyer";
                 }
                 else

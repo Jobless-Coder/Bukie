@@ -2,7 +2,6 @@ package com.example.krishna.bukie;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +10,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -26,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
@@ -43,7 +39,6 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -52,11 +47,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -123,18 +116,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
-        username = sharedPreferences.getString("username", null);
+        username = sharedPreferences.getString("uid", null);
         Bundle bundle = getIntent().getExtras();
         String isMap = bundle.getString("isMap");
 
         myChats = bundle.getParcelable("mychats");
         identity = bundle.getString("identity");
         if (identity.compareTo("buyer") == 0) {
-            tmpuser = myChats.getSeller();
+            tmpuser = myChats.getSellerid();
             ppic = myChats.getSellerpic();
             fullname = myChats.getSellerfullname();
         } else {
-            tmpuser = myChats.getBuyer();
+            tmpuser = myChats.getBuyerid();
             ppic = myChats.getBuyerpic();
             fullname = myChats.getBuyerfullname();
 
@@ -238,7 +231,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSeller(), myChats.getBuyer(), username, new IncomingMessageListener() {
+        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, new IncomingMessageListener() {
             public void receiveIncomingMessage(MessageItem ch) {
                 messageItemList.add(ch);
 
@@ -344,7 +337,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        if (popup.isShowing()) {
+      /*  if (popup.isShowing()) {
             popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
@@ -353,7 +346,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
             });
-        }
+        }*/
         rootview.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
 
@@ -430,14 +423,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     intent.putExtra("mychats", myChats);
                     intent.putExtra("identity", identity);
                     startActivity(intent);
-                   // finish();
+                   finish();
                 }else if(isNetworkLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
                     intent.putExtra("mychats", myChats);
                     intent.putExtra("identity", identity);
                     startActivity(intent);
-                    //finish();
+
+                    finish();
                 }else{
                     //Device location is not set
                     PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
@@ -632,7 +626,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             SimpleDateFormat ft =
                     new SimpleDateFormat("hh:mm a");
             date = ft.format(d);
-            //MessageItem m2 = new MessageItem(contact, date, username, d.getTime() + "","contact");
+            //MessageItem m2 = new MessageItem(contact, date, uid, d.getTime() + "","contact");
             MessageItem m=new MessageItem(date,username,d.getTime() + "",contact,"contact");
             fh.sendMessage(m);
 

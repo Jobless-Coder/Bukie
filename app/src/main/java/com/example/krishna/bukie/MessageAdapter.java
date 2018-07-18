@@ -5,14 +5,10 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -129,7 +125,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
     messageItem=messageItemList.get(position);
-    current_user=messageItem.getUsername();
+    current_user=messageItem.getUid();
         MessageViewHolder messageViewHolder=null;
         CameraViewHolder cameraViewHolder=null;
         ContactViewHolder contactViewHolder=null;
@@ -148,7 +144,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
         SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        String username=sharedPreferences.getString("username",null);
+        String uid=sharedPreferences.getString("uid",null);
         Resources r = context.getResources();
 
        // float set= (float) Math.ceil(messageItem.getImageurl().size()/3);
@@ -156,14 +152,14 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
     if(position>0) {
-        previous_user=messageItemList.get(position - 1).getUsername();
+        previous_user=messageItemList.get(position - 1).getUid();
     }
     else
         previous_user="-1";
 
 
 
-    if(current_user.compareTo(username)==0&&current_user.compareTo(previous_user)==0)
+    if(current_user.compareTo(uid)==0&&current_user.compareTo(previous_user)==0)
     {
         if(messageItem.getType().compareTo("message")==0) {
             messageViewHolder.rlson2.setVisibility(View.GONE);
@@ -248,7 +244,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
     }
-    else if(current_user.compareTo(username)==0&&(current_user.compareTo(previous_user)!=0)){
+    else if(current_user.compareTo(uid)==0&&(current_user.compareTo(previous_user)!=0)){
 
         if(messageItem.getType().compareTo("message")==0) {
             messageViewHolder.rlson2.setVisibility(View.GONE);
@@ -320,7 +316,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
 
     }
-    else if(current_user.compareTo(username)!=0&&(current_user.compareTo(previous_user)!=0)){
+    else if(current_user.compareTo(uid)!=0&&(current_user.compareTo(previous_user)!=0)){
        // holder.rlson1.setVisibility(View.GONE);
 
         if(messageItem.getType().compareTo("message")==0) {
@@ -391,7 +387,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         }
 
     }
-    else if(current_user.compareTo(username)!=0&&current_user.compareTo(previous_user)==0){
+    else if(current_user.compareTo(uid)!=0&&current_user.compareTo(previous_user)==0){
        // holder.rlson1.setVisibility(View.GONE);
 
         if(messageItem.getType().compareTo("message")==0) {

@@ -3,7 +3,6 @@ package com.example.krishna.bukie;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
@@ -35,7 +34,6 @@ import com.rd.draw.controller.DrawController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DisplayAdActivity extends AppCompatActivity implements DrawController.ClickListener, View.OnClickListener {
     private ViewPager viewPager;
@@ -47,7 +45,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private BookAds bookAds;
     private LikeButton likeButton;
     private FirebaseFirestore firebaseFirestore;
-    private String chatid,username,userprofilepic;
+    private String chatid,uid,userprofilepic;
     private MyChats myChats;
 
 
@@ -56,9 +54,10 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_ad_two);
+
         Bundle bundle = getIntent().getExtras();
         bookAds = bundle.getParcelable("bookads");
-       // Log.i("bookads",bookAds.getSeller()+"hello");
+       // Log.i("bookads",bookAds.getSellerid()+"hello");
         //floatingActionButton=findViewById(R.id.floatingActionButton);
         //floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
@@ -72,18 +71,28 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     floatingActionButton.show();
                 }
             }
-        });
-        */
+        });*/
+
         firebaseFirestore=FirebaseFirestore.getInstance();
-        TextView price,title,category,date;
+        TextView price,title,category,date,desc,fullname,author,publisher;
         price= findViewById(R.id.price);
         price.setText("₹ "+bookAds.getPrice());
         title=findViewById(R.id.title);
+        desc=findViewById(R.id.desc);
+        author=findViewById(R.id.author);
+        publisher=findViewById(R.id.publisher);
         category=findViewById(R.id.category);
         date=findViewById(R.id.date);
+        fullname=findViewById(R.id.fullname);
+        author.setText("written by "+bookAds.getBookauthor());
+        publisher.setText("published by "+bookAds.getBookpublisher());
         title.setText(bookAds.getBooktitle());
-        date.setText(bookAds.getDate());
+        date.setText("uploaded on "+bookAds.getDate());
         category.setText(bookAds.getBookcategory());
+        desc.setText(bookAds.getBookdesc());
+        fullname.setText("by "+bookAds.getSellerfullname());
+
+
         //floatingActionButton.setOnClickListener(this);
 
         if(getActionBar()!=null)
@@ -101,12 +110,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         likeButton=findViewById(R.id.favourites);
 
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
 
-        if(username.equals(bookAds.seller))
+        if(uid.equals(bookAds.getSellerid()))
         {
-            findViewById(R.id.viewPagercard).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
+          findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
             findViewById(R.id.chatbutton).setVisibility(View.GONE);
+            //Toast.makeText(this, ""+bookAds.getBookpicslist().size(), Toast.LENGTH_SHORT).show();
         }
 
         setFavouriteButton();
@@ -122,7 +132,10 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 removeFromWishList();
             }
         });
-        viewPagerAdapter=new ViewPagerAdapter(this,bookAds);
+        List<String> booksUrl=new ArrayList<>();
+        booksUrl.add(bookAds.getBookcoverpic());
+        booksUrl.addAll(bookAds.getBookpicslist());
+        viewPagerAdapter=new ViewPagerAdapter(this,booksUrl);
 
         viewPager.setAdapter(viewPagerAdapter);
         pageIndicatorView = findViewById(R.id.pageIndicatorView);
@@ -161,7 +174,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
     private void setFavouriteButton() {
         Log.e("Favourite", "inside fab setting function");
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -186,7 +199,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     private void removeFromWishList() {
         final ArrayList<Pair> wishList = new ArrayList<>();
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -205,7 +218,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void removeIfAvailable(ArrayList<Pair> wishList) {
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         for(Pair adObject: wishList)
         {
             if(adObject.value.equals(bookAds.adid))
@@ -216,7 +229,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     public void shareAd(View view) {
-        Toast.makeText(this, "Call you friend and talk about this ad", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Call your friend and talk about this ad", Toast.LENGTH_SHORT).show();
     }
 
     class Pair
@@ -228,7 +241,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         }
     }
     private void addToWishList() {
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("user/"+username+"/mywishlist");
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         dref.push().setValue(bookAds.adid);
     }
 
@@ -273,17 +286,18 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     public void goToChat(View view) {
+       // Toast.makeText(this, "niiga", Toast.LENGTH_SHORT).show();
 
-        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+       SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        uid=sharedPreferences.getString("uid",null);
         userprofilepic=sharedPreferences.getString("profilepic",null);
         final String userfullname=sharedPreferences.getString("fullname",null);
-        chatid=username+"%"+bookAds.getAdid();
+        chatid=uid+"%"+bookAds.getAdid();
         firebaseFirestore=FirebaseFirestore.getInstance();
-        DocumentReference mychatdoc=firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid);
-        if(username!=null) {
-            //Log.i("kll",bookAds.getSeller()+"hello");
-            if(username.compareTo(bookAds.getSeller())!=0) {
+        DocumentReference mychatdoc=firebaseFirestore.collection("users").document(uid).collection("mychats").document(chatid);
+        if(uid!=null) {
+            //Log.i("kll",bookAds.getSellerid()+"hello");
+            if(uid.compareTo(bookAds.getSellerid())!=0) {
 
                 mychatdoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -291,7 +305,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                         if (task.isSuccessful()) {
 
-                            myChats=new MyChats(bookAds.getSeller(),username,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
                             DocumentSnapshot snapshot = task.getResult();
 
                             if (snapshot.exists()) {
@@ -305,7 +319,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                 getApplicationContext().startActivity(intent);
 
                             } else {
-                                //chatid=username+bookAds.getAdid();
+                                //chatid=uid+bookAds.getAdid();
                                 //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
                                 createNewChat();
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
@@ -322,7 +336,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 });
             }
             else {
-                Toast.makeText(this, "Why so lonely?,you can't chat with yourself", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Why so lonely?,you can't chat with yourself", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -330,7 +344,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     private void createNewChat() {
 
-        firebaseFirestore.collection("users").document(username).collection("mychats").document(chatid)
+        firebaseFirestore.collection("users").document(uid).collection("mychats").document(chatid)
                 .set(myChats)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -345,7 +359,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                     }
                 });
-        firebaseFirestore.collection("users").document(bookAds.getSeller()).collection("mychats").document(chatid)
+        firebaseFirestore.collection("users").document(bookAds.getSellerid()).collection("mychats").document(chatid)
                 .set(myChats)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

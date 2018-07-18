@@ -83,7 +83,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private FirebaseAuth firebaseAuth;
     private ImageView imageView;
     private Uri imageUri;
-    private String usernameid,profilepicurl,path,signinmethod,uid,fullnameid;
+    private String profilepicurl,path,signinmethod,uid,fullnameid;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     private FirebaseFirestore firebaseFirestore;
@@ -110,7 +110,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         Bundle bundle = getIntent().getExtras();
         signinmethod=bundle.getString("signinmethod");
         fullname=(EditText) findViewById(R.id.fullname);
-        username = (EditText) findViewById(R.id.username);
+        //username = (EditText) findViewById(R.id.username);
         register = (View) findViewById(R.id.register);
         register.setOnClickListener(this);
         progressDialog = new ProgressDialog(this);
@@ -165,15 +165,15 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         switch (v.getId()) {
             case R.id.register:
-                usernameid=username.getText().toString();
-                if(usernameid.isEmpty()==false){
+                //usernameid=username.getText().toString();
+                //if(usernameid.isEmpty()==false){
                     registerUser();
                     progressDialog.setMessage("Registering user ...");
                     progressDialog.show();
-                }
+               // }
 
-                else
-                    Toast.makeText(this, "Input valid username", Toast.LENGTH_SHORT).show();
+               // else
+                  //  Toast.makeText(this, "Input valid uid", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.ppview:
                 changeProfilepic();
@@ -244,9 +244,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void registerUser() {
-        username.setText("");
+       // username.setText("");
         //Toast
-        DocumentReference user=firebaseFirestore.collection("users").document(usernameid);
+       /* DocumentReference user=firebaseFirestore.collection("users").document(ui);
         user.get().addOnCompleteListener(new OnCompleteListener <DocumentSnapshot> () {
             @Override
             public void onComplete(@NonNull Task < DocumentSnapshot > task) {
@@ -264,13 +264,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
                 }
             }
-        });
+        });*/
+        createNewUser();
     }
 
     private void createNewUser() {
 
         if (imageUri != null) {
-            path = "profilepicuser/" + usernameid + ".png";
+            path = "profilepicuser/" + uid + ".png";
             final StorageReference riversRef = storageReference.child(path);
 
             UploadTask uploadTask = riversRef.putFile(imageUri);
@@ -290,15 +291,15 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 public void onSuccess(Uri uri) {
 
                     profilepicurl=uri+"";
-                    User user=new User(usernameid,profilepicurl,signinmethod,uid,fullnameid);
-                    firebaseFirestore.collection("users").document(usernameid)
+                    User user=new User(profilepicurl,signinmethod,uid,fullnameid);
+                    firebaseFirestore.collection("users").document(uid)
                             .set(user)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     progressDialog.dismiss();
                                     SharedPreferences.Editor editor = pref.edit();
-                                    editor.putString("username",usernameid);
+                                    editor.putString("uid",uid);
                                     editor.putString("profilepic",profilepicurl);
                                     editor.putString("fullname",fullnameid);
                                     editor.commit();
@@ -324,9 +325,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         }
         else {
 
-            User user=new User(usernameid,profilepicurl,signinmethod,uid,fullnameid);
+            User user=new User(profilepicurl,signinmethod,uid,fullnameid);
             //User user=new User(usernameid,profilepicurl);
-            firebaseFirestore.collection("users").document(usernameid)
+            firebaseFirestore.collection("users").document(uid)
                     .set(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -335,7 +336,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                             Toast.makeText(RegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
 
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("username",usernameid);
+                            editor.putString("uid",uid);
                             editor.putString("profilepic",profilepicurl);
                             editor.putString("fullname",fullnameid);
                             editor.commit();
