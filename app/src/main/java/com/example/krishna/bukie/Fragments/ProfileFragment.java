@@ -81,9 +81,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
 
+
         if(uid!=null)
         {
             FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
+
         }
         else {
             Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
@@ -126,6 +128,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         TextView textView=v.findViewById(R.id.fullname);
         textView.setBackground(null);
         textView.setText(fullname);
+        FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("fullname").setValue(fullname);
         //TextView textView=view.findViewById(R.id.textview);
         Glide.with(getActivity())
                 .load(ppic)
@@ -237,6 +240,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getContext(), AuthActivity.class);
                 getContext().startActivity(intent);
                 getActivity().finish();
+
+
                /* Toast.makeText(getContext(), "logout selected", Toast.LENGTH_SHORT)
                         .show();*/
 

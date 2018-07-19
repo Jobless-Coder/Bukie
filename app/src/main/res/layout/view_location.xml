@@ -29,35 +29,40 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:id="@+id/ll1"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="200dp"
             android:id="@+id/locationview1"
             android:gravity="center"
-            android:background="@color/grey"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:orientation="vertical"
             android:layout_height="150dp">
             <ImageView
+                android:scaleType="centerCrop"
+                android:cropToPadding="true"
                 android:layout_gravity="center"
-                android:src="@drawable/location"
                 android:id="@+id/location1"
-                android:layout_width="70dp"
-                android:layout_height="70dp" />
-            <TextView
-                android:id="@+id/locationdesc1"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="bottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+
 
         </android.support.design.widget.CoordinatorLayout>
+        <TextView
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:id="@+id/locationdesc1"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="bottom"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -86,36 +91,40 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:id="@+id/ll21"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="200dp"
             android:id="@+id/locationview2"
             android:gravity="center"
-            android:background="@color/grey"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:orientation="vertical"
             android:layout_height="150dp">
             <ImageView
+                android:scaleType="centerCrop"
+                android:cropToPadding="true"
                 android:layout_gravity="center"
-                android:src="@drawable/location"
                 android:id="@+id/location2"
-                android:layout_width="70dp"
-                android:layout_height="70dp" />
-            <TextView
-                android:id="@+id/locationdesc2"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="bottom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
 
         </android.support.design.widget.CoordinatorLayout>
+        <TextView
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:layout_marginTop="5dp"
+            android:id="@+id/locationdesc2"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="bottom"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+
 
 
     <TextView

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,13 +172,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     }
     String daydetails2;
-        formatter = new SimpleDateFormat("dd MMMM yy");
+        formatter = new SimpleDateFormat("dd MMMM -yy");
         daydetails = formatter.format(current_date);
         daydetails2=formatter.format(previous_date);
        // boolean samedate = DateUtils.is(current_date, previous_date);
     if(daydetails2.compareTo(daydetails)!=0){
 
-
+        daydetails=daydetails.replace("-","'");
         if(messageItem.getType().compareTo("message")==0) {
             messageViewHolder.dayll.setVisibility(View.VISIBLE);
             messageViewHolder.day.setText(daydetails);
@@ -280,6 +281,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.time1.setText(messageItem.getTime());
             //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
+            String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
+            Glide.clear(locationViewHolder.location1);
+            Glide.with(context).load(mapurl).into(locationViewHolder.location1);
+            Log.i("mapppy",mapurl);
+           // locationViewHolder.location1.setImageResource();
         }
        /* else {
             locationViewHolder.rlson1.setVisibility(View.GONE);
@@ -356,6 +362,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             locationViewHolder.time1.setText(messageItem.getTime());
+            String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
+            Glide.clear(locationViewHolder.location1);
+            Glide.with(context).load(mapurl).into(locationViewHolder.location1);
+            Log.i("mapppy",mapurl);
             //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
@@ -432,6 +442,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
             locationViewHolder.time2.setText(messageItem.getTime());
             //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
+            String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
+            Glide.clear(locationViewHolder.location2);
+            Glide.with(context).load(mapurl).into(locationViewHolder.location2);
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
@@ -502,6 +515,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             locationViewHolder.time2.setText(messageItem.getTime());
             //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
+            String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
+            Glide.clear(locationViewHolder.location2);
+            Glide.with(context).load(mapurl).into(locationViewHolder.location2);
+            locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
             locationViewHolder.locationdesc2.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
@@ -516,13 +533,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
                 //galleryVieHolder.gridView1.setColumnWidth();
             }
-            /*else if(messageItem.getImageurl().size()==1){
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
-                float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, r.getDisplayMetrics());
-                galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int)height));
-                galleryVieHolder.gridView2.setNumColumns(messageItem.getImageurl().size());
 
-            }*/
             else {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 315, r.getDisplayMetrics());
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -606,6 +617,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public View locationview1,locationview2,dayll;
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2,day;
+        public ImageView location1,location2;
+      //  public String mapUrl="https://maps.googleapis.com/maps/api/staticmap?center="+22.7672+","+88.3843+"&zoom=16&size=150x150&markers=color:red|size:mid|"+22.7672+","+88.3843+"&key="+String.valueOf(R.string.API_KEY);
 
         public LocationViewHolder(View itemView) {
             super(itemView);
@@ -620,6 +633,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
             time2=itemView.findViewById(R.id.time2);
             dayll=itemView.findViewById(R.id.dayll);
             day=itemView.findViewById(R.id.day);
+            location1=itemView.findViewById(R.id.location1);
+            location2=itemView.findViewById(R.id.location2);
 
             locationview1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -633,6 +648,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     onClickListener.onLocation(v,getAdapterPosition());
                 }
             });
+        }
+
+        public String getMapUrl(String latitude,String longitude) {
+            String mapUrl="https://maps.googleapis.com/maps/api/staticmap?center="+latitude+","+longitude+"&zoom=16&size=150x150&markers=color:red|size:mid|"+latitude+","+longitude+"&key="+context.getString(R.string.API_KEY);
+
+            return mapUrl;
         }
     }
     public class CameraViewHolder extends RecyclerView.ViewHolder{
