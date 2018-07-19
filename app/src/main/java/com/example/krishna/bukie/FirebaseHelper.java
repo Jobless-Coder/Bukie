@@ -112,7 +112,7 @@ private CollectionReference collectionReference;
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
 
-
+                        //documentReference.getId();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -124,37 +124,6 @@ private CollectionReference collectionReference;
     }
 
     public void startListening() {
-       /* if(isListening) return;
-        ddref = FirebaseDatabase.getInstance().getReference().child("chats/"+refID);
-        childEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                MessageItem chat = dataSnapshot.getValue(MessageItem.class);
-                listener.receiveIncomingMessage(chat);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        ddref.addChildEventListener(childEventListener);
-        isListening = true;*/
         if (isListening) return;
       Query query=firebaseFirestore.collection("allchats").document("chats").collection(refID).orderBy("timestamp");
       listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -168,12 +137,15 @@ private CollectionReference collectionReference;
                 for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
                     switch (dc.getType()) {
                         case ADDED:
-                            MessageItem chat=dc.getDocument().toObject(MessageItem.class);;
+                            MessageItem chat=dc.getDocument().toObject(MessageItem.class);
                             //Log.i("MessageChati",chat.getMessage_body());
-                            listener.receiveIncomingMessage(chat);
+                            listener.receiveIncomingMessage(chat, dc.getDocument().getId());
                             // Log.d(TAG, "New city: " + dc.getDocument().getData());
                             break;
                         case MODIFIED:
+                            MessageItem ch = dc.getDocument().toObject(MessageItem.class);
+                            listener.updateMessageStatus(ch);
+
                             // Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
                         case REMOVED:

@@ -50,6 +50,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -232,14 +233,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, new IncomingMessageListener() {
-            public void receiveIncomingMessage(MessageItem ch) {
-                messageItemList.add(ch);
+            public void receiveIncomingMessage(MessageItem ch, String id) {
+                if (!ch.getUid().equals(username))
+                {
+                    FirebaseFirestore.getInstance()
+                            .collection("allchats")
+                            .document("chats")
+                            .collection(myChats.getChatid())
+                            .document(id)
+                            .update("status","seen");
+                    ch.setStatus("seen");
+                    Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
+                }
 
+                messageItemList.add(ch);
 
                 adapter.notifyDataSetChanged();
 
-
                 recyclerView.scrollToPosition(messageItemList.size() - 1);
+            }
+
+            public void updateMessageStatus(MessageItem ch)
+            {
+                for(int i = messageItemList.size()-1;i>=0;i--){
+                    MessageItem ms = messageItemList.get(i);
+                    if(ms.getTimestamp().equals(ch.getTimestamp()))
+                    {
+                        ms.setStatus("read");
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
             }
 
         });

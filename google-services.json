@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "854258071480-3f3nrkibat329uoc8cgcpbao3njblngm.apps.googleusercontent.com",
+          "client_id": "854258071480-ca0phunsonb2n1ba73q9el225p60s82e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.krishna.bukie",
+            "certificate_hash": "76df6a5ef7a755564895ac48c67ff737beb25b7a"
+          }
+        },
+        {
+          "client_id": "854258071480-h8jbmdomg8u36o9ejnb2ri00ai20shhh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.krishna.bukie",
@@ -25,15 +33,11 @@
         {
           "client_id": "854258071480-fra268gftjp6idsppv0vs253r2oq0n2d.apps.googleusercontent.com",
           "client_type": 3
-        },
-        {
-          "client_id": "854258071480-fra268gftjp6idsppv0vs253r2oq0n2d.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDz0sgfUgHlAsXklfirMXibIBThPaDCAzU"
+          "current_key": "AIzaSyCQlv-wvaVmbg2SnsdkcQj6fzdl5nH3YnA"
         }
       ],
       "services": {
@@ -44,7 +48,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "854258071480-fra268gftjp6idsppv0vs253r2oq0n2d.apps.googleusercontent.com",
+              "client_id": "854258071480-c1uvq3uttcca72d7md02nutvb8ej22et.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

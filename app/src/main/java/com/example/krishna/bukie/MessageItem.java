@@ -5,9 +5,19 @@ import java.util.List;
 public class MessageItem {
     private String message_body;
     private String time;
-    private String uid;
+    private String uid; //this is the fucking sender u bitch!
     private String timestamp;
     public Geopoint geopoint;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String status;
 
     public Geopoint getGeopoint() {
         return geopoint;
@@ -19,6 +29,7 @@ public class MessageItem {
         this.timestamp = timestamp;
         this.geopoint=geoPoint;
         this.type = type;
+        this.status = "sent";
     }
 
     public List<String> getImageurl() {
@@ -35,6 +46,7 @@ public class MessageItem {
         this.timestamp = timestamp;
         this.type = type;
         this.imageurl = imageurl;
+        this.status = "sent";
     }
 
     public String getType() {
@@ -47,7 +59,7 @@ public class MessageItem {
         this.uid = uid;
         this.timestamp = timestamp;
         this.type=type;
-
+        this.status = "sent";
     }
 
     public Contact getContact() {
@@ -60,12 +72,7 @@ public class MessageItem {
         this.timestamp = timestamp;
         this.contact = contact;
         this.type = type;
-    }
-
-    public MessageItem(String message_body, String time, String uid) {
-        this.message_body = message_body;
-        this.time = time;
-        this.uid = uid;
+        this.status = "sent";
     }
 
     public String getTimestamp() {
