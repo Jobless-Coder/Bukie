@@ -5,7 +5,7 @@ import java.util.List;
 public class MessageItem {
     private String message_body;
     private String time;
-    private String username;
+    private String uid;
     private String timestamp;
     public Geopoint geopoint;
 
@@ -13,9 +13,9 @@ public class MessageItem {
         return geopoint;
     }
 
-    public MessageItem(String time, String username, String timestamp, Geopoint geoPoint, String type) {
+    public MessageItem(String time, String uid, String timestamp, Geopoint geoPoint, String type) {
         this.time = time;
-        this.username = username;
+        this.uid = uid;
         this.timestamp = timestamp;
         this.geopoint=geoPoint;
         this.type = type;
@@ -29,9 +29,9 @@ public class MessageItem {
      private String type;
      private List<String> imageurl;
 
-    public MessageItem(String time, String username, String timestamp, String type, List<String> imageurl) {
+    public MessageItem(String time, String uid, String timestamp, String type, List<String> imageurl) {
         this.time = time;
-        this.username = username;
+        this.uid = uid;
         this.timestamp = timestamp;
         this.type = type;
         this.imageurl = imageurl;
@@ -41,10 +41,10 @@ public class MessageItem {
         return type;
     }
 
-    public MessageItem(String message_body, String time, String username, String timestamp, String type) {
+    public MessageItem(String message_body, String time, String uid, String timestamp, String type) {
         this.message_body = message_body;
         this.time = time;
-        this.username = username;
+        this.uid = uid;
         this.timestamp = timestamp;
         this.type=type;
 
@@ -54,18 +54,18 @@ public class MessageItem {
         return contact;
     }
 
-    public MessageItem(String time, String username, String timestamp, Contact contact, String type) {
+    public MessageItem(String time, String uid, String timestamp, Contact contact, String type) {
         this.time = time;
-        this.username = username;
+        this.uid = uid;
         this.timestamp = timestamp;
         this.contact = contact;
         this.type = type;
     }
 
-    public MessageItem(String message_body, String time, String username) {
+    public MessageItem(String message_body, String time, String uid) {
         this.message_body = message_body;
         this.time = time;
-        this.username = username;
+        this.uid = uid;
     }
 
     public String getTimestamp() {
@@ -82,8 +82,8 @@ public class MessageItem {
         return message_body;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUid() {
+        return uid;
     }
 
     public String getTime() {

@@ -20,7 +20,7 @@
         android:theme="@style/BaseTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
-        <include layout="@layout/toolbar_chats"/>
+        <include layout="@layout/toolbar_mychats"/>
     </android.support.v7.widget.Toolbar>
 </android.support.design.widget.AppBarLayout>
     <RelativeLayout

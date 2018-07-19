@@ -13,12 +13,16 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ViewPagerAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
     //private int [] images;
    // private String [] desc;
-    private BookAds bookAds;
+   // private BookAds bookAds;
+    private  List<String> booksUrl=new ArrayList<>();
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
@@ -38,8 +42,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         //bookAds.getBookpicslist().add(bookAds.getCoverpic());
         ImageView imageView=view.findViewById(R.id.imageView);
         //TextView textView=view.findViewById(R.id.textview);
+        //if()
         Glide.with(context)
-                .load(bookAds.getBookpicslist().get(position))
+                .load(booksUrl.get(position))
                 .into(imageView);
         //imageView.setImageResource(images[position]);
        // textView.setText(desc[position]);
@@ -47,16 +52,16 @@ public class ViewPagerAdapter extends PagerAdapter {
         return view;
     }
 
-    public ViewPagerAdapter(Context context, BookAds bookAds) {
+    public ViewPagerAdapter(Context context, List<String> booksUrl) {
         this.context = context;
-        this.bookAds=bookAds;
+        this.booksUrl=booksUrl;
     }
 
 
 
     @Override
     public int getCount() {
-        return bookAds.getBookpicslist().size();
+        return booksUrl.size();
     }
 
     @Override

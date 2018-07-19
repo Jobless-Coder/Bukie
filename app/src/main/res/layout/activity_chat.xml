@@ -13,14 +13,14 @@
         android:layout_height="wrap_content">
     <android.support.v7.widget.Toolbar
         android:elevation="4dp"
-
+        android:background="@color/light_grey"
         android:id="@+id/toolbar_chats"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:theme="@style/BaseTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
-        <include layout="@layout/toolbar_conversation"/>
+        <include layout="@layout/toolbar_activity_chat"/>
     </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

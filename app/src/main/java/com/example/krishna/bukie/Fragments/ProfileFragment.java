@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
@@ -61,7 +62,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private List<String> myadspathlist;
     private View v,myads,mywishlist;
     private boolean myadsfrag=true;
-    private String username,ppic,fullname;
+    private String uid,ppic,fullname;
+    private Myadswishadapter adapter;
+    private ListenerRegistration listenerRegistration;
 
     public ProfileFragment() {
     }
@@ -76,114 +79,86 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         String msg = getString(R.string.msg_token_fmt, token);
         Log.e("token", msg);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
 
-        if(username!=null)
+
+        if(uid!=null)
         {
-            FirebaseDatabase.getInstance().getReference().child("user").child(username).child("token").setValue(token);
+            FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
+
         }
         else {
             Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
         }
         setHasOptionsMenu(true);
     }
-    private void replaceFragment(Fragment fragment) {
+    /*private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frame, fragment);
 
         transaction.commit();
-    }
+    }*/
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View v=inflater.inflate(R.layout.fragment_profile, container,false);
+        View tabsview=getActivity().findViewById(R.id.header);
+        tabsview.setVisibility(View.GONE);
         myads=v.findViewById(R.id.myads);
         mywishlist=v.findViewById(R.id.mywishlist);
         myads.setOnClickListener(this);
         mywishlist.setOnClickListener(this);
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
-        recyclerView.setHasFixedSize(true);
+
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-       // viewPager = (ViewPager) v.findViewById(R.id.viewpager);
-       /* tabLayout = (TabLayout) v.findViewById(R.id.tabs);
-        //mFragmentPagerAdapter adapter = new mFragmentPagerAdapter(getChildFragmentManager());
-        //viewPager.setAdapter(adapter);
-        //tabLayout.setupWithViewPager(viewPager);
-        //new setAdapterTask().execute();
-        //viewPager.setAdapter(adapter);
-        tabLayout.addTab(tabLayout.newTab().setText("My ads"));
-        tabLayout.addTab(tabLayout.newTab().setText("My wishlist"));
-        //tabLayout.addTab(tabLayout.newTab().setText("Games"));
-        replaceFragment(new MyAdsFragment());*/
 
         myads.setSelected(true);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         fullname=sharedPreferences.getString("fullname",null);
         ppic=sharedPreferences.getString("profilepic",null);
-        username=sharedPreferences.getString("username",null);
+        uid=sharedPreferences.getString("uid",null);
         ImageView imageView=v.findViewById(R.id.profilepic);
         TextView textView=v.findViewById(R.id.fullname);
         textView.setBackground(null);
         textView.setText(fullname);
+        FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("fullname").setValue(fullname);
         //TextView textView=view.findViewById(R.id.textview);
         Glide.with(getActivity())
                 .load(ppic)
                 .into(imageView);
+        myadsfrag=true;
         setupRecyclerViewContent("myads");
 
 
 
-        /*tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    replaceFragment(new MyAdsFragment());
-                } else{
-                    replaceFragment(new MyWishlistFragment());
-                }
 
-
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
 
 
         return v;
     }
 
-    private void setupRecyclerViewContent(String s) {
+    private void setupRecyclerViewContent(final String s) {
+        recyclerView.setHasFixedSize(true);
        myadslist=new ArrayList<BookAds>();
-       myadspathlist=new ArrayList<String>();
-
-        mDatabase.child("user").child(username).child(s).addValueEventListener(new ValueEventListener() {
+      // myadspathlist=new ArrayList<String>();
+        adapter=new Myadswishadapter(myadslist,getContext());
+        recyclerView.setAdapter(adapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
+        mDatabase.child("users").child(uid).child(s).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {
-                    //String path=dataSnapshot1.getValue().toString();
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                   myadspathlist.add(dataSnapshot1.getValue().toString());
-                    // Log.i("hello2",dataSnapshot1.getValue().toString());
-                    getAds(myadspathlist);
-                    /*getAds(path);
-                    getAds(path);*/
+                    String adid=dataSnapshot1.getValue().toString();
+                    getAds(adid,s);
+
                 }
 
 
@@ -197,29 +172,36 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getAds(final List<String> myadspathlist) {
-        for (String path:myadspathlist){
+    public void getAds(/*final List<String> myadspathlist*/final String path, final String s) {
+        /*adapter=new Myadswishadapter(myadslist,getContext());
+        recyclerView.setAdapter(adapter);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);*/
+       // for (String path:myadspathlist){
             DocumentReference book=firebaseFirestore.collection("bookads").document(path);
             book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task< DocumentSnapshot > task) {
 
                     if (task.isSuccessful()) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        BookAds bookAds=snapshot.toObject(BookAds.class);
-                        myadslist.add(bookAds);
-                        //Toast.makeText(getContext(), ""+myadslist.size(), Toast.LENGTH_SHORT).show();
-                        if (myadspathlist.size()==myadslist.size())
-                        {
-                            Myadswishadapter adapter=new Myadswishadapter(myadslist,getContext());
-                            recyclerView.setAdapter(adapter);
-                            GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
-                            recyclerView.setLayoutManager(manager);
+                       // Toast.makeText(getContext(), ""+path.equals("myads")+s, Toast.LENGTH_SHORT).show();
+                        if(s.equals("myads")&&myadsfrag==true||s.equals("mywishlist")&&myadsfrag==false) {
+                            DocumentSnapshot snapshot = task.getResult();
+                            BookAds bookAds = snapshot.toObject(BookAds.class);
+                            myadslist.add(bookAds);
+                            adapter.notifyDataSetChanged();
                         }
+
                     }
                 }
             });
-        }
+     /* listenerRegistration=book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+          @Override
+          public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+          }
+      });*/
+
 
 
     }
@@ -258,13 +240,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getContext(), AuthActivity.class);
                 getContext().startActivity(intent);
                 getActivity().finish();
+
+
                /* Toast.makeText(getContext(), "logout selected", Toast.LENGTH_SHORT)
                         .show();*/
 
                 break;
             case R.id.settings:
-                Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
-                        .show();
+                //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
+                   //     .show();
                 break;
 
             default:
@@ -290,6 +274,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     myadsfrag=true;
                     myads.setSelected(true);
                     mywishlist.setSelected(false);
+                    myadslist.clear();
+                    adapter.notifyDataSetChanged();
                     setupRecyclerViewContent("myads");
 
                 }
@@ -300,6 +286,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     myads.setSelected(false);
                     mywishlist.setSelected(true);
                     myadsfrag=false;
+                    myadslist.clear();
+                    adapter.notifyDataSetChanged();
                     setupRecyclerViewContent("mywishlist");
                 }
 

@@ -18,11 +18,11 @@
         android:paddingLeft="4.0dip"
         android:paddingRight="0.0dip"
         android:paddingTop="0.0dip" >
-        <ImageView
+        <!--ImageView
             android:id="@+id/filter"
             android:src="@drawable/filter"
             android:layout_width="40dp"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent" /-->
 
 
         <TextView

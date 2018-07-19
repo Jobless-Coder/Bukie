@@ -29,6 +29,10 @@ PostnewadActivity context;
         init();
     }
 
+    public Uri getImageLink() {
+        return imageLink;
+    }
+
     public SquareImageView(PostnewadActivity context, @Nullable AttributeSet attrs) {
 
         super(context);

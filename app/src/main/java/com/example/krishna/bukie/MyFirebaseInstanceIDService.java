@@ -63,10 +63,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
         SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        String username=sharedPreferences.getString("username",null);
-        if(username!=null)
+        String uid=sharedPreferences.getString("uid",null);
+        if(uid!=null)
         {
-            FirebaseDatabase.getInstance().getReference().child("user").child(username).child("token").setValue(token);
+            FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
         }
         Log.e("Token: ",token);
     }

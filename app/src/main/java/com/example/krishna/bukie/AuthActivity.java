@@ -38,6 +38,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -54,12 +55,12 @@ import java.util.Arrays;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN =1 ;
-    private static final String TAG = "Google";
+    private static final String TAG = "Googleex";
     private int height, width;
     TextView hello, bye, forgotpass;
     boolean helloInMiddle;
     int big, small, hsm, hl, bsm, bl, loginsize, GREY;
-    LinearLayout loginflow, signflow,verifyemail;
+    LinearLayout loginflow, signflow,verifyemail,verifyemail2;
     View facebookbtn, googlebtn, signinbtn, signupbtn,sendemail;
     EditText regemail, regpass, repregpass, loginpass, loginemail,forgotemail;
     String email, password,reppassword,signinmethod;
@@ -69,7 +70,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignIn account;
     FirebaseUser currentUser;
-    View verifybtn;
+    TextView verifybtn;
     private FirebaseFirestore firebaseFirestore;
 
     @Override
@@ -77,11 +78,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onCreate(savedInstanceState);
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
-        String username=sharedPreferences.getString("username",null);
+        String userid=sharedPreferences.getString("uid",null);
 
 
-     //   Toast.makeText(this, ""+username, Toast.LENGTH_SHORT).show();
-        if(username!=null){
+     //   Toast.makeText(this, ""+uid, Toast.LENGTH_SHORT).show();
+        if(userid!=null){
             Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
             startActivity(intent);
             finish();
@@ -118,9 +119,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         signupbtn.setOnClickListener(this);
         verifyemail=findViewById(R.id.verifyemail);
         verifybtn=findViewById(R.id.verifybtn);
-        verifybtn.setOnClickListener(this);
+        verifyemail.setOnClickListener(this);
         progressDialog = new ProgressDialog(this);
         firebaseFirestore=FirebaseFirestore.getInstance();
+        firebaseAuth=FirebaseAuth.getInstance();
 
         //google sign in
 
@@ -137,14 +139,17 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         // Handle success
                         handleFacebookAccessToken(loginResult.getAccessToken());
 
+
                     }
 
                     @Override
                     public void onCancel() {
+                        progressDialog.dismiss();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        progressDialog.dismiss();
                     }
                 }
         );
@@ -243,6 +248,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
     //google sign in
     private void signIn() {
+        progressDialog.setMessage("Signing in ...");
+        progressDialog.show();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -285,6 +292,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
                             if(isNew)
                             {
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","google");
                                 startActivity(intent);
@@ -303,7 +311,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
                                                         SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("username",document.getData().get("username").toString());
+                                                        editor.putString("uid",document.getData().get("uid").toString());
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
@@ -315,6 +323,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -323,14 +332,21 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
                         } else {
-                            Toast.makeText(AuthActivity.this, "Sign in failure , please try again",
-                                    Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            /*Toast.makeText(AuthActivity.this, "Sign in failure , please try again"+task.getResult()+task.getException(),
+                                    Toast.LENGTH_SHORT).show();*/
+                            Log.e("jkl",task.getResult()+"except"+task.getException());
 
                         }
 
 
                     }
-                });
+                }).addOnCanceledListener(new OnCanceledListener() {
+           @Override
+           public void onCanceled() {
+               progressDialog.dismiss();
+           }
+       });
     }
     @Override
     public void onStart() {
@@ -379,6 +395,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.makeText(AuthActivity.this, "Couldnot register pls try again", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }).addOnCanceledListener(new OnCanceledListener() {
+                @Override
+                public void onCanceled() {
+                    progressDialog.dismiss();
+                }
             });
 
 
@@ -394,9 +415,62 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void hello() {
-        findViewById(R.id.loginscreen).setVisibility(View.GONE);
-        findViewById(R.id.verifyemail).setVisibility(View.VISIBLE);
+    public void hello() {
+        this.findViewById(R.id.loginscreen).setVisibility(View.GONE);
+        verifyemail2=findViewById(R.id.verifyemail);
+        verifyemail2.setVisibility(View.VISIBLE);
+        final int[] k = {0};
+        verifyemail2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.i("nibbaaa","jkl");
+              //  Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+
+                if (!firebaseAuth.getCurrentUser().isEmailVerified()){
+                    verifyEmail(k[0]);
+                 //   Log.i("nibbaaa","hellol");
+
+                }
+
+
+
+            }
+        });
+        if (!firebaseAuth.getCurrentUser().isEmailVerified()){
+            verifyEmail( k[0]++);
+        }
+        else {
+            Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+    }
+    public void verifyEmail(int k){
+        if(k!=0){
+            TextView btn=this.findViewById(R.id.verifybtn);
+            btn.setText("Resend Email");
+            Log.i("nibbaa","k="+k);
+        }
+
+
+        FirebaseUser user=firebaseAuth.getCurrentUser();
+
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AuthActivity.this, "Email sent to user, please verify!", Toast.LENGTH_SHORT).show();
+                           // Log.d("nibbaa1", "Email sent.");
+
+                        }
+                        else {
+                          //  Log.d("nibbaa1", "Email not sent.");
+                        }
+                    }
+                });
+
     }
 
     //sign in with email
@@ -435,7 +509,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                     Toast.makeText(AuthActivity.this, ""+UID, Toast.LENGTH_SHORT).show();
                                                     SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                    editor.putString("username",document.getData().get("username").toString());
+                                                    editor.putString("uid",document.getData().get("uid").toString());
                                                     editor.putString("fullname",document.getData().get("fullname").toString());
                                                     editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                     editor.commit();
@@ -477,6 +551,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
                             if(isNew)
                             {
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","facebook");
                                 startActivity(intent);
@@ -495,7 +570,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                         Toast.makeText(AuthActivity.this, ""+UID, Toast.LENGTH_SHORT).show();
                                                         SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
                                                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("username",document.getData().get("username").toString());
+                                                        editor.putString("uid",document.getData().get("uid").toString());
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
@@ -507,12 +582,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
+                                progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
 
                         } else {
+                            progressDialog.dismiss();
 
                             Toast.makeText(AuthActivity.this, "Sign in failure,please try again",
                                     Toast.LENGTH_SHORT).show();
@@ -521,7 +598,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
                     }
-                });
+                }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+                progressDialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -538,6 +620,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 signIn();
                 break;
             case R.id.facebookbtn:
+                progressDialog.setMessage("Signing in ...");
+                progressDialog.show();
                 LoginManager.getInstance().logInWithReadPermissions(
                         this,
                         Arrays.asList("email", "public_profile")
@@ -549,7 +633,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.sendemail:
                 sendEmailForForgotPassword();
                 break;
-            case R.id.verifybtn:
+            /*case R.id.verifyemail2:
                 Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
                 int k=0;
                 while (!firebaseAuth.getCurrentUser().isEmailVerified()){
@@ -562,7 +646,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 finish();
 
-                break;
+                break;*/
             default:
                 break;
         }
@@ -588,30 +672,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             Toast.makeText(AuthActivity.this, "Cannot send email,retry!", Toast.LENGTH_SHORT).show();
                         }
                     }
-                });
+                }).addOnCanceledListener(new OnCanceledListener() {
+            @Override
+            public void onCanceled() {
+                progressDialog.dismiss();
+            }
+        });
         forgotemail.setText("");
 
     }
-    private void verifyEmail(int k){
-        if(k!=0){
-            //Button btn=this.findViewById(R.id.verifybtn);
-            //btn.setText("Resend Email");
-        }
 
-
-        FirebaseUser user=firebaseAuth.getCurrentUser();
-
-        user.sendEmailVerification()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(AuthActivity.this, "Email sent to user, please verify!", Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "Email sent.");
-                        }
-                    }
-                });
-    }
 
     private void forgotPassword() {
         this.findViewById(R.id.loginscreen).setVisibility(View.GONE);
@@ -629,7 +699,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void onVerifyButtonClick(View view) {
+    /*public void onVerifyButtonClick(View view) {
         int k=0;
         Toast.makeText(this, "kkkk", Toast.LENGTH_SHORT).show();
         while (!firebaseAuth.getCurrentUser().isEmailVerified()){
@@ -641,5 +711,5 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("signinmethod","email");
         startActivity(intent);
         finish();
-    }
+    }*/
 }

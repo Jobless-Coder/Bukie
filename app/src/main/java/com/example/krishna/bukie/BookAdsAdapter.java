@@ -14,6 +14,9 @@ package com.example.krishna.bukie;
         import android.widget.TextView;
 
         import com.bumptech.glide.Glide;
+        import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+        import com.bumptech.glide.request.RequestListener;
+        import com.bumptech.glide.request.target.Target;
         import com.facebook.shimmer.ShimmerFrameLayout;
 
         import java.util.List;
@@ -46,7 +49,31 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
         final BookAds bookAds=bookAdsList.get(position);
         if(holder.bookprice.getBackground()!=null) {
             holder.shimmerFrameLayout.startShimmerAnimation();
-            Handler handler = new Handler();
+            Glide.with(context)
+                    .load(bookAds.getBookcoverpic()).listener(new RequestListener<String, GlideDrawable>() {
+                @Override
+                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                    holder.bookcategory.setBackground(null);
+                    holder.bookpic.setBackground(null);
+                    holder.bookdate.setBackground(null);
+                    holder.booktitle.setBackground(null);
+                    holder.bookprice.setBackground(null);
+
+                    holder.booktitle.setText(bookAds.getBooktitle());
+                    holder.bookprice.setText(bookAds.getPrice());
+                    holder.bookdate.setText(bookAds.getDate());
+                    holder.bookcategory.setText(bookAds.getBookcategory());
+                    return false;
+                }
+            })
+                    .into(holder.bookpic);
+            /*Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -57,21 +84,19 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
                     holder.bookdate.setBackground(null);
                     holder.booktitle.setBackground(null);
                     holder.bookprice.setBackground(null);
-                    Glide.with(context)
-                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
-                            .into(holder.bookpic);
+
                     holder.booktitle.setText(bookAds.getBooktitle());
                     holder.bookprice.setText(bookAds.getPrice());
                     holder.bookdate.setText(bookAds.getDate());
                     holder.bookcategory.setText(bookAds.getBookcategory());
                     //bookAds.setShowShimmer(false);
                 }
-            }, 1000);
+            }, 1000);*/
         }
         else{
 
             Glide.with(context)
-                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
+                    .load(bookAds.getBookcoverpic())
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getBooktitle());
             holder.bookprice.setText(bookAds.getPrice());

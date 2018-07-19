@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize">
         <android.support.v7.widget.Toolbar
-            android:background="@color/white"
+            android:background="@color/light_grey"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -47,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
+            android:visibility="gone"
             android:textAllCaps="false"
             android:text="pick image"
             android:onClick="goToImageActivity"
@@ -84,6 +85,7 @@
                 android:layout_height="wrap_content">
 
                 <android.support.v7.widget.CardView
+                    android:onClick="selectCoverImage"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="10dp"
@@ -165,6 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:backgroundTint="@color/white"
                 android:id="@+id/title"
                 android:hint="Book Name"
                 android:layout_width="match_parent"
@@ -174,6 +177,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:id="@+id/category"
+                android:hint="Category"
+                android:backgroundTint="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:backgroundTint="@color/white"
                 android:id="@+id/author"
                 android:hint="Author (may be blank)"
                 android:layout_width="match_parent"
@@ -185,6 +199,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:backgroundTint="@color/white"
                 android:id="@+id/publisher"
                 android:hint="Publisher (may be blank)"
                 android:layout_width="match_parent"
@@ -196,16 +211,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_gravity="center"
-                android:textSize="30sp"
-                android:text="\u20B9"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="bottom"
+                android:paddingBottom="10dp"
+                android:textSize="20sp"
+                android:text="₹"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <android.support.design.widget.TextInputLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <EditText
+                    android:gravity="center_vertical"
                     android:id="@+id/price"
+                    android:backgroundTint="@color/white"
                     android:hint="price"
                     android:inputType="number"
                     android:ems="5"
@@ -214,15 +233,32 @@
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:textSize="18sp"
+            android:text="Enter Additional Details"
+            android:layout_height="wrap_content" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
+            app:hintAnimationEnabled="false"
+            app:counterEnabled="true"
+            android:layout_gravity="bottom"
+            app:counterMaxLength="150"
+            android:background="@android:color/transparent"
+
             android:layout_height="wrap_content">
-            <EditText
-                android:gravity="top"
-                android:hint="enter additional details"
+            <android.support.design.widget.TextInputEditText
                 android:background="@drawable/border_bg"
-                android:lines="4"
+                android:layout_gravity="bottom"
+
+                android:padding="10dp"
+                android:gravity="top"
+                android:lines="5"
+                android:textSize="14sp"
+
+                android:id="@+id/desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>

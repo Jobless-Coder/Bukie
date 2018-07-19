@@ -1,10 +1,8 @@
 package com.example.krishna.bukie;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,12 +17,12 @@ public String bookcoverpic;
 public String bookpublisher;
 public String bookauthor;
 public String bookdesc;
-public  String seller;
+public  String sellerid;
 public String adid;
 public String sellerpic;
 public String sellerfullname;
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String seller, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
@@ -33,7 +31,7 @@ public String sellerfullname;
         this.bookpublisher = bookpublisher;
         this.bookauthor = bookauthor;
         this.bookdesc = bookdesc;
-        this.seller = seller;
+        this.sellerid = sellerid;
         this.adid = adid;
         this.sellerpic = sellerpic;
         this.sellerfullname = sellerfullname;
@@ -46,12 +44,12 @@ public String sellerfullname;
         return sellerfullname;
     }
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String seller, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
+    public BookAds(String date, String booktitle, String price, String bookcategory, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
         this.bookcategory = bookcategory;
-        this.seller = seller;
+        this.sellerid = sellerid;
         this.adid = adid;
         this.sellerpic = sellerpic;
         this.sellerfullname = sellerfullname;
@@ -63,8 +61,8 @@ public String sellerfullname;
         return sellerpic;
     }
 
-    public String getSeller() {
-        return seller;
+    public String getSellerid() {
+        return sellerid;
     }
 
     public String getAdid() {
@@ -93,7 +91,7 @@ public BookAds(){
         this.bookpicslist = new ArrayList<String>();
         in.readList(bookpicslist,String.class.getClassLoader());
         this.adid=in.readString();
-        this.seller=in.readString();
+        this.sellerid =in.readString();
         this.sellerpic=in.readString();
         this.sellerfullname=in.readString();
         this.bookcoverpic=in.readString();
@@ -166,7 +164,7 @@ public BookAds(){
         //dest.writeString(this.coverpic);
         dest.writeList(this.bookpicslist);
         dest.writeString(this.adid);
-        dest.writeString(this.seller);
+        dest.writeString(this.sellerid);
         dest.writeString(this.sellerpic);
         dest.writeString(this.sellerfullname);
         dest.writeString(this.bookcoverpic);
@@ -177,6 +175,15 @@ public BookAds(){
         this.bookauthor=in.readString();
         this.bookpublisher=in.readString();
         this.bookdesc=in.readString();*/
+
+    }
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof BookAds)) return false;
+        BookAds o = (BookAds) obj;
+        return this.getAdid() .equals(o.getAdid());
+        // o.buyerfullname=this.buyerfullname;
 
     }
 }
