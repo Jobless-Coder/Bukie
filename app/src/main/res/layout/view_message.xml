@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:layout_height="wrap_content"
     android:layout_width="wrap_content"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/dayll"
@@ -19,100 +20,161 @@
     android:layout_marginBottom="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/rellayoutson1"
         android:layout_alignParentRight="true"
         android:background="@drawable/chat_bubbles1"
-
+        android:layout_marginLeft="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <!--com.vanniktech.emoji.EmojiTextView
-        android:visibility="visible"
-        android:paddingBottom="20dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/message_body1"
-        android:textColor="#ffffff"
-        android:minWidth="70dp"
-        android:textSize="14sp"
-        /-->
-        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-            android:visibility="visible"
-            android:paddingBottom="20dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
+        <LinearLayout
+            android:id="@+id/llx"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/message_body1"
-            android:textColor="#ffffff"
-            android:minWidth="70dp"
-            android:textSize="14sp"
-            />
+            android:layout_height="wrap_content">
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
+                <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                    android:visibility="visible"
+                    android:paddingBottom="0dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/message_body1"
+                    android:textColor="#ffffff"
+                    android:minWidth="95dp"
+                    android:textSize="16sp"
+                    emojicon:emojiconSize="22sp"
+                    />
+                <!--
+                <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                android:visibility="visible"
+                android:paddingBottom="20dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/message_body1"
+                android:textColor="#ffffff"
+                android:minWidth="70dp"
+                android:textSize="14sp"
+                />
+                -->
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="right"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    <TextView
+                <TextView
+                    android:id="@+id/seenstatustext"
+                    android:layout_gravity="left"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="10sp"
+                    android:textStyle="italic"
+                    android:textColor="@color/white"
+                    android:text="sent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        android:paddingRight="10dp"
-        android:paddingBottom="5dp"
-        android:textColor="@color/white"
-        android:layout_alignRight="@+id/ll1"
-        android:layout_alignBottom="@+id/ll1"
-        android:id="@+id/time1"
-        android:textSize="8sp"
-        android:textStyle="italic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginRight="4dp"
+                    android:gravity="right"
+                    android:paddingBottom="5dp"
+                    android:textColor="@color/white"
+                    android:id="@+id/time1"
+                    android:textSize="10sp"
+                    android:textStyle="italic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!--
+                <RelativeLayout
+                    android:visibility="visible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/sent"
+                        android:visibility="visible"
+                        android:tint="@color/grey"
+                        android:src="@drawable/tick1"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp" />
+
+                    <ImageView
+                        android:visibility="visible"
+                        android:id="@+id/seen"
+                        android:layout_marginLeft="3dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/tick1"
+                        android:tint="@color/grey" />
+                </RelativeLayout>
+                -->
+
+            </LinearLayout>
+        </LinearLayout>
+
     </RelativeLayout>
     <RelativeLayout
         android:visibility="gone"
         android:id="@+id/rellayoutson2"
+        android:layout_marginRight="30dp"
         android:background="@drawable/chat_bubbles3"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/ll21"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-            android:paddingBottom="20dp"
-            android:visibility="visible"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/message_body2"
-            android:textColor="@color/white"
-            android:minWidth="70dp"
-            android:textSize="14sp"
-            />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/ll21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                    android:visibility="visible"
+                    android:paddingBottom="0dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="3dp"
+                    emojicon:emojiconSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/message_body2"
+                    android:textColor="@color/white"
+                    android:minWidth="70dp"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+            <TextView
+                android:layout_gravity="right"
+                android:layout_marginRight="12dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/white"
+                android:id="@+id/time2"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
-
-        <TextView
-            android:paddingRight="10dp"
-            android:paddingBottom="5dp"
-            android:layout_alignBottom="@id/ll21"
-            android:layout_alignRight="@id/ll21"
-            android:textColor="@color/white"
-            android:id="@+id/time2"
-            android:textSize="8sp"
-            android:textStyle="italic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
     </RelativeLayout>
 
 </RelativeLayout>

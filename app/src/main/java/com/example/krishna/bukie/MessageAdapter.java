@@ -240,17 +240,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
     if(current_user.compareTo(uid)==0&&current_user.compareTo(previous_user)==0)
     {
         if(messageItem.getType().compareTo("message")==0) {
-            messageViewHolder.rlson2.setVisibility(View.GONE);
+            messageViewHolder.rlson2.setVisibility(View.INVISIBLE);
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-            messageViewHolder.time1.setText(messageItem.getTime());
-            //messageViewHolder.messagebody1.setVisibility(View.VISIBLE);
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
+            messageViewHolder.time1.setText(messageItem.getTime());
+            messageViewHolder.seenstatustext.setText(messageItem.getStatus());
 
         }
-        /*else {
-            messageViewHolder.rlson1.setVisibility(View.GONE);
-        }*/
+
         if(messageItem.getType().compareTo("contact")==0){
             contactViewHolder.rlson2.setVisibility(View.GONE);
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
@@ -258,7 +256,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.time1.setText(messageItem.getTime());
             //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
-
         }
 
         if(messageItem.getType().compareTo("camera")==0){
@@ -316,26 +313,23 @@ public class MessageAdapter extends RecyclerView.Adapter {
             }
             galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
 
-
-
-
         }
         /*else {
             galleryVieHolder.rlson1.setVisibility(View.GONE);
         }*/
 
-
-
     }
     else if(current_user.compareTo(uid)==0&&(current_user.compareTo(previous_user)!=0)){
 
         if(messageItem.getType().compareTo("message")==0) {
+
             messageViewHolder.rlson2.setVisibility(View.GONE);
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             messageViewHolder.time1.setText(messageItem.getTime());
-            //messageViewHolder.messagebody1.setVisibility(View.VISIBLE);
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
+            messageViewHolder.seenstatustext.setText(messageItem.getStatus());
+
         }
         if(messageItem.getType().compareTo("contact")==0){
             contactViewHolder.rlson2.setVisibility(View.GONE);
@@ -405,6 +399,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     }
     else if(current_user.compareTo(uid)!=0&&(current_user.compareTo(previous_user)!=0)){
        // holder.rlson1.setVisibility(View.GONE);
+        //this block is for handling chats in the left (receiver) side
 
         if(messageItem.getType().compareTo("message")==0) {
             messageViewHolder.rlson1.setVisibility(View.GONE);
@@ -558,7 +553,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public class MessageViewHolder extends RecyclerView.ViewHolder{
         public EmojiconTextView messagebody1,messagebody2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2,day;
+        public TextView time1,time2,day, seenstatustext;
+        public LinearLayout llx;
+        public ImageView seen, sent;
         public View dayll;
 
         public MessageViewHolder(View itemView) {
@@ -572,6 +569,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             time2=itemView.findViewById(R.id.time2);
             dayll=itemView.findViewById(R.id.dayll);
             day=itemView.findViewById(R.id.day);
+            llx = itemView.findViewById(R.id.llx);
+            //seen = itemView.findViewById(R.id.seen);
+            //sent = itemView.findViewById(R.id.sent);
+            seenstatustext = itemView.findViewById(R.id.seenstatustext);
         }
     }
     public class ContactViewHolder extends RecyclerView.ViewHolder{

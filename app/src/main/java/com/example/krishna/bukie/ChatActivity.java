@@ -259,7 +259,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     MessageItem ms = messageItemList.get(i);
                     if(ms.getTimestamp().equals(ch.getTimestamp()))
                     {
-                        ms.setStatus("read");
+                        ms.setStatus("seen");
                         adapter.notifyDataSetChanged();
                         break;
                     }
