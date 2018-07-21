@@ -390,13 +390,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return true;
     }
 
-    @Override
-    public void onDestroyView() {
-        floatingActionButton.hide();
-        super.onDestroyView();
+    /*@Override
+    public void onPause() {
+        //Log.i("stop","yeah");
+        floatingActionButton.hide(FloatingActionButton.OnVisibilityChangedListener());
+        super.onPause();
 
 
-    }
+    }*/
 
 
     @Override

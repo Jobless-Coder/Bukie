@@ -67,7 +67,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     FirebaseFirestoreSettings settings;
     @Override
     public void onDestroyView() {
-        listenerRegistration.remove();
+//        listenerRegistration.remove();
         super.onDestroyView();
 
     }
@@ -119,13 +119,14 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     }
 
     private void getMyChats(final String identityuser) {
+      //  firestoreRecyclerAdapter.startListening();
         if(myChatsList!=null)
         myChatsList.clear();
-        myChatsAdapter=new MyChatsAdapter(myChatsList,context,uid);
-        recyclerView.setAdapter(myChatsAdapter);
+        //myChatsAdapter=new MyChatsAdapter(myChatsList,context,uid);
+        //recyclerView.setAdapter(myChatsAdapter);
         Query query = firebaseFirestore.collection("users").document(uid).collection("mychats").whereEqualTo(identityuser,uid);
 
-       listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+       /*listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
            @Override
            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                if (e != null) {
@@ -157,24 +158,24 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
 
            }
-       });
+       });*/
 
 
 
 
-        /*FirestoreRecyclerOptions<MyChats> response = new FirestoreRecyclerOptions.Builder<MyChats>()
+        FirestoreRecyclerOptions<MyChats> response = new FirestoreRecyclerOptions.Builder<MyChats>()
                 .setQuery(query, MyChats.class)
-                .build();*/
+                .build();
 
 
-        /*firestoreRecyclerAdapter=new FirestoreRecyclerAdapter<MyChats, MyChatHolder>(response) {
+         firestoreRecyclerAdapter=new FirestoreRecyclerAdapter<MyChats, MyChatHolder>(response) {
 
             @Override
             public void onBindViewHolder(final MyChatHolder holder, int position, MyChats model)
             {
 
                 final MyChats myChats=model;
-                Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
                 if(holder.username.getBackground()!=null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Glide.with(context)
@@ -192,7 +193,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                     holder.ppcard2.setCardBackgroundColor(Color.WHITE);
                                     holder.username.setBackground(null);
 
-                                    if(myChats.getBuyerid().compareTo(username)==0) {
+                                    if(myChats.getBuyerid().compareTo(uid)==0) {
                                         identity = "buyer";
                                         holder.username.setText(myChats.getSellerfullname());
                                         Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
@@ -216,7 +217,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     Glide.with(context)
                             .load(myChats.getCoverpic())
                             .into(holder.adpic);
-                    if(myChats.getBuyerid().compareTo(username)==0) {
+                    if(myChats.getBuyerid().compareTo(uid)==0) {
                         identity = "buyer";
                         holder.username.setText(myChats.getSellerfullname());
                         Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
@@ -235,7 +236,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v)
                     {
-                        if(myChats.getBuyerid().compareTo(username)==0) {
+                        if(myChats.getBuyerid().compareTo(uid)==0) {
                             identity = "buyer";
                         }
                         else
@@ -250,6 +251,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
+
             }
 
             @Override
@@ -268,8 +270,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 return myChatHolder;
             }
         };
+        firestoreRecyclerAdapter.startListening();
         firestoreRecyclerAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(firestoreRecyclerAdapter);*/
+        recyclerView.setAdapter(firestoreRecyclerAdapter);
+
     }
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ppic,adpic;
@@ -304,17 +308,17 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
         }
     }
-   /* @Override
+   /*@Override
     public void onStart() {
         super.onStart();
         firestoreRecyclerAdapter.startListening();
-    }
+    }*/
 
     @Override
     public void onStop() {
         super.onStop();
         firestoreRecyclerAdapter.stopListening();
-    }*/
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -324,7 +328,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buyfrag=true;
                     buy.setSelected(true);
                     sell.setSelected(false);
-                   listenerRegistration.remove();
+                  // listenerRegistration.remove();
+                    firestoreRecyclerAdapter.stopListening();
 
                    getMyChats("buyerid");
 
@@ -336,7 +341,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buy.setSelected(false);
                     sell.setSelected(true);
                     buyfrag=false;
-                   listenerRegistration.remove();
+                  // listenerRegistration.remove();
+                    firestoreRecyclerAdapter.stopListening();
                    getMyChats("sellerid");
                 }
 

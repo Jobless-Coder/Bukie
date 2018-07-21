@@ -59,7 +59,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
 
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
-                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
+                    .load(bookAds.getBookcoverpic())
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -87,7 +87,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
         else{
 
             Glide.with(context)
-                    .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
+                    .load(bookAds.getBookcoverpic())
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getBooktitle());
             holder.bookprice.setText(bookAds.getPrice());

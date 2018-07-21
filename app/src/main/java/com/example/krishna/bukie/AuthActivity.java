@@ -72,6 +72,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseUser currentUser;
     TextView verifybtn;
     private FirebaseFirestore firebaseFirestore;
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        signOut();
+        loginManager=LoginManager.getInstance();
+
 
 
         setContentView(R.layout.activity_auth);
@@ -129,9 +131,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //facebooksign in
-
+        signOut();
         mCallbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(
+        loginManager.registerCallback(
                 mCallbackManager,
                 new FacebookCallback < LoginResult > () {
                     @Override
@@ -153,6 +155,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
         );
+
 
 
         //animations
@@ -315,6 +318,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
+                                                        progressDialog.dismiss();
+                                                        Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
 
                                                         Log.d(TAG, document.getId() + " => " + document.getData());
                                                     }
@@ -323,10 +330,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
-                                progressDialog.dismiss();
-                                Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
-                                startActivity(intent);
-                                finish();
+
                             }
 
 
@@ -513,6 +517,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                     editor.putString("fullname",document.getData().get("fullname").toString());
                                                     editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                     editor.commit();
+                                                    Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                                                    //intent.putExtra("signinmethod","google");
+                                                    startActivity(intent);
+                                                    finish();
 
                                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                                 }
@@ -521,10 +529,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                             }
                                         }
                                     });
-                            Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
-                            //intent.putExtra("signinmethod","google");
-                            startActivity(intent);
-                            finish();
+
                         }
                         else
                             Toast.makeText(AuthActivity.this, "Failure", Toast.LENGTH_SHORT).show();
@@ -574,6 +579,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                         editor.putString("fullname",document.getData().get("fullname").toString());
                                                         editor.putString("profilepic",document.getData().get("profilepic").toString());
                                                         editor.commit();
+                                                        progressDialog.dismiss();
+                                                        Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
 
                                                         Log.d(TAG, document.getId() + " => " + document.getData());
                                                     }
@@ -582,10 +591,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         });
-                                progressDialog.dismiss();
-                                Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
-                                startActivity(intent);
-                                finish();
+
                             }
 
                         } else {
@@ -693,6 +699,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         firebaseAuth.signOut();
         mGoogleSignInClient.signOut();
+        loginManager.logOut();
 
 
         // Google sign out

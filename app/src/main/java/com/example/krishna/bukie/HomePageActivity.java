@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,9 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.example.krishna.bukie.Fragments.ChatFragment;
 import com.example.krishna.bukie.Fragments.HomeFragment;
 import com.example.krishna.bukie.Fragments.ProfileFragment;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Date;
 
 public class HomePageActivity extends AppCompatActivity {
     AHBottomNavigation bottomNavigation;
@@ -31,6 +35,8 @@ public class HomePageActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     ActionBar actionbar;
     private int mposition;
+    private FirebaseDatabase firebaseDatabase;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,11 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         setSupportActionBar(toolbar);
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        uid=sharedPreferences.getString("uid",null);
+        //firebaseDatabase=FirebaseDatabase.getInstance().
+
        /*  actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);*/
@@ -111,12 +122,14 @@ public class HomePageActivity extends AppCompatActivity {
                 switch (position){
 
                     case 0:
-                      // tabsview.setVisibility(View.GONE);
+                        if(mposition!=0) {
+                            // tabsview.setVisibility(View.GONE);
                         /*toolbargroup.removeAllViews();
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
                         toolbargroup.addView(toolbarview);*/
-                        fragment = new HomeFragment();
-                        mposition=0;
+                            fragment = new HomeFragment();
+                            mposition = 0;
+                        }
                       //  FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         /*transaction.replace(R.id.frame, fragment, "new fragment");
                         transaction.addToBackStack(null);
@@ -126,11 +139,13 @@ public class HomePageActivity extends AppCompatActivity {
 
                         break;
                     case 1:
+                        if(mposition!=1) {
                        /*toolbargroup.removeAllViews();
                         toolbarview=getLayoutInflater().inflate(R.layout.toolbar_mychats,toolbargroup,false);
                         toolbargroup.addView(toolbarview);*/
-                        fragment = new ChatFragment();
-                        mposition=1;
+                            fragment = new ChatFragment();
+                            mposition = 1;
+                        }
                         /*transaction.replace(R.id.frame, fragment, "new fragment");
                         transaction.addToBackStack(null);
                         transaction.commit();*/
@@ -138,13 +153,15 @@ public class HomePageActivity extends AppCompatActivity {
 
                         break;
                     case 2:
-                       // tabsview=findViewById(R.id.header);
-                        //tabsview.setVisibility(View.GONE);
-                        toolbargroup.removeAllViews();
-                       toolbarview=getLayoutInflater().inflate(R.layout.toolbar_myprofile,toolbargroup,false);
-                        toolbargroup.addView(toolbarview);
-                        fragment = new ProfileFragment();
-                        mposition=2;
+                        if(mposition!=2) {
+                            // tabsview=findViewById(R.id.header);
+                            //tabsview.setVisibility(View.GONE);
+                            toolbargroup.removeAllViews();
+                            toolbarview = getLayoutInflater().inflate(R.layout.toolbar_myprofile, toolbargroup, false);
+                            toolbargroup.addView(toolbarview);
+                            fragment = new ProfileFragment();
+                            mposition = 2;
+                        }
                         /*transaction.replace(R.id.frame, fragment, "new fragment");
                         transaction.addToBackStack(null);
                         transaction.commit()*/;
@@ -180,5 +197,32 @@ public class HomePageActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        Date d=new Date();
+        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
+        super.onDestroy();
+    }
 
+    @Override
+    protected void onStart() {
+
+
+        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
+
+        super.onStart();
+    }
+
+   /* @Override
+    protected void onPause() {
+        Date d=new Date();
+        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
+        super.onPause();
+    }
+
+    @Override
+    protected void onPostResume() {
+        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
+        super.onPostResume();
+    }*/
 }

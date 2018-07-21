@@ -41,7 +41,8 @@ private DatabaseReference ddref;
 private ChildEventListener childEventListener;
 private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
 private CollectionReference collectionReference;
-    ListenerRegistration listenerRegistration;
+private ListenerRegistration listenerRegistration;
+private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
 
     public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
@@ -91,7 +92,7 @@ private CollectionReference collectionReference;
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 MessageItem item= document.toObject(MessageItem.class);
                                 chats.add(item);
-                                Log.i("ghjkl",item.getMessage_body());
+                                //Log.i("ghjkl",item.getMessage_body());
                                 //Log.d(TAG, document.getId() + " => " + document.getData());
                             }
                         } else {
@@ -103,7 +104,7 @@ private CollectionReference collectionReference;
         return chats;
     }
 
-    public void sendMessage(MessageItem message)//add to recyclerview then send
+    public void sendMessage(final MessageItem message)//add to recyclerview then send
     {
 
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
@@ -111,7 +112,32 @@ private CollectionReference collectionReference;
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                       // Date d=new Date();
+                        Long d=Long.parseLong(message.getTimestamp());
+                        DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(refID).child("last_message");
+                        final Long[] time = new Long[1];
+                        databaseReference.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.getValue()!=null)
+                                time[0] =Long.parseLong(dataSnapshot.getValue().toString());
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        if(time[0]==null||time[0]!=null&&d> time[0]){
+                            databaseReference.child("time").setValue(d);
+                            databaseReference.child("sender").setValue(message.getUid());
+                            databaseReference.child("type").setValue(message.getType());
+                            databaseReference.child("status").setValue(message.getStatus());
+                            databaseReference.child("message_body").setValue(message.getMessage_body());
+
+
+                        }
                         //documentReference.getId();
                     }
                 })

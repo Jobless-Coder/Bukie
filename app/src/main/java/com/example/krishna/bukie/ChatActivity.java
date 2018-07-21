@@ -50,6 +50,11 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -83,8 +88,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private EmojiconEditText chatbox;
     private int count;
-    private String fullname, ppic,tmpuser,identity,username;
-    private TextView username2;
+    private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
+    private TextView username2,status;
     private MyChats myChats;
     private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
    // EmojiPopup emojiPopup;
@@ -108,6 +113,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Point point;
     private PopupWindow popup=new PopupWindow();
     private EmojIconActions emojIcon;
+    private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
+    private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +125,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         storageReference = firebaseStorage.getReference();
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
         username = sharedPreferences.getString("uid", null);
+        userfullname=sharedPreferences.getString("fullname",null);
         Bundle bundle = getIntent().getExtras();
         String isMap = bundle.getString("isMap");
 
@@ -127,12 +135,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             tmpuser = myChats.getSellerid();
             ppic = myChats.getSellerpic();
             fullname = myChats.getSellerfullname();
+            sendtouid=myChats.getSellerid();
+
         } else {
             tmpuser = myChats.getBuyerid();
             ppic = myChats.getBuyerpic();
             fullname = myChats.getBuyerfullname();
+            sendtouid=myChats.getBuyerid();
 
         }
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(identity).setValue(userfullname);
 
 
         chatbox = findViewById(R.id.chatbox);
@@ -143,10 +155,32 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         ImageView pp = (ImageView) findViewById(R.id.profile_pic);
         username2.setText(fullname);
         Glide.with(getApplicationContext()).load(ppic).into(pp);
+        status=findViewById(R.id.status);
+
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context = getApplicationContext();
+        firebaseDatabase.getReference().child("users").child(sendtouid).child("last_seen").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null) {
+                    String h = dataSnapshot.getValue().toString();
+                    if (h.equals("online")) {
+                        status.setText("online");
+                    } else {
+                        status.setText("offline");
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
 
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview);
@@ -233,7 +267,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, new IncomingMessageListener() {
-            public void receiveIncomingMessage(MessageItem ch, String id) {
+            public void receiveIncomingMessage(final MessageItem ch, String id) {
                 if (!ch.getUid().equals(username))
                 {
                     FirebaseFirestore.getInstance()
@@ -243,8 +277,42 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .document(id)
                             .update("status","seen");
                     ch.setStatus("seen");
+                    final String[] time = new String[1];
+                    final String[] sender = new String[1];
+
                     Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
+                    final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child("last_message");
+                    databaseReference.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        time[0] =dataSnapshot.getValue().toString();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    databaseReference.child("sender").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            sender[0] =dataSnapshot.getValue().toString();
+                            if(sender[0].equals(ch.getUid())&&time[0].equals(ch.getTimestamp())){
+                                databaseReference.child("status").setValue("seen");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                 }
+
 
                 messageItemList.add(ch);
 
@@ -388,10 +456,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-    public void onDestroy() {
-        super.onDestroy();
-        fh.stopListening();
-    }
+
 
 
     @Override
@@ -865,5 +930,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
        finish();
         return true;
     }
+
+    @Override
+    protected void onStart() {
+
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
+
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
+
+        fh.stopListening();
+        super.onDestroy();
+    }
+   /* @Override
+    protected void onPause() {
+
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
+
+        fh.stopListening();
+        super.onPause();
+    }
+
+    @Override
+    protected void onPostResume() {
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
+        super.onPostResume();
+    }*/
+
 }
+
 
