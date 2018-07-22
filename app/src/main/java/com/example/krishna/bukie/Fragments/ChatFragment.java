@@ -308,11 +308,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
         }
     }
-   /*@Override
+   @Override
     public void onStart() {
         super.onStart();
         firestoreRecyclerAdapter.startListening();
-    }*/
+    }
 
     @Override
     public void onStop() {

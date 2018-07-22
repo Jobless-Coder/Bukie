@@ -40,6 +40,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         tabsview=findViewById(R.id.header);
@@ -56,6 +57,9 @@ public class HomePageActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
+       // MyFirebaseMessagingService myFirebaseMessagingService=new MyFirebaseMessagingService();
+
+        //myFirebaseMessagingService.onMessageReceived();
         //firebaseDatabase=FirebaseDatabase.getInstance().
 
        /*  actionbar = getSupportActionBar();
@@ -196,6 +200,7 @@ public class HomePageActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
 
     @Override
     protected void onDestroy() {
