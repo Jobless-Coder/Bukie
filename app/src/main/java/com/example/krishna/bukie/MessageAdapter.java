@@ -245,7 +245,27 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
             messageViewHolder.time1.setText(messageItem.getTime());
-            messageViewHolder.seenstatustext.setText(messageItem.getStatus());
+            //messageViewHolder.seenstatustext.setText(messageItem.getStatus());
+            if(messageItem.getStatus().equals("seen"))
+                messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+
+            /*
+            if(!messageViewHolder.seen)
+            {
+                if(messageItem.getStatus().equals("seen"))
+                {
+                    messageViewHolder.seen = true;
+                    messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+                }
+                else
+                {
+                    messageViewHolder.seenicon.setVisibility(View.VISIBLE);
+                    messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+                }
+            }
+            */
 
         }
 
@@ -328,7 +348,26 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             messageViewHolder.time1.setText(messageItem.getTime());
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
-            messageViewHolder.seenstatustext.setText(messageItem.getStatus());
+            if(messageItem.getStatus().equals("seen"))
+                messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+
+            /*
+            if(!messageViewHolder.seen)
+            {
+                if(messageItem.getStatus().equals("seen"))
+                {
+                    messageViewHolder.seen = true;
+                    messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+                }
+                else
+                {
+                    messageViewHolder.seenicon.setVisibility(View.VISIBLE);
+                    messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+                }
+            }
+            */
 
         }
         if(messageItem.getType().compareTo("contact")==0){
@@ -553,10 +592,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public class MessageViewHolder extends RecyclerView.ViewHolder{
         public EmojiconTextView messagebody1,messagebody2;
         public RelativeLayout rlson1,rlson2,rlfather;
-        public TextView time1,time2,day, seenstatustext;
+        public TextView time1,time2,day;
         public LinearLayout llx;
-        public ImageView seen, sent;
+        public ImageView seenicon;
         public View dayll;
+        //public boolean seen;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
@@ -570,9 +610,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             dayll=itemView.findViewById(R.id.dayll);
             day=itemView.findViewById(R.id.day);
             llx = itemView.findViewById(R.id.llx);
-            //seen = itemView.findViewById(R.id.seen);
+            seenicon = itemView.findViewById(R.id.seenicon);
             //sent = itemView.findViewById(R.id.sent);
-            seenstatustext = itemView.findViewById(R.id.seenstatustext);
+            //seenstatustext = itemView.findViewById(R.id.seenstatustext);
+
         }
     }
     public class ContactViewHolder extends RecyclerView.ViewHolder{

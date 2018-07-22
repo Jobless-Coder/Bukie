@@ -57,6 +57,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
 
         if(holder.bookprice.getBackground()!=null) {
 
+            //TODO: bookAds.getBookpicslist().size() can be zero when its empty, you forgot to handle that case
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
                     .load(bookAds.getBookcoverpic())
