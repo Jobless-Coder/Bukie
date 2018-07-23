@@ -240,7 +240,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-       connectedRef.removeEventListener(listener);
+        //connectedRef.removeEventListener(listener);
         Date d=new Date();
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
         super.onDestroy();

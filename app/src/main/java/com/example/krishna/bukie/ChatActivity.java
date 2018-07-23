@@ -604,6 +604,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             //Log.e("nigga",path);
             final StorageReference riversRef = storageReference.child(path);
 
+            photo = ImageCompressor.compressFromUri(this, photo);
             UploadTask uploadTask = riversRef.putFile(photo);
             Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
@@ -639,7 +640,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         final StorageReference riversRef = storageReference.child(path);
         imagepaths=new ArrayList<>();
 
-        UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
+        Uri imageToUpload  = Uri.parse(mCurrentPhotoPath);
+        imageToUpload = ImageCompressor.compressFromUri(this, imageToUpload);
+        UploadTask uploadTask = riversRef.putFile(imageToUpload);
+        //UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {

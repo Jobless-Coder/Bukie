@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Date;
 
 import id.zelory.compressor.Compressor;
 
@@ -30,7 +31,7 @@ public class ImageCompressor {
 
     public static Uri compressFromUri(Context context, Uri original)
     {
-        File f = new File("demo");
+        File f = new File("demo_"+(new Date()).getTime());
         try {
             f = FileUtil.from(context, original);
             f = new Compressor(context).compressToFile(f);

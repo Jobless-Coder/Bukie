@@ -54,26 +54,15 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private static final int EXTRA_PHOTO = 32;
     private static final int PROFILE_IMAGE = 11;
     private int PICK_IMAGE_MULTIPLE = 1;
-    private static final int REQUEST_IMAGE_CAPTURE = 5;
-    private  String imageEncoded, mCurrentPhotoPath;
-    private  List<String> imagesEncodedList;
     private EditText title,category,price,author,publisher,desc;
-    private View chooseimg,postad;
-    //private ArrayList<Uri> mArrayUri;
     private FirebaseStorage firebaseStorage;
     private String path, coverurl;
     private  StorageReference storageReference;
     private List<String> downloadurl;
-    private List<String> imagefilenamelist=new ArrayList<>();
-    private List<String> imagesPathList;
+    private Uri photoURI;
     private FirebaseFirestore firebaseFirestore;
-    private DocumentReference documentReference;
     private String mtitle,mcategory,mprice,mdate,madid, muid,mprofilepic,mfullname,mpublisher,mauthor,mdesc;
-    private CollectionReference bookadscollection;
-    private LinearLayout linearLayout;
-    private HashSet<Uri> hset;
-    private Uri coveruri;
-    private int random = 0;
+    //private CollectionReference bookadscollection;
     private FloatingActionButton floatingActionButton;
     private ProgressDialog progressDialog;
     private DisplayMetrics metrics;
@@ -81,8 +70,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private FlexboxLayout flex;
     private Uri coverImageUri;
     private String username;
-    private boolean coverimage=false;
-    private int count;
     private DatabaseReference mDatabase;
 
 
@@ -96,11 +83,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         mfullname=sharedPreferences.getString("fullname",null);
         progressDialog=new ProgressDialog(this);
         madid= muid +"%"+UUID.randomUUID();
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         username = sharedPreferences.getString("uid", null);
 
-        count=0;
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -114,7 +100,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         firebaseFirestore=FirebaseFirestore.getInstance();
        storageReference=firebaseStorage.getReference();
       // documentReference=firebaseFirestore.document("bookads/"+UUID.randomUUID());
-        bookadscollection = firebaseFirestore.collection("bookads");
+        //bookadscollection = firebaseFirestore.collection("bookads");
 
         //chooseimg=findViewById(R.id.chooseimg);
         floatingActionButton=findViewById(R.id.fabpostad);
@@ -179,7 +165,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent(int tag) {
 
         Intent pictureIntent = new Intent(
                 MediaStore.ACTION_IMAGE_CAPTURE);
@@ -187,16 +173,22 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             //Create a file to store the image
             File photoFile = null;
             try {
+                Log.e("picture camera","here inside createImage try");
                 photoFile = createImageFile();
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 // Error occurred while creating the File
+                Log.e("picture camera","here: "+ex.getLocalizedMessage());
             }
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() +".provider", photoFile);
+                photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() +".provider", photoFile);
                 pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         photoURI);
                 startActivityForResult(pictureIntent,
-                        REQUEST_IMAGE_CAPTURE);
+                        tag);
+            }
+            else
+            {
+                Log.e("picture camera","photofile is null");
             }
         }
     }
@@ -204,9 +196,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = username+timeStamp;
-        imagefilenamelist.add(imageFileName);
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+        //imagefilenamelist.add(imageFileName);
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  // prefix
                 ".jpg",         // suffix
@@ -214,8 +205,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:"+image.getAbsolutePath();
-        Log.e("location",mCurrentPhotoPath);
+        //mCurrentPhotoPath = "file:"+image.getAbsolutePath();
+        //Log.e("location",mCurrentPhotoPath);
         return image;
     }
 
@@ -223,14 +214,20 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 
-             if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK
-                && null != data) {
+             if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK) {
+                 if(data != null)
                 sendToUCrop(data.getData(), UCrop.REQUEST_CROP);
+                 else if(photoURI != null)
+                     sendToUCrop(photoURI, UCrop.REQUEST_CROP);
             }
-            else if(requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK && data != null)
+            else if(requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK && (data != null || photoURI != null))
             {
+                Uri imageUri;
+                if(data != null)
+                    imageUri = UCrop.getOutput(data);
+                else
+                    imageUri = photoURI;
                 try {
-                    Uri imageUri = UCrop.getOutput(data);
                     imageUri = ImageCompressor.compressFromUri(this,imageUri);
                     SquareImageView sq = new SquareImageView(this, imageUri, metrics);
                     extraImages.add(sq);
@@ -240,12 +237,16 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     e.printStackTrace();
                     Toast.makeText(this, "null....", Toast.LENGTH_SHORT).show();
                 }
+                photoURI = null;
+            }
+            else if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK){
+                if(data != null)
+                    sendToUCrop(data.getData(), PROFILE_IMAGE);
+                else
+                    sendToUCrop(photoURI, PROFILE_IMAGE);
             }
 
-            else if(requestCode == SELECT_PHOTO && resultCode == RESULT_OK
-                    && null != data){
-                sendToUCrop(data.getData(), PROFILE_IMAGE);
-            }
+            //experimental
 
             else if(requestCode == PROFILE_IMAGE && resultCode == RESULT_OK && data != null)
             {
@@ -258,11 +259,27 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     e.printStackTrace();
                     Toast.makeText(this, "null....", Toast.LENGTH_SHORT).show();
                 }
+                photoURI = null;
 
             }
+            else if(requestCode == PROFILE_IMAGE && resultCode == RESULT_OK)
+             {
+                 Log.e("photos","Inside this block");
+                 if(photoURI!=null)
+                 {
+                     Log.e("photos","photouri has something");
+                     Toast.makeText(this, "photouri not null", Toast.LENGTH_SHORT).show();
+                 }
+                 else
+                 {
+                     Log.e("photos","photouri has nothing");
+                 }
+                 photoURI = null;
+             }
                 else {
-                Toast.makeText(this, "You haven't picked Image",
-                        Toast.LENGTH_LONG).show();
+                    Log.e("photoerror", "Request code: "+requestCode+" Result Code: "+resultCode);
+                    Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
+                    photoURI = null;
             }
 
 
@@ -342,6 +359,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
 
             case R.id.fabpostad:
@@ -369,13 +387,14 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     progressDialog.setMessage("Posting ad ...");
                     progressDialog.show();
                     uploadImage(coverImageUri,true);
-                    for(SquareImageView squareImageView:extraImages){
-                        uploadImage(squareImageView.getImageLink(), false);
-                        count++;
+                    for(int i = 1; i<flex.getChildCount(); i++)
+                    {
+                        SquareImageView squareImageView = (SquareImageView)flex.getChildAt(i);
+                        if(squareImageView != null)
+                            uploadImage(squareImageView.getImageLink(), false);
+                        else
+                            Toast.makeText(this, "Null image during upload!", Toast.LENGTH_SHORT).show();
                     }
-
-
-
 
                 }
                 break;
@@ -464,7 +483,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
     public void addNewSquareImage(View view) {
-        coverimage=false;
         //TODO: Add imagepicker cropper and all necessary shit here
         selectImage(EXTRA_PHOTO);
     }
@@ -493,7 +511,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 if (items[item].equals("Take Photo")) {
                     //userChoosenTask ="Take Photo";
                     //if(result)
-                        cameraIntent();
+                        cameraIntent(tag);
                 } else if (items[item].equals("Choose from Library")) {
                     //userChoosenTask ="Choose from Library";
                     //if(result)
@@ -515,19 +533,17 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         startActivityForResult(Intent.createChooser(intent,"Select Picture"), tag);
     }
 
-    private void cameraIntent() {
-        dispatchTakePictureIntent();
+    private void cameraIntent(int tag) {
+        dispatchTakePictureIntent(tag);
     }
 
     public void selectCoverImage(View view) {
-        coverimage=true;
         selectImage(SELECT_PHOTO);
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
-
         return true;
     }
 }
