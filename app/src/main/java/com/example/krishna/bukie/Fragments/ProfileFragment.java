@@ -82,14 +82,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         uid=sharedPreferences.getString("uid",null);
 
 
-        if(uid!=null)
+       /* if(uid!=null)
         {
             FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
 
         }
         else {
             Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
-        }
+        }*/
         setHasOptionsMenu(true);
     }
     /*private void replaceFragment(Fragment fragment) {

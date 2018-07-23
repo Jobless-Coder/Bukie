@@ -21,7 +21,15 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.example.krishna.bukie.Fragments.ChatFragment;
 import com.example.krishna.bukie.Fragments.HomeFragment;
 import com.example.krishna.bukie.Fragments.ProfileFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.OnDisconnect;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.Date;
 
@@ -37,6 +45,8 @@ public class HomePageActivity extends AppCompatActivity {
     private int mposition;
     private FirebaseDatabase firebaseDatabase;
     private String uid;
+    DatabaseReference connectedRef;
+    ValueEventListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +67,30 @@ public class HomePageActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-       // MyFirebaseMessagingService myFirebaseMessagingService=new MyFirebaseMessagingService();
+       DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
+        /*final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
+        onDisconnectRef.cancel();
+        presenceRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
+        DatabaseReference connectedRef;
+        connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
+                } else {
 
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                System.err.println("Listener was cancelled");
+            }
+        });*/
+       // MyFirebaseMessagingService myFirebaseMessagingService=new MyFirebaseMessagingService();
+       // FirebaseMessaging.getInstance().
         //myFirebaseMessagingService.onMessageReceived();
         //firebaseDatabase=FirebaseDatabase.getInstance().
 
@@ -79,7 +111,11 @@ public class HomePageActivity extends AppCompatActivity {
                         return true;
                     }
                 });*/
-
+        MyFirebaseInstanceIDService myFirebaseInstanceIDService=new MyFirebaseInstanceIDService(uid);
+       myFirebaseInstanceIDService.onTokenRefresh();
+       // myFirebaseInstanceIDService.onTokenRefresh();
+       // FirebaseMessagingService firebaseMessagingService=new FirebaseMessagingService();
+        //firebaseMessagingService.onCreate();
         mposition=0;
         loadFragment(new HomeFragment());
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
@@ -204,16 +240,44 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+       connectedRef.removeEventListener(listener);
         Date d=new Date();
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
         super.onDestroy();
     }
+
 
     @Override
     protected void onStart() {
 
 
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
+        DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
+        final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
+        //onDisconnectRef.cancel();
+        presenceRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
+
+       /* connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+/
+        listener=(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("onlinexs");
+                    //onDisconnectRef.cancel();
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+              //  System.err.println("Listener was cancelled");
+            }
+        });
+        connectedRef.addValueEventListener(listener);*/
+
 
         super.onStart();
     }
