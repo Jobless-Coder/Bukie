@@ -7,8 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +41,7 @@ import com.google.firebase.storage.UploadTask;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +54,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private static final int EXTRA_PHOTO = 32;
     private static final int PROFILE_IMAGE = 11;
     private int PICK_IMAGE_MULTIPLE = 1;
-    private  String imageEncoded;
+    private static final int REQUEST_IMAGE_CAPTURE = 5;
+    private  String imageEncoded, mCurrentPhotoPath;
     private  List<String> imagesEncodedList;
     private EditText title,category,price,author,publisher,desc;
     private View chooseimg,postad;
@@ -59,6 +64,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private String path, coverurl;
     private  StorageReference storageReference;
     private List<String> downloadurl;
+    private List<String> imagefilenamelist=new ArrayList<>();
     private List<String> imagesPathList;
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference;
@@ -74,6 +80,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private ArrayList<SquareImageView> extraImages;
     private FlexboxLayout flex;
     private Uri coverImageUri;
+    private String username;
     private boolean coverimage=false;
     private int count;
     private DatabaseReference mDatabase;
@@ -91,8 +98,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         madid= muid +"%"+UUID.randomUUID();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-
-
+        username = sharedPreferences.getString("uid", null);
 
         count=0;
         setSupportActionBar(toolbar);
@@ -172,6 +178,46 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
     }
 
+
+    private void dispatchTakePictureIntent() {
+
+        Intent pictureIntent = new Intent(
+                MediaStore.ACTION_IMAGE_CAPTURE);
+        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+            //Create a file to store the image
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() +".provider", photoFile);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        photoURI);
+                startActivityForResult(pictureIntent,
+                        REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = username+timeStamp;
+        imagefilenamelist.add(imageFileName);
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:"+image.getAbsolutePath();
+        Log.e("location",mCurrentPhotoPath);
+        return image;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -434,7 +480,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Select an image");
+        //builder.setTitle("Select an image");
 
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
@@ -470,7 +516,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void cameraIntent() {
-
+        dispatchTakePictureIntent();
     }
 
     public void selectCoverImage(View view) {
