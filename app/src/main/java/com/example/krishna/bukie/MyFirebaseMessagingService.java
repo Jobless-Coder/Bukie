@@ -148,13 +148,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) {
-        SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        super.onNewToken(token);
+        /*SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         String uid=sharedPreferences.getString("uid",null);
         if(uid!=null)
         {
             FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
         }
-        Log.e("Token: ",token);
-        super.onNewToken(token);
+        Log.e("Token: ",token);*/
+
     }
 }

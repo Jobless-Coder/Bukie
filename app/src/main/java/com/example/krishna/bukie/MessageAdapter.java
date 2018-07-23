@@ -693,7 +693,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         }
 
         public String getMapUrl(String latitude,String longitude) {
-            String mapUrl="https://maps.googleapis.com/maps/api/staticmap?center="+latitude+","+longitude+"&zoom=16&size=150x150&markers=color:red|size:mid|"+latitude+","+longitude+"&key="+context.getString(R.string.API_KEY);
+            String mapUrl="https://maps.googleapis.com/maps/api/staticmap?center="+latitude+","+longitude+"&zoom=16&size=300x300&markers=color:red|size:mid|"+latitude+","+longitude+"&key="+context.getString(R.string.API_KEY);
 
             return mapUrl;
         }

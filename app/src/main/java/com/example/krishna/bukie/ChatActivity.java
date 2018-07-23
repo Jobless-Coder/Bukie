@@ -91,7 +91,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
     private TextView username2,status;
     private MyChats myChats;
-    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
+    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn,online;
    // EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
     private final Handler handler = new Handler();
@@ -156,6 +156,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         username2.setText(fullname);
         Glide.with(getApplicationContext()).load(ppic).into(pp);
         status=findViewById(R.id.status);
+        online=findViewById(R.id.online);
+
 
 
         setSupportActionBar(toolbar);
@@ -168,8 +170,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     String h = dataSnapshot.getValue().toString();
                     if (h.equals("online")) {
                         status.setText("online");
+                        online.setVisibility(View.VISIBLE);
                     } else {
                         status.setText("offline");
+                        online.setVisibility(View.GONE);
                     }
                 }
 

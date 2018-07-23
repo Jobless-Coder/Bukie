@@ -32,6 +32,11 @@ import java.io.Console;
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
+    String uid;
+
+    public MyFirebaseInstanceIDService(String uid) {
+        this.uid=uid;
+    }
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -62,8 +67,9 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
-        SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        String uid=sharedPreferences.getString("uid",null);
+       // SharedPreferences sharedPreferences=getApplication().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+       // String uid=sharedPreferences.getString("uid",null);
+       // String uid="r1kmn9OV1GXmbXXpuUJXB6nDLe03";
         if(uid!=null)
         {
             FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
