@@ -34,6 +34,7 @@ import com.rd.draw.controller.DrawController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class DisplayAdActivity extends AppCompatActivity implements DrawController.ClickListener, View.OnClickListener {
     private ViewPager viewPager;
@@ -47,6 +48,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private FirebaseFirestore firebaseFirestore;
     private String chatid,uid,userprofilepic;
     private MyChats myChats;
+    private MyChatsStatus myChatsStatus;
+    private  FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
 
 
@@ -84,7 +87,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         category=findViewById(R.id.category);
         date=findViewById(R.id.date);
         fullname=findViewById(R.id.fullname);
+        if(bookAds.getBookauthor()!=null)
         author.setText("written by "+bookAds.getBookauthor());
+        if(bookAds.getBookpublisher()!=null)
         publisher.setText("published by "+bookAds.getBookpublisher());
         title.setText(bookAds.getBooktitle());
         date.setText("uploaded on "+bookAds.getDate());
@@ -116,7 +121,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         {
           findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
             findViewById(R.id.chatbutton).setVisibility(View.GONE);
-            //Toast.makeText(this, ""+bookAds.getBookpicslist().size(), Toast.LENGTH_SHORT).show();
+
         }
 
         setFavouriteButton();
@@ -143,7 +148,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         pageIndicatorView.setCount(bookAds.getBookpicslist().size()); // specify total count of indicators
 
         pageIndicatorView.setClickListener(this);
-        //viewPager.
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -316,14 +320,16 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                         if (task.isSuccessful()) {
 
-                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookcoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookcoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname,false);
+                            myChatsStatus=new MyChatsStatus(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookcoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+
                             DocumentSnapshot snapshot = task.getResult();
 
                             if (snapshot.exists()) {
 
                                 //Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                                intent.putExtra("mychats", myChats);
+                                intent.putExtra("mychats", myChatsStatus);
                                 intent.putExtra("identity", "buyer");
                                 intent.putExtra("isMap","0");
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -333,12 +339,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                 //chatid=uid+bookAds.getAdid();
                                 //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
                                 createNewChat();
-                                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                                intent.putExtra("mychats", myChats);
-                                intent.putExtra("identity", "buyer");
-                                intent.putExtra("isMap","0");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                getApplicationContext().startActivity(intent);
+
                             }
 
 
@@ -354,6 +355,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void createNewChat() {
+
 
         firebaseFirestore.collection("users").document(uid).collection("mychats").document(chatid)
                 .set(myChats)
@@ -375,6 +377,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        firebaseDatabase.getReference().child("chat_status").child(myChatsStatus.getChatid()).setValue(myChatsStatus);
+                        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                        intent.putExtra("mychats", myChatsStatus);
+                        intent.putExtra("identity", "buyer");
+                        intent.putExtra("isMap","0");
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
 
                     }
                 })

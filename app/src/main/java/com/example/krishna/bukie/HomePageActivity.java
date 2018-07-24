@@ -240,7 +240,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //connectedRef.removeEventListener(listener);
+        connectedRef.removeEventListener(listener);
         Date d=new Date();
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
         super.onDestroy();
@@ -257,14 +257,13 @@ public class HomePageActivity extends AppCompatActivity {
         //onDisconnectRef.cancel();
         presenceRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
 
-       /* connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-/
+        connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         listener=(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
-                    firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("onlinexs");
+                    firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
                     //onDisconnectRef.cancel();
                 } else {
 
@@ -276,22 +275,11 @@ public class HomePageActivity extends AppCompatActivity {
               //  System.err.println("Listener was cancelled");
             }
         });
-        connectedRef.addValueEventListener(listener);*/
+        connectedRef.addValueEventListener(listener);
 
 
         super.onStart();
     }
 
-   /* @Override
-    protected void onPause() {
-        Date d=new Date();
-        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue(d.getTime()+"");
-        super.onPause();
-    }
 
-    @Override
-    protected void onPostResume() {
-        firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
-        super.onPostResume();
-    }*/
 }

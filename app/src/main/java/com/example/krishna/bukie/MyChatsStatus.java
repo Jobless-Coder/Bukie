@@ -3,19 +3,32 @@ package com.example.krishna.bukie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MyChats implements Parcelable{
+public class MyChatsStatus implements Parcelable {
     private  String sellerid;
     private String buyerid;
     private String adid;
+
+    public Last_Message getLast_message() {
+        return last_message;
+    }
+
     private String coverpic;
     private String chatid;
     private String sellerpic;
+
+    public void setLast_message(Last_Message last_message) {
+        this.last_message = last_message;
+    }
+
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
-    private Boolean isActive;
+    public Last_Message last_message;
+    //private int i;
 
-    public MyChats(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname, Boolean isActive) {
+
+
+    public MyChatsStatus(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname, Last_Message last_message) {
         this.sellerid = sellerid;
         this.buyerid = buyerid;
         this.adid = adid;
@@ -25,19 +38,8 @@ public class MyChats implements Parcelable{
         this.buyerpic = buyerpic;
         this.sellerfullname = sellerfullname;
         this.buyerfullname = buyerfullname;
-        this.isActive = isActive;
+        this.last_message = last_message;
     }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-
-    }
-
-    public Boolean getActive() {
-
-        return isActive;
-    }
-    //private int i;
 
     public String getSellerfullname() {
         return sellerfullname;
@@ -47,7 +49,7 @@ public class MyChats implements Parcelable{
         return buyerfullname;
     }
 
-   /* public MyChats(String sellerid, String buyer, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname) {
+    public MyChatsStatus(String sellerid, String buyer, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname) {
         this.sellerid = sellerid;
         this.buyerid = buyer;
         this.adid = adid;
@@ -57,24 +59,16 @@ public class MyChats implements Parcelable{
         this.buyerpic = buyerpic;
         this.sellerfullname = sellerfullname;
         this.buyerfullname = buyerfullname;
-    }*/
-
-   /* public MyChats(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic) {
-        this.sellerid = sellerid;
-        this.buyerid = buyerid;
-        this.adid = adid;
-        this.coverpic = coverpic;
-        this.chatid = chatid;
-        this.sellerpic = sellerpic;
-        this.buyerpic = buyerpic;
-    }*/
+    }
 
 
-    public MyChats(){
+
+
+    public MyChatsStatus(){
 
     }
 
-    protected MyChats(Parcel in) {
+    protected MyChatsStatus(Parcel in) {
         sellerid = in.readString();
         buyerid = in.readString();
         adid = in.readString();
@@ -84,17 +78,18 @@ public class MyChats implements Parcelable{
         sellerpic=in.readString();
         sellerfullname = in.readString();
         buyerfullname = in.readString();
+       // last_message= (Last_Message) in.readValue(Last_Message.class.getClassLoader());
     }
 
-    public static final Creator<MyChats> CREATOR = new Creator<MyChats>() {
+    public static final Creator<MyChatsStatus> CREATOR = new Creator<MyChatsStatus>() {
         @Override
-        public MyChats createFromParcel(Parcel in) {
-            return new MyChats(in);
+        public MyChatsStatus createFromParcel(Parcel in) {
+            return new MyChatsStatus(in);
         }
 
         @Override
-        public MyChats[] newArray(int size) {
-            return new MyChats[size];
+        public MyChatsStatus[] newArray(int size) {
+            return new MyChatsStatus[size];
         }
     };
 
@@ -138,6 +133,8 @@ public class MyChats implements Parcelable{
         return 0;
     }
 
+
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(sellerid);
@@ -149,6 +146,7 @@ public class MyChats implements Parcelable{
         dest.writeString(sellerpic);
         dest.writeString(sellerfullname);
         dest.writeString(buyerfullname);
+       // dest.writeValue(Last_Message.class);
     }
 
     public void setSellerfullname(String sellerfullname) {
@@ -163,10 +161,11 @@ public class MyChats implements Parcelable{
         if (obj == null) return false;
         if (obj == this) return true;
         if (!(obj instanceof MyChats)) return false;
-        MyChats o = (MyChats) obj;
+        MyChatsStatus o = (MyChatsStatus) obj;
 
         return this.getChatid() .equals(o.getChatid());
-       // o.buyerfullname=this.buyerfullname;
+        // o.buyerfullname=this.buyerfullname;
 
     }
+
 }

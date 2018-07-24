@@ -31,10 +31,14 @@ import com.example.krishna.bukie.ChatActivity;
 import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.MyChats;
 import com.example.krishna.bukie.MyChatsAdapter;
+import com.example.krishna.bukie.MyChatsStatus;
 import com.example.krishna.bukie.R;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,6 +69,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private List<MyChats> removeMyChatsList=new ArrayList<>();
     private ListenerRegistration listenerRegistration;
     FirebaseFirestoreSettings settings;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     @Override
     public void onDestroyView() {
 //        listenerRegistration.remove();
@@ -120,11 +126,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     private void getMyChats(final String identityuser) {
       //  firestoreRecyclerAdapter.startListening();
-        if(myChatsList!=null)
-        myChatsList.clear();
+       // if(myChatsList!=null)
+      //  myChatsList.clear();
         //myChatsAdapter=new MyChatsAdapter(myChatsList,context,uid);
         //recyclerView.setAdapter(myChatsAdapter);
-        Query query = firebaseFirestore.collection("users").document(uid).collection("mychats").whereEqualTo(identityuser,uid);
+        //Query query = firebaseFirestore.collection("users").document(uid).collection("mychats").whereEqualTo(identityuser,uid);
 
        /*listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
            @Override
@@ -163,7 +169,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
 
 
-        FirestoreRecyclerOptions<MyChats> response = new FirestoreRecyclerOptions.Builder<MyChats>()
+       /* FirestoreRecyclerOptions<MyChats> response = new FirestoreRecyclerOptions.Builder<MyChats>()
                 .setQuery(query, MyChats.class)
                 .build();
 
@@ -200,7 +206,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                     }
                                     else
                                     {
-                                        identity = "sellerid";
+                                        identity = "seller";
                                         holder.username.setText(myChats.getBuyerfullname());
                                         Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
                                     }
@@ -225,7 +231,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     }
                     else
                     {
-                        identity = "sellerid";
+                        identity = "seller";
                         holder.username.setText(myChats.getBuyerfullname());
                         Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
 
@@ -240,7 +246,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             identity = "buyer";
                         }
                         else
-                            identity="sellerid";
+                            identity="seller";
                         //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, ChatActivity.class);
                         intent.putExtra("mychats", myChats);
@@ -272,7 +278,119 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         };
         firestoreRecyclerAdapter.startListening();
         firestoreRecyclerAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(firestoreRecyclerAdapter);
+        recyclerView.setAdapter(firestoreRecyclerAdapter);*/
+
+        com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild(identityuser).equalTo(uid);
+        FirebaseRecyclerOptions<MyChatsStatus> options =
+                new FirebaseRecyclerOptions.Builder<MyChatsStatus>()
+                        .setQuery(query, MyChatsStatus.class)
+                        .build();
+        firebaseRecyclerAdapter=new FirebaseRecyclerAdapter<MyChatsStatus,MyChatHolder>(options) {
+            @Override
+            public void onBindViewHolder(final MyChatHolder holder, int position, MyChatsStatus model){
+                final MyChatsStatus myChats=model;
+                //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
+                if(holder.username.getBackground()!=null) {
+                    holder.shimmerFrameLayout.startShimmerAnimation();
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                                    holder.ppcard.setCardBackgroundColor(Color.WHITE);
+                                    holder.ppcard2.setCardBackgroundColor(Color.WHITE);
+                                    holder.username.setBackground(null);
+
+                                    if(myChats.getBuyerid().compareTo(uid)==0) {
+                                        identity = "buyer";
+                                        holder.username.setText(myChats.getSellerfullname());
+                                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                                    }
+                                    else
+                                    {
+                                        identity = "seller";
+                                        holder.username.setText(myChats.getBuyerfullname());
+                                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+                                    }
+                                    return false;
+                                }
+                            })
+                            .into(holder.adpic);
+
+
+
+                }
+                else{
+
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .into(holder.adpic);
+                    if(myChats.getBuyerid().compareTo(uid)==0) {
+                        identity = "buyer";
+                        holder.username.setText(myChats.getSellerfullname());
+                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+
+                    }
+                    else
+                    {
+                        identity = "seller";
+                        holder.username.setText(myChats.getBuyerfullname());
+                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
+                    }
+                }
+
+                holder.chatlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if(myChats.getBuyerid().compareTo(uid)==0) {
+                            identity = "buyer";
+                        }
+                        else
+                            identity="seller";
+                        //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("mychats", myChats);
+                        intent.putExtra("identity", identity);
+                        intent.putExtra("isMap","0");
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+
+                    }
+                });
+
+            }
+            @Override
+            public int getItemViewType(int position) {
+                return position;
+            }
+
+            /*@NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return null;
+            }*/
+            @Override
+            public MyChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View v= LayoutInflater.from(getContext())
+                        .inflate(R.layout.mychatview,parent,false);
+                final MyChatHolder myChatHolder=new MyChatHolder(v);
+
+                return myChatHolder;
+            }
+        };
+        firebaseRecyclerAdapter.startListening();
+        firebaseRecyclerAdapter.notifyDataSetChanged();
+        recyclerView.setAdapter(firebaseRecyclerAdapter);
+
 
     }
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -311,13 +429,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
    @Override
     public void onStart() {
         super.onStart();
-        firestoreRecyclerAdapter.startListening();
+        firebaseRecyclerAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firestoreRecyclerAdapter.stopListening();
+        firebaseRecyclerAdapter.stopListening();
     }
     @Override
     public void onClick(View v) {
@@ -329,7 +447,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buy.setSelected(true);
                     sell.setSelected(false);
                   // listenerRegistration.remove();
-                    firestoreRecyclerAdapter.stopListening();
+                    firebaseRecyclerAdapter.stopListening();
 
                    getMyChats("buyerid");
 
@@ -342,7 +460,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     sell.setSelected(true);
                     buyfrag=false;
                   // listenerRegistration.remove();
-                    firestoreRecyclerAdapter.stopListening();
+                    firebaseRecyclerAdapter.stopListening();
                    getMyChats("sellerid");
                 }
 

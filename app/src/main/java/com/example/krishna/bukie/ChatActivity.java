@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -90,8 +91,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private int count;
     private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
     private TextView username2,status;
-    private MyChats myChats;
-    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn,online;
+   // private MyChats myChats;
+    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
    // EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
     private final Handler handler = new Handler();
@@ -115,6 +116,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private EmojIconActions emojIcon;
     private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+    private CardView online;
+    private MyChatsStatus myChats;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,7 +147,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             sendtouid=myChats.getBuyerid();
 
         }
-        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(identity).setValue(userfullname);
+       // firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(identity).setValue(userfullname);
 
 
         chatbox = findViewById(R.id.chatbox);
@@ -170,10 +173,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     String h = dataSnapshot.getValue().toString();
                     if (h.equals("online")) {
                         status.setText("online");
-                        online.setVisibility(View.VISIBLE);
+                        online.setCardBackgroundColor(getResources().getColor(R.color.green));
                     } else {
                         status.setText("offline");
-                        online.setVisibility(View.GONE);
+                        online.setCardBackgroundColor(getResources().getColor(R.color.grey));
                     }
                 }
 
