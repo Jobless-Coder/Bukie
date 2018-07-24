@@ -182,9 +182,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         hello.setTranslationX(width / 2 - 106);
         bye.setTranslationX(width * 3 / 4);
 
+
         signflow.setTranslationX(width * 2);
     }
-//animtions
+
+    //animations
     public void translate(View view) {
 
         if (view.getId() == R.id.hello) {
@@ -201,8 +203,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim3 = ObjectAnimator.ofFloat(hello, "textSize", small, big);
             ObjectAnimator anim4 = ObjectAnimator.ofFloat(bye, "textSize", big, small);
 
-            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", width / 2 - loginflow.getWidth());
-            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width + signflow.getWidth());
+            Log.e("dimensions","width: "+width+" login w: "+loginflow.getWidth()+" position "+loginflow.getX()+" left: "+loginflow.getLeft());
+            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "X", (width-loginflow.getWidth())/2);
+            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width*2);
 
             ObjectAnimator anim7 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
             ObjectAnimator anim8 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);
@@ -230,8 +233,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim4 = ObjectAnimator.ofFloat(bye, "textSize", small, big);
 
 
-            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", -loginflow.getWidth() * 2);
-            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width / 2 - signflow.getWidth());
+            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", -loginflow.getWidth()*2);
+            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "X", width / 2 - signflow.getWidth()/2);
 
             ObjectAnimator anim7 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
             ObjectAnimator anim8 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);

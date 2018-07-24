@@ -77,6 +77,7 @@ import java.util.UUID;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconMultiAutoCompleteTextView;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="helloo" ;
@@ -89,7 +90,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private List<MessageItem> messageItemList;
     private  FirebaseHelper fh;
     private Context context;
-    private EmojiconEditText chatbox;
+    private EmojiconMultiAutoCompleteTextView chatbox;
     private int count;
     private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
     private TextView username2,status;
@@ -264,6 +265,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         sendbtn.setOnClickListener(this);
         //emojiPopup = EmojiPopup.Builder.fromRootView(rootview).build((EmojiEditText) chatbox);
         //Emoji
+        /*
         emojIcon=new EmojIconActions(this,rootview,chatbox,emoji);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.keyboard, R.drawable.emoji);
@@ -280,7 +282,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e(TAG, "Keyboard closed");
             }
         });
-
+        */
 
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, userfullname,new IncomingMessageListener() {
             public void receiveIncomingMessage(final MessageItem ch, String id) {
@@ -626,7 +628,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.makeText(ChatActivity.this, "Error uploading photo,checck internet connection", Toast.LENGTH_SHORT).show();
                     }
 
-
                     return riversRef.getDownloadUrl();
                 }
             }).addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -639,7 +640,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     sendMessage("gallery");
                     if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1)
                         sendMessage("camera");
-
 
                 }
             });

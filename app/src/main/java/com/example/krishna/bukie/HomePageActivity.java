@@ -250,7 +250,6 @@ public class HomePageActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
 
-
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
         DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
         final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
@@ -276,7 +275,6 @@ public class HomePageActivity extends AppCompatActivity {
             }
         });
         connectedRef.addValueEventListener(listener);
-
 
         super.onStart();
     }

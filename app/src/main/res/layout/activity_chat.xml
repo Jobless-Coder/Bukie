@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:maxLines="4"
         android:inputType="textMultiLine" /-->
-            <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconMultiAutoCompleteTextView
                 android:backgroundTint="@android:color/transparent"
                 android:id="@+id/chatbox"
                 android:hint="Type a message"

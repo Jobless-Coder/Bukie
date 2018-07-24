@@ -15,6 +15,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -91,9 +92,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-        setSizeOfSquareImageViews();
         extraImages = new ArrayList<>();
         flex = findViewById(R.id.flexlayout);
         firebaseStorage=FirebaseStorage.getInstance();
@@ -135,6 +133,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
+
+        //to display selected image
+
+        setSizeOfSquareImageViews();
 
 
     }
@@ -231,7 +233,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     imageUri = ImageCompressor.compressFromUri(this,imageUri);
                     SquareImageView sq = new SquareImageView(this, imageUri, metrics);
                     extraImages.add(sq);
-                    flex.addView(sq,1);
+                    flex.addView(sq,0);
                     refreshFlex();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -313,6 +315,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             findViewById(R.id.adnewimagebutton).setVisibility(View.VISIBLE);
         }
     }
+
+
     public void addImageView(View v){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -320,8 +324,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE);
     }
-
-
 
     @Override
     public void onDestroy(){
@@ -380,14 +382,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 mdate=ft.format(d);
 
 
-
                 if(mprice.isEmpty()||mtitle.isEmpty()||mcategory.isEmpty()/*||mArrayUri!=null*/)
                     Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
                 else {
                     progressDialog.setMessage("Posting ad ...");
                     progressDialog.show();
                     uploadImage(coverImageUri,true);
-                    for(int i = 1; i<flex.getChildCount(); i++)
+                    for(int i = 0; i<flex.getChildCount()-1; i++)
                     {
                         SquareImageView squareImageView = (SquareImageView)flex.getChildAt(i);
                         if(squareImageView != null)
@@ -445,6 +446,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
     }
+
+
     public void  postAd(){
         title.setText("");
         price.setText("");
@@ -491,7 +494,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     /*public void goToImageActivity(View view) {
         startActivity(new Intent(this, ImageCompressorTestActivity.class));
     }*/
-
 
     private void selectImage(final int tag) {//1
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
