@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -33,7 +34,7 @@ public class FirebaseHelper {
 private String adID;
 private String seller;
 private String buyer;
-private String username;
+private String username,receiver,userfullname;
 private String refID;//this id is the node key for this entire chat section
 private IncomingMessageListener listener;
 private boolean isListening;
@@ -45,7 +46,7 @@ private ListenerRegistration listenerRegistration;
 private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
 
-    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, IncomingMessageListener listener)
+    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener)
     {
 
         adID = ad;
@@ -54,11 +55,19 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
         username = usernameofuser;
         this.listener = listener;
         isListening = false;
+        this.userfullname=userfullname;
         createRefID();
+
     }
 
     private void createRefID() {
         refID=adID;
+        if(seller.equals(username))
+            receiver=buyer;
+            else
+                receiver=seller;
+
+
 
     }
 
@@ -106,21 +115,41 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
     public void sendMessage(final MessageItem message)//add to recyclerview then send
     {
+        final Last_Message[] last_message = new Last_Message[1];
 
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+
                        // Date d=new Date();
                         Long d=Long.parseLong(message.getTimestamp());
-                        DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(refID).child("last_message");
-                        final Long[] time = new Long[1];
-                        databaseReference.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                        final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(refID);
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.getValue()!=null)
-                                time[0] =Long.parseLong(dataSnapshot.getValue().toString());
+                                MyChatsStatus myChatsStatus = dataSnapshot.getValue(MyChatsStatus.class);
+                                if(myChatsStatus.getBuyerid_isactive().equals(myChatsStatus.getBuyerid()+"_false")) {
+                                    databaseReference.child("buyerid_isactive").setValue(myChatsStatus.getBuyerid() + "_true");
+                                    databaseReference.child("sellerid_isactive").setValue(myChatsStatus.getSellerid() + "_true");
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        final Long[] time = new Long[1];
+                        databaseReference.child("last_message").child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.getValue()!=null) {
+                                   // last_message[0] = (Last_Message) dataSnapshot.getValue();
+                                    time[0] =Long.parseLong(dataSnapshot.getValue().toString());
+                                }
                             }
 
                             @Override
@@ -130,14 +159,32 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                         });
 
                         if(time[0]==null||time[0]!=null&&d> time[0]){
-                            databaseReference.child("time").setValue(d);
-                            databaseReference.child("sender").setValue(message.getUid());
-                            databaseReference.child("type").setValue(message.getType());
-                            databaseReference.child("status").setValue(message.getStatus());
-                            databaseReference.child("message_body").setValue(message.getMessage_body());
+
+                            databaseReference.child("last_message").child("time").setValue(d);
+                            databaseReference.child("last_message").child("sender").setValue(message.getUid());
+                            databaseReference.child("last_message").child("type").setValue(message.getType());
+                            databaseReference.child("last_message").child("status").setValue(message.getStatus());
+                            databaseReference.child("last_message").child("message_body").setValue(message.getMessage_body());
 
 
                         }
+
+                        databaseReference.child(receiver).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                if(dataSnapshot.getValue()==null||dataSnapshot.getValue().toString().equals("false")){
+                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname);
+                                    firebaseDatabase.getReference().child("notifications").push().setValue(chatNotifs);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                         //documentReference.getId();
                     }
                 })

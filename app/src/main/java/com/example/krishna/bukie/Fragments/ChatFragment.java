@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +51,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ChatFragment extends Fragment implements View.OnClickListener {
@@ -116,15 +120,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         uid=sharedPreferences.getString("uid",null);
 
         getMyChats("buyerid");
-        //firebaseFirestore=context.FirebaseFirestore.getInstance();
-
         setHasOptionsMenu(true);
 
 
         return v;
     }
 
-    private void getMyChats(final String identityuser) {
+   // private void getMyChats(final String identityuser) {
       //  firestoreRecyclerAdapter.startListening();
        // if(myChatsList!=null)
       //  myChatsList.clear();
@@ -279,113 +281,182 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         firestoreRecyclerAdapter.startListening();
         firestoreRecyclerAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(firestoreRecyclerAdapter);*/
+       private void getMyChats(final String identityuser) {
 
-        com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild(identityuser).equalTo(uid);
+        com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild(identityuser+"_isactive").equalTo(uid+"_true");
         FirebaseRecyclerOptions<MyChatsStatus> options =
                 new FirebaseRecyclerOptions.Builder<MyChatsStatus>()
                         .setQuery(query, MyChatsStatus.class)
                         .build();
         firebaseRecyclerAdapter=new FirebaseRecyclerAdapter<MyChatsStatus,MyChatHolder>(options) {
             @Override
-            public void onBindViewHolder(final MyChatHolder holder, int position, MyChatsStatus model){
-                final MyChatsStatus myChats=model;
-                //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
-                if(holder.username.getBackground()!=null) {
-                    holder.shimmerFrameLayout.startShimmerAnimation();
-                    Glide.with(context)
-                            .load(myChats.getCoverpic())
-                            .listener(new RequestListener<String, GlideDrawable>() {
-                                @Override
-                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                    return false;
-                                }
+            public void onBindViewHolder(final MyChatHolder holder, int position, MyChatsStatus model) {
+                final MyChatsStatus myChats = model;
+                //if (myChats.isActive()) {
+                    Date d = new Date(myChats.getLast_message().getTime());
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+                    final String timecast = simpleDateFormat.format(d);
 
-                                @Override
-                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                    holder.shimmerFrameLayout.stopShimmerAnimation();
-                                    holder.ppcard.setCardBackgroundColor(Color.WHITE);
-                                    holder.ppcard2.setCardBackgroundColor(Color.WHITE);
-                                    holder.username.setBackground(null);
-
-                                    if(myChats.getBuyerid().compareTo(uid)==0) {
-                                        identity = "buyer";
-                                        holder.username.setText(myChats.getSellerfullname());
-                                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                    //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
+                    if (holder.username.getBackground() != null) {
+                        holder.shimmerFrameLayout.startShimmerAnimation();
+                        Glide.with(context)
+                                .load(myChats.getCoverpic())
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        return false;
                                     }
-                                    else
-                                    {
-                                        identity = "seller";
-                                        holder.username.setText(myChats.getBuyerfullname());
-                                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        holder.shimmerFrameLayout.stopShimmerAnimation();
+                                        // holder.ppcard.setCardBackgroundColor(Color.WHITE);
+                                        holder.ppcard2.setCardBackgroundColor(Color.WHITE);
+                                        holder.username.setBackground(null);
+                                        holder.status.setBackground(null);
+                                        holder.time.setBackground(null);
+                                        holder.message.setBackground(null);
+                                        holder.time.setText(timecast);
+                                        if (myChats.getLast_message().getSender().equals(uid)) {
+                                            holder.status.setVisibility(View.VISIBLE);
+                                            if (myChats.getLast_message().getStatus().equals("sent")) {
+                                                holder.status.setImageResource(R.drawable.ic_text_sent);
+                                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                                            } else {
+                                                holder.status.setImageResource(R.drawable.ic_text_seen);
+                                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green), PorterDuff.Mode.SRC_IN);
+                                            }
+                                            if (myChats.getLast_message().getType().equals("message"))
+                                                holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
+                                            else if (myChats.getLast_message().getType().equals("gallery"))
+                                                holder.message.setText("You : sent photos");
+                                            else if (myChats.getLast_message().getType().equals("location"))
+                                                holder.message.setText("You : sent a location");
+                                            else if (myChats.getLast_message().getType().equals("contact"))
+                                                holder.message.setText("You : sent a contact");
+                                            else
+                                                holder.message.setText("You : sent a photo");
+                                        } else {
+
+                                            holder.status.setVisibility(View.GONE);
+                                            if (myChats.getLast_message().getType().equals("message"))
+                                                holder.message.setText(myChats.getLast_message().getMessage_body());
+                                            else if (myChats.getLast_message().getType().equals("gallery"))
+                                                holder.message.setText("Sent photos");
+                                            else if (myChats.getLast_message().getType().equals("location"))
+                                                holder.message.setText("Sent a location");
+                                            else if (myChats.getLast_message().getType().equals("contact"))
+                                                holder.message.setText("Sent a contact");
+                                            else
+                                                holder.message.setText("Sent a photo");
+
+
+                                        }
+
+                                        if (myChats.getBuyerid().compareTo(uid) == 0) {
+                                            identity = "buyer";
+                                            holder.username.setText(myChats.getSellerfullname());
+                                            Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                                        } else {
+                                            identity = "seller";
+                                            holder.username.setText(myChats.getBuyerfullname());
+                                            Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+                                        }
+
+                                        return false;
                                     }
-                                    return false;
-                                }
-                            })
-                            .into(holder.adpic);
+                                })
+                                .into(holder.adpic);
 
 
-
-                }
-                else{
-
-                    Glide.with(context)
-                            .load(myChats.getCoverpic())
-                            .into(holder.adpic);
-                    if(myChats.getBuyerid().compareTo(uid)==0) {
-                        identity = "buyer";
-                        holder.username.setText(myChats.getSellerfullname());
-                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
-
-                    }
-                    else
-                    {
-                        identity = "seller";
-                        holder.username.setText(myChats.getBuyerfullname());
-                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
-
-                    }
-                }
-
-                holder.chatlayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        if(myChats.getBuyerid().compareTo(uid)==0) {
-                            identity = "buyer";
+                    } else {
+                        holder.time.setText(timecast);
+                        if (myChats.getLast_message().getSender().equals(uid)) {
+                            holder.status.setVisibility(View.VISIBLE);
+                            if (myChats.getLast_message().getStatus().equals("sent")) {
+                                holder.status.setImageResource(R.drawable.ic_text_sent);
+                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                            } else {
+                                holder.status.setImageResource(R.drawable.ic_text_seen);
+                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green), PorterDuff.Mode.SRC_IN);
+                            }
+                            if (myChats.getLast_message().getType().equals("message"))
+                                holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
+                            else if (myChats.getLast_message().getType().equals("gallery"))
+                                holder.message.setText("You : sent photos");
+                            else if (myChats.getLast_message().getType().equals("location"))
+                                holder.message.setText("You : sent a location");
+                            else if (myChats.getLast_message().getType().equals("contact"))
+                                holder.message.setText("You : sent a contact");
+                            else
+                                holder.message.setText("You : sent a photo");
+                        } else {
+                            holder.status.setVisibility(View.GONE);
+                            if (myChats.getLast_message().getType().equals("message"))
+                                holder.message.setText(myChats.getLast_message().getMessage_body());
+                            else if (myChats.getLast_message().getType().equals("gallery"))
+                                holder.message.setText("Sent photos");
+                            else if (myChats.getLast_message().getType().equals("location"))
+                                holder.message.setText("Sent a location");
+                            else if (myChats.getLast_message().getType().equals("contact"))
+                                holder.message.setText("Sent a contact");
+                            else
+                                holder.message.setText("Sent a photo");
                         }
-                        else
-                            identity="seller";
-                        //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, ChatActivity.class);
-                        intent.putExtra("mychats", myChats);
-                        intent.putExtra("identity", identity);
-                        intent.putExtra("isMap","0");
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
 
+                        Glide.with(context)
+                                .load(myChats.getCoverpic())
+                                .into(holder.adpic);
+                        if (myChats.getBuyerid().compareTo(uid) == 0) {
+                            identity = "buyer";
+                            holder.username.setText(myChats.getSellerfullname());
+                            Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+
+                        } else {
+                            identity = "seller";
+                            holder.username.setText(myChats.getBuyerfullname());
+                            Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
+                        }
                     }
-                });
 
-            }
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
+                    holder.chatlayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (myChats.getBuyerid().compareTo(uid) == 0) {
+                                identity = "buyer";
+                            } else
+                                identity = "seller";
+                            //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, ChatActivity.class);
+                            intent.putExtra("mychats", myChats);
+                            intent.putExtra("identity", identity);
+                            intent.putExtra("isMap", "0");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
 
-            /*@NonNull
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                return null;
-            }*/
-            @Override
-            public MyChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        }
 
-                View v= LayoutInflater.from(getContext())
-                        .inflate(R.layout.mychatview,parent,false);
-                final MyChatHolder myChatHolder=new MyChatHolder(v);
+                    });
 
-                return myChatHolder;
-            }
+
+                }
+                @Override
+                public int getItemViewType ( int position){
+                    return position;
+                }
+
+                @Override
+                public MyChatHolder onCreateViewHolder (@NonNull ViewGroup parent,int viewType){
+
+                    View v = LayoutInflater.from(getContext())
+                            .inflate(R.layout.mychatview, parent, false);
+                    final MyChatHolder myChatHolder = new MyChatHolder(v);
+
+                    return myChatHolder;
+                }
+
         };
         firebaseRecyclerAdapter.startListening();
         firebaseRecyclerAdapter.notifyDataSetChanged();
@@ -394,8 +465,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     }
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView ppic,adpic;
-        public TextView username;
+        public ImageView ppic,adpic,status;
+        public TextView username,time,message;
         public ShimmerFrameLayout shimmerFrameLayout;
         public CardView chatlayout,ppcard,ppcard2;
 
@@ -409,6 +480,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
             ppcard=itemView.findViewById(R.id.ppcard);
             ppcard2=itemView.findViewById(R.id.ppcard2);
             adpic=itemView.findViewById(R.id.adpic);
+            status=itemView.findViewById(R.id.status);
+            time=itemView.findViewById(R.id.time);
+            message=itemView.findViewById(R.id.message);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -55,6 +55,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.OnDisconnect;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -118,6 +120,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private CardView online;
     private MyChatsStatus myChats;
+    private DatabaseReference connectedRef;
+    private ValueEventListener listener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,6 +164,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Glide.with(getApplicationContext()).load(ppic).into(pp);
         status=findViewById(R.id.status);
         online=findViewById(R.id.online);
+        status.setText("offline");
+        online.setCardBackgroundColor(getResources().getColor(R.color.grey));
+
 
 
 
@@ -184,6 +191,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                status.setText("offline");
+                online.setCardBackgroundColor(getResources().getColor(R.color.grey));
 
             }
         });
@@ -273,7 +282,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, new IncomingMessageListener() {
+        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, userfullname,new IncomingMessageListener() {
             public void receiveIncomingMessage(final MessageItem ch, String id) {
                 if (!ch.getUid().equals(username))
                 {
@@ -946,6 +955,30 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
 
         firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
+        DatabaseReference presenceRef = firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username);
+        final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
+        //onDisconnectRef.cancel();
+        presenceRef.onDisconnect().setValue("false");
+
+        connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        listener=(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
+                    //onDisconnectRef.cancel();
+                } else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                //  System.err.println("Listener was cancelled");
+            }
+        });
+        connectedRef.addValueEventListener(listener);
 
         super.onStart();
     }
@@ -953,24 +986,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
+        connectedRef.removeEventListener(listener);
 
         fh.stopListening();
         super.onDestroy();
     }
-   /* @Override
-    protected void onPause() {
 
-        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
-
-        fh.stopListening();
-        super.onPause();
-    }
-
-    @Override
-    protected void onPostResume() {
-        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
-        super.onPostResume();
-    }*/
 
 }
 

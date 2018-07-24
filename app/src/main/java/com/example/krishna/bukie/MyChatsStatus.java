@@ -14,6 +14,15 @@ public class MyChatsStatus implements Parcelable {
 
     private String coverpic;
     private String chatid;
+
+    public String getSellerid_isactive() {
+        return sellerid_isactive;
+    }
+
+    public String getBuyerid_isactive() {
+        return buyerid_isactive;
+    }
+
     private String sellerpic;
 
     public void setLast_message(Last_Message last_message) {
@@ -23,7 +32,17 @@ public class MyChatsStatus implements Parcelable {
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
-    public Last_Message last_message;
+    public Last_Message last_message=null;
+    private String buyerid_isactive;
+    private String sellerid_isactive;
+
+   /* public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }*/
     //private int i;
 
 
@@ -59,6 +78,8 @@ public class MyChatsStatus implements Parcelable {
         this.buyerpic = buyerpic;
         this.sellerfullname = sellerfullname;
         this.buyerfullname = buyerfullname;
+        buyerid_isactive=buyer+"_false";
+        sellerid_isactive=sellerid+"_false";
     }
 
 

@@ -67,7 +67,7 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
      * An object representing the current location
      */
     private Location mCurrentLocation;
-    private MyChats myChats;
+    private MyChatsStatus myChats;
     private String identity;
 
     //A client that handles connection / connection failures for Google locations
