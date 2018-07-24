@@ -1,6 +1,7 @@
 package com.example.krishna.bukie.Fragments;
 
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -362,9 +365,29 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.homemenu, menu2);
+       SearchManager searchManager =
+               (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
+       SearchView searchView =
+               (SearchView) menu2.findItem(R.id.search).getActionView();
+       searchView.setSearchableInfo(
+               searchManager.getSearchableInfo(getActivity().getComponentName()));
+       /* MenuItem searchItem=menu2.findItem(R.id.search);
+       SearchView searchView=(SearchView) searchItem.getActionView();
+       searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+           @Override
+           public boolean onQueryTextSubmit(String query) {
+               return false;
+           }
+
+           @Override
+           public boolean onQueryTextChange(String newText) {
+               return false;
+           }
+       });*/
 
 
-        super.onCreateOptionsMenu(menu2,inflater2);
+
+       super.onCreateOptionsMenu(menu2,inflater2);
     }
 
     @Override
@@ -382,6 +405,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;*/
+
 
 
             default:
