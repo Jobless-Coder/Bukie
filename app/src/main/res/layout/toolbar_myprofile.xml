@@ -21,7 +21,6 @@
             android:id="@+id/share_location"
             android:layout_width="35.0dip"
             android:layout_height="35.0dip"
-            android:src="@drawable/boy"
             android:scaleType="fitCenter" />
 
     </LinearLayout>

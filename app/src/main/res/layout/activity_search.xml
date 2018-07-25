@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchActivity">
 
-</android.support.constraint.ConstraintLayout>
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity"
+    android:id="@+id/tt"
+    android:orientation="vertical">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:transitionName="search"
+        android:id="@+id/transitiontoolbar"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+            android:elevation="4dp"
+            android:background="@color/light_grey"
+            android:id="@+id/toolbar_chats"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:theme="@style/BaseTheme"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            >
+            <include layout="@layout/toolbar_search"/>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+    <android.support.v7.widget.RecyclerView
+        android:visibility="visible"
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

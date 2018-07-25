@@ -75,10 +75,15 @@
         <activity android:name=".ChatActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".RegistrationActivity" />
-        <activity android:name=".HomePageActivity">
-            <meta-data
+        <activity android:name=".HomePageActivity"
+            android:launchMode="singleTop">
+
+            <!--meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" /-->
+            <!--meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/searchable" /-->
         </activity>
         <activity android:name=".PostnewadActivity" />
         <activity android:name=".DisplayAdActivity" />
@@ -102,7 +107,22 @@
         </service>
 
         <activity android:name=".ImageCompressorTestActivity" />
-        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".SearchActivity"
+            >
+            <!--
+            android:parentActivityName=".HomePageActivity"intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomePageActivity" />
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" /-->
+
+            <!--meta-data android:name="android.app.default_searchable"
+                android:value=".HomePageActivity" /-->
+
+        </activity>
     </application>
 
 </manifest>

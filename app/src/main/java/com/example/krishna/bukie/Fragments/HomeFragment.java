@@ -1,12 +1,14 @@
 package com.example.krishna.bukie.Fragments;
 
 
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +42,7 @@ import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
+import com.example.krishna.bukie.SearchActivity;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -90,6 +94,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
         firebaseFirestore=FirebaseFirestore.getInstance();
         context=getContext();
+        /*Fade fade=new Fade();
+        //fade.setDuration(300);
+        getActivity().getWindow().setExitTransition(fade);*/
 
 
 
@@ -124,25 +131,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-               /* Handler handler=new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
 
-                    }
-                },3000);*/
-                bookAdsList.clear();
-               // bookAdsList=new ArrayList<>();
+               bookAdsList.clear();
+               //bookAdsList=new ArrayList<>();
                 getadvertisements();
-
-
-
             }
         });
-       // swipeRefreshLayout.setEnabled(true);
-        //listenerRegistration.remove();
-        //listenerRegistration.remove();
 
 
 
@@ -365,12 +359,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.homemenu, menu2);
-       SearchManager searchManager =
-               (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
+       /*SearchManager searchManager =
+              (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
        SearchView searchView =
                (SearchView) menu2.findItem(R.id.search).getActionView();
        searchView.setSearchableInfo(
-               searchManager.getSearchableInfo(getActivity().getComponentName()));
+               searchManager.getSearchableInfo(getActivity().getComponentName()));*/
        /* MenuItem searchItem=menu2.findItem(R.id.search);
        SearchView searchView=(SearchView) searchItem.getActionView();
        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -394,13 +388,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search:
+                View toolbarsearch=getActivity().findViewById(R.id.transitiontoolbar);
+                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(getActivity(),toolbarsearch,"search");
+                Intent intent=new Intent(getActivity(), SearchActivity.class);
+                //intent.putExtra(SyncStateContract.Constants.KEY_ANIM_TYPE,)
                 Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
                         .show();
+                startActivity(intent,activityOptions.toBundle());
                 break;
             case R.id.filter:
                 Toast.makeText(getContext(), "filter selected", Toast.LENGTH_SHORT)
                         .show();
                 break;
+
            /* case android.R.id.home:
 
                 mDrawerLayout.openDrawer(GravityCompat.START);

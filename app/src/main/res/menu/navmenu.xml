@@ -14,7 +14,7 @@
         android:title="About us"
 
         android:iconTint="@color/light_violet"
-        android:icon="@drawable/aboutus"
+
         />
 
 
