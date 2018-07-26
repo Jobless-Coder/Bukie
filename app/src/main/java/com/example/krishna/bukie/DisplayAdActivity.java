@@ -119,7 +119,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
         if(uid.equals(bookAds.getSellerid()))
         {
-          findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
+            findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
             findViewById(R.id.chatbutton).setVisibility(View.GONE);
 
         }
