@@ -1,6 +1,7 @@
 package com.example.krishna.bukie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends BaseAdapter {
@@ -38,8 +40,9 @@ public class ImageAdapter extends BaseAdapter {
     }
 
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View grid;
+        ImageView imageView;
 
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -49,16 +52,28 @@ public class ImageAdapter extends BaseAdapter {
 
             grid = inflater.inflate(R.layout.view_single_grid, null);
 
-            ImageView imageView = (ImageView)grid.findViewById(R.id.image);
+             imageView = (ImageView)grid.findViewById(R.id.image);
 
 
             Glide.with(mContext).load(images.get(position)).into(imageView);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(mContext,ImageViewActivity.class);
+                    //  ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(activity,view,"image");
+                    intent.putExtra("position",position);
+                    intent.putStringArrayListExtra("url", (ArrayList<String>) images);
+                    mContext.startActivity(intent/*,activityOptions.toBundle()*/);
+
+                }
+            });
 
         }
         else
         {
             grid = (View) convertView;
         }
+
 
         return grid;
     }

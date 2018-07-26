@@ -1,11 +1,16 @@
 package com.example.krishna.bukie;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,7 +23,14 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.transition.Fade;
+import android.support.transition.TransitionManager;
+import android.support.transition.TransitionSet;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -39,6 +51,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,12 +92,15 @@ import java.util.UUID;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
+import static java.security.AccessController.getContext;
+
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG ="helloo" ;
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 21;
     private static final int RESULT_PICK_CONTACT = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 5;
     private static final int PICK_IMAGE_MULTIPLE = 14;
+    private static final int MY_PERMISSIONS_REQUEST_STORAGE =111 ;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -242,14 +259,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onCameraImage(View view, int position) {
+                ArrayList<String> imagelist= (ArrayList<String>) messageItemList.get(position).getImageurl();
+                Intent intent=new Intent(context,ImageViewActivity.class);
+                //  ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(activity,view,"image");
+                intent.putExtra("position",0);
+                intent.putStringArrayListExtra("url", (ArrayList<String>) imagelist);
+                context.startActivity(intent/*,activityOptions.toBundle()*/);
 
             }
+
         });
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
-        //recyclerView.getItemAnimator().setChangeDuration(0);
-       // recyclerView.scrollToPosition(messageItemList.size() - 1);
-        //camerabtn=findViewById(R.id.camerabtn);
+
         sendbtn = (View) findViewById(R.id.sendbtn);
         camera = findViewById(R.id.camera);
         attach = findViewById(R.id.attach);
@@ -383,7 +405,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if (before == 0 && s.length() > 0) {
-                    int cx = camera.getWidth() / 2;
+                    /*int cx = camera.getWidth() / 2;
                     int cy = camera.getHeight() / 2;
                     float initialRadius = (float) Math.hypot(cx, cy);
                     Animator anim = ViewAnimationUtils.createCircularReveal(camera, cx, cy, initialRadius, 0);
@@ -395,14 +417,38 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             send.setVisibility(View.VISIBLE);
                             togglesend = true;
                         }
-                    });
+                    });*/
+                    /*AnimatorSet animationSet = new AnimatorSet();
+
+                    ObjectAnimator scaleY = ObjectAnimator.ofFloat(camera,"scaleY", 1f, 0.5f);
+                    ObjectAnimator scaleX = ObjectAnimator.ofFloat(camera,"scaleX", 1f, 0.5f);
+
+                    animationSet.playTogether(scaleX, scaleY);
+                    animationSet.setDuration(300);
+                    animationSet.start();
+
+                    AnimatorSet animationSet2 = new AnimatorSet();
+                    ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(send,"scaleY", 0.5f, 1f);
+                    ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(send,"scaleX", 0.5f, 15f);
+
+                    animationSet2.playTogether(scaleX2, scaleY2);
+                    animationSet2.setDuration(300);
+                    animationSet2.start();*/
+                    camera.setVisibility(View.INVISIBLE);
 
 
-                    anim.start();
+
+
+
+                    send.setVisibility(View.VISIBLE);
+
+
+
+                    togglesend = true;
 
                 }
                 if (before > 0 && s.length() == 0) {
-                    int cx = send.getWidth() / 2;
+                    /*int cx = send.getWidth() / 2;
                     int cy = send.getHeight() / 2;
                     float initialRadius = (float) Math.hypot(cx, cy);
                     Animator anim = ViewAnimationUtils.createCircularReveal(send, cx, cy, initialRadius, 0);
@@ -417,7 +463,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     });
 
 
-                    anim.start();
+                    anim.start();*/
+
+
+                    send.setVisibility(View.INVISIBLE);
+
+                    camera.setVisibility(View.VISIBLE);
+
+
+                    togglesend = false;
 
                 }
 
@@ -445,16 +499,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-      /*  if (popup.isShowing()) {
-            popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-
-
-
-                }
-            });
-        }*/
         rootview.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
 
@@ -497,6 +541,46 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return true;
+    }
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA =999 ;
+    private void getCameraPermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+
+        }
+
+    }
+    private void getStoragePermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+               // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
+
+            } else {
+               // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_STORAGE);
+            }
+
+        }
+
     }
 
     private void shareGallery() {
@@ -801,6 +885,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 if(!togglesend){
+                    getStoragePermissions();
                    // Toast.makeText(context, "hkl", Toast.LENGTH_SHORT).show();
                     dispatchTakePictureIntent();
 
@@ -857,6 +942,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.popupcamera:
                 popup.dismiss();
+                //getCameraPermissions();
+                getStoragePermissions();
                 dispatchTakePictureIntent();
                 break;
             case R.id.popupcontact:

@@ -141,7 +141,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         List<String> booksUrl=new ArrayList<>();
         booksUrl.add(bookAds.getBookcoverpic());
         booksUrl.addAll(bookAds.getBookpicslist());
-        viewPagerAdapter=new ViewPagerAdapter(this,booksUrl);
+        viewPagerAdapter=new ViewPagerAdapter(DisplayAdActivity.this,this,booksUrl);
 
         viewPager.setAdapter(viewPagerAdapter);
         pageIndicatorView = findViewById(R.id.pageIndicatorView);

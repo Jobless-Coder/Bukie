@@ -1,13 +1,83 @@
 package com.example.krishna.bukie;
 
+import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
-public class ImageViewActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ImageViewActivity extends AppCompatActivity implements View.OnClickListener {
+    private List<String> ImageUrl=new ArrayList<>();
+    private int position;
+    private ViewPager viewPager;
+    private View back,gotoleft,gotoright;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_image_view);
+       // postponeEnterTransition();
+        viewPager=findViewById(R.id.viewPager);
+        back=findViewById(R.id.back);
+        back.setOnClickListener(this);
+        gotoleft=findViewById(R.id.gotoleft);
+        gotoright=findViewById(R.id.gotoright);
+        gotoright.setOnClickListener(this);
+        gotoleft.setOnClickListener(this);
+        Bundle bundle=getIntent().getExtras();
+        ImageUrl=bundle.getStringArrayList("url");
+        if(ImageUrl.size()==1){
+            gotoleft.setVisibility(View.GONE);
+            gotoright.setVisibility(View.GONE);
+        }
+        position=bundle.getInt("position");
+        ImageViewPagerAdapter imageViewPagerAdapter=new ImageViewPagerAdapter(this,ImageUrl);
+        viewPager.setAdapter(imageViewPagerAdapter);
+        viewPager.setCurrentItem(position);
+       // startPostponedEnterTransition();
+
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_view);
+    public void onClick(View v) {
+        int pos=viewPager.getCurrentItem();
+        switch (v.getId()){
+            case R.id.back:
+                onBackPressed();
+                break;
+            case R.id.gotoleft:
+                if(pos==0)
+                {
+                    //viewPager.setCurrentItem(ImageUrl.size()-1,true);
+
+                }
+
+                else{
+                    viewPager.setCurrentItem(pos-1,true);
+
+                }
+
+                break;
+            case R.id.gotoright:
+                if(pos==ImageUrl.size()-1){
+
+                }
+                   // viewPager.setCurrentItem(0,true);
+                else
+                    viewPager.setCurrentItem(pos+1,true);
+
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //supportFinishAfterTransition();
+        super.onBackPressed();
     }
 }

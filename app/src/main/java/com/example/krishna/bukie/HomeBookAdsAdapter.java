@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,10 +53,13 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
     @Override
     public void onBindViewHolder(@NonNull final BookHolder holder, int position) {
         final BookAds bookAds=bookAdsList.get(position);
+       // if(bookAds==null)
+      //  Log.e("bookads","kll"+position+bookAds.getAdid());
 
         if(holder.bookprice.getBackground()!=null) {
 
             holder.shimmerFrameLayout.startShimmerAnimation();
+
             Glide.with(context)
                     .load(bookAds.getBookcoverpic())
                     .listener(new RequestListener<String, GlideDrawable>() {

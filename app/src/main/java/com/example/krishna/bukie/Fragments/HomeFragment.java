@@ -2,57 +2,37 @@ package com.example.krishna.bukie.Fragments;
 
 
 import android.app.ActivityOptions;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Fade;
-import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.krishna.bukie.BookAds;
-//import com.example.krishna.bukie.BookAdsAdapter;
-import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.SearchActivity;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -63,7 +43,6 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.constraint.Constraints.TAG;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recyclerView;
@@ -94,9 +73,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
         firebaseFirestore=FirebaseFirestore.getInstance();
         context=getContext();
-        /*Fade fade=new Fade();
-        //fade.setDuration(300);
-        getActivity().getWindow().setExitTransition(fade);*/
+
 
 
 
@@ -133,7 +110,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onRefresh() {
 
                bookAdsList.clear();
-               //bookAdsList=new ArrayList<>();
+
                 getadvertisements();
             }
         });
@@ -168,183 +145,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 bookAdsList.add(bookAds);
                                 homeBookAdsAdapter.notifyDataSetChanged();
 
-                                // Log.d(TAG, document.getId() + " => " + document.getData());
+
                             }
                             swipeRefreshLayout.setRefreshing(false);
                         } else {
                             swipeRefreshLayout.setRefreshing(false);
-                            // Log.d(TAG, "Error getting documents: ", task.getException());
+                            //
                         }
                     }
                 });
     }
 
 
-        /*Query query = firebaseFirestore.collection("bookads");
-        listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
 
-                    return;
-                }
-                for (DocumentChange dc : queryDocumentSnapshots.getDocumentChanges()) {
-                    BookAds bookAds;
-                    //removeMyChatsList=new ArrayList<>();
-                    switch (dc.getType()) {
-                        case ADDED:
-                            bookAds=dc.getDocument().toObject(BookAds.class);;
-                            bookAdsList.add(bookAds);
-                            break;
-                        case MODIFIED:
-                            bookAds=dc.getDocument().toObject(BookAds.class);
-                            bookAdsList.remove(bookAds);
-                            bookAdsList.add(bookAds);
-
-                            break;
-                        case REMOVED:
-                            bookAds=dc.getDocument().toObject(BookAds.class);
-
-                            bookAdsList.remove(bookAds);
-
-
-                            break;
-                    }
-                    homeBookAdsAdapter.notifyDataSetChanged();
-
-                }
-
-            }
-        });*/
-
-
-
-        /*FirestoreRecyclerOptions<BookAds> response = new FirestoreRecyclerOptions.Builder<BookAds>()
-                .setQuery(query, BookAds.class)
-                .build();
-        firestoreRecyclerAdapter=new FirestoreRecyclerAdapter<BookAds, BookHolder>(response) {
-            @Override
-            public void onBindViewHolder(final BookHolder holder, int position, BookAds model)
-            {
-
-                final BookAds bookAds=model;
-
-                if(holder.bookprice.getBackground()!=null) {
-
-                    holder.shimmerFrameLayout.startShimmerAnimation();
-                    Glide.with(context)
-                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
-                            .listener(new RequestListener<String, GlideDrawable>() {
-                                @Override
-                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                    holder.shimmerFrameLayout.stopShimmerAnimation();
-                                    holder.bookcategory.setBackground(null);
-                                    holder.bookpic.setBackground(null);
-                                    holder.bookdate.setBackground(null);
-                                    holder.booktitle.setBackground(null);
-                                    holder.bookprice.setBackground(null);
-                                    holder.booktitle.setText(bookAds.getBooktitle());
-                                    holder.bookprice.setText(bookAds.getPrice());
-                                    holder.bookdate.setText(bookAds.getDate());
-                                    holder.bookcategory.setText(bookAds.getBookcategory());
-                                    return false;
-                                }
-                            })
-                            .into(holder.bookpic);
-
-                }
-                else{
-
-                    Glide.with(context)
-                            .load(bookAds.getBookpicslist().get(bookAds.getBookpicslist().size()-1))
-                            .into(holder.bookpic);
-                    holder.booktitle.setText(bookAds.getBooktitle());
-                    holder.bookprice.setText(bookAds.getPrice());
-                    holder.bookdate.setText(bookAds.getDate());
-                    holder.bookcategory.setText(bookAds.getBookcategory());
-
-                }
-                holder.selectad.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v)
-                    {
-
-                        Intent intent = new Intent(context, DisplayAdActivity.class);
-                        intent.putExtra("bookads", bookAds);
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                        //getActivity().finish();
-                    }
-                });
-            }
-
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-
-            @NonNull
-            @Override
-            public BookHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-                View v= LayoutInflater.from(getContext())
-                        .inflate(R.layout.bookadview,parent,false);
-                final BookHolder bookHolder=new BookHolder(v);
-
-                return bookHolder;
-            }
-        };
-        firestoreRecyclerAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(firestoreRecyclerAdapter);*/
-
-
-    /*public class BookHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView bookpic;
-        public TextView bookprice,bookdate,bookcategory,booktitle;
-        public ShimmerFrameLayout shimmerFrameLayout;
-        public View selectad;
-
-
-        public BookHolder(View itemView) {
-            super(itemView);
-            shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
-            bookpic=(ImageView)itemView.findViewById(R.id.bookpic);
-            bookcategory=itemView.findViewById(R.id.bookcategory);
-            bookdate=itemView.findViewById(R.id.bookdate);
-            bookprice=itemView.findViewById(R.id.bookprice);
-            booktitle=itemView.findViewById(R.id.booktitle);
-            selectad=itemView.findViewById(R.id.selectad);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    bookItemClickListener.onItemClick(v, getAdapterPosition());
-
-                }
-            });
-        }
-
-        @Override
-        public void onClick(View v) {
-
-        }
-    }*/
-    /*@Override
-    public void onStart() {
-        super.onStart();
-        firestoreRecyclerAdapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        firestoreRecyclerAdapter.stopListening();
-    }*/
 
 
 
@@ -389,22 +202,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (item.getItemId()) {
             case R.id.search:
                 View toolbarsearch=getActivity().findViewById(R.id.transitiontoolbar);
-                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(getActivity(),toolbarsearch,"search");
+                View search=getActivity().findViewById(R.id.search);
+                Pair<View, String> p1 = Pair.create(toolbarsearch, "search");
+                Pair<View, String> p2 = Pair.create(search, "searchicon");
+                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(getActivity(),p1,p2);
                 Intent intent=new Intent(getActivity(), SearchActivity.class);
                 //intent.putExtra(SyncStateContract.Constants.KEY_ANIM_TYPE,)
-                Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
-                        .show();
+                ///Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
+               //         .show();
                 startActivity(intent,activityOptions.toBundle());
                 break;
             case R.id.filter:
-                Toast.makeText(getContext(), "filter selected", Toast.LENGTH_SHORT)
-                        .show();
+
                 break;
 
-           /* case android.R.id.home:
 
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;*/
 
 
 
@@ -414,21 +226,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return true;
     }
 
-    /*@Override
-    public void onPause() {
-        //Log.i("stop","yeah");
-        floatingActionButton.hide(FloatingActionButton.OnVisibilityChangedListener());
-        super.onPause();
 
-
-    }*/
 
 
     @Override
     public void onClick(View v) {
         Intent intent=new Intent(getContext(), PostnewadActivity.class);
         startActivity(intent);
-        //getActivity().finish();
+
 
     }
 }

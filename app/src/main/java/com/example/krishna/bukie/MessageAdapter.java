@@ -715,8 +715,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             time2=itemView.findViewById(R.id.time2);
             dayll=itemView.findViewById(R.id.dayll);
             day=itemView.findViewById(R.id.day);
+            cameraview1=itemView.findViewById(R.id.cameraview1);
+            cameraview2=itemView.findViewById(R.id.cameraview2);
 
-            /*cameraview1.setOnClickListener(new View.OnClickListener() {
+            cameraview1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onClickListener.onCameraImage(v,getAdapterPosition());
@@ -727,7 +729,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 public void onClick(View v) {
                     onClickListener.onCameraImage(v,getAdapterPosition());
                 }
-            });*/
+            });
 
         }
     }

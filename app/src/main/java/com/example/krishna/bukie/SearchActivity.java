@@ -10,11 +10,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -65,7 +72,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog.setMessage("Searching wait ..");
 
        // Log.i("hellonibbas","ffg");
-        Fade fade = new Fade();
+        final Fade fade = new Fade();
         fade.excludeTarget(R.id.tt, true);
         fade.excludeTarget(android.R.id.statusBarBackground, true);
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
@@ -75,12 +82,78 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         firebaseFirestore=FirebaseFirestore.getInstance();
         context=getApplicationContext();
         recyclerView.setHasFixedSize(true);
+        bookAdsList=new ArrayList<>();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context);
         recyclerView.setAdapter(homeBookAdsAdapter);
+        searchbox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if ( (s.length() <before||s.length()>before)&&togglesearch==false) {
+                    togglesearch=true;
+                    search_icon.setVisibility(View.VISIBLE);
+                    clear_icon.setVisibility(View.GONE);
+
+                }
+                if (before > 0 && s.length() == 0) {
+                    togglesearch=true;
+                    search_icon.setVisibility(View.VISIBLE);
+                    clear_icon.setVisibility(View.GONE);
+
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        searchbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                   searchAds();
+
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
        // handleIntent(getIntent());
+
+    }
+    public void searchAds(){
+        InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchbox.getWindowToken(), 0);
+        bookAdsList.clear();
+        bookadslistpath.clear();
+        homeBookAdsAdapter.notifyDataSetChanged();
+        // bookAdsList=new ArrayList<>();
+        //bookadslistpath=new ArrayList<>();
+
+
+
+        String query=searchbox.getText().toString().trim();
+        if(query.length()>0){
+            // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
+            progressDialog.show();
+            getMyAdsPaths(query);
+            togglesearch=false;
+            search_icon.setVisibility(View.GONE);
+            clear_icon.setVisibility(View.VISIBLE);
+        }
+        else {
+            searchbox.setText("");
+        }
+
     }
 
     @Override
@@ -88,20 +161,24 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()){
             case R.id.searchbtn:
                 if(togglesearch==true){
-                    bookAdsList.clear();
-                    bookadslistpath.clear();
+                    /*bookAdsList.clear();
+                   bookadslistpath.clear();
                     homeBookAdsAdapter.notifyDataSetChanged();
+                   // bookAdsList=new ArrayList<>();
+                    //bookadslistpath=new ArrayList<>();
 
 
 
                     String query=searchbox.getText().toString().trim();
-                    if(query!=""){
+                    if(query.length()>0){
+                       // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
                         progressDialog.show();
                         getMyAdsPaths(query);
                         togglesearch=false;
                         search_icon.setVisibility(View.GONE);
                         clear_icon.setVisibility(View.VISIBLE);
-                    }
+                    }*/
+                    searchAds();
 
 
                 }
@@ -130,11 +207,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-               if(/*response.code()==200&&*/response.body()!=null) {
+               if(response.code()==200&&response.body()!=null) {
                     bookadslistpath=response.body();
                     getMyAds(bookadslistpath);
                     progressDialog.dismiss();
-                    Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
+                   // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
+                    //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
 
                }
 
@@ -162,6 +240,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         DocumentSnapshot document = task.getResult();
                         BookAds bookAds=document.toObject(BookAds.class);
                         bookAdsList.add(bookAds);
+                        homeBookAdsAdapter.notifyDataSetChanged();
 
                        /// Log.d(TAG, "Cached document data: " + document.getData());
                     } else {
