@@ -26,6 +26,8 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -98,6 +100,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         loginManager=LoginManager.getInstance();
+        if (BuildConfig.DEBUG) {
+            FacebookSdk.setIsDebugEnabled(true);
+            FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+        }
+
 
 
 
@@ -446,14 +453,26 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         if (!firebaseAuth.getCurrentUser().isEmailVerified()){
             verifyEmail( k[0]++);
         }
-        else {
+        /*else {
             Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
 
     }
     public void verifyEmail(int k){
+        FirebaseAuth.getInstance().getCurrentUser().reload();
+        firebaseAuth=FirebaseAuth.getInstance();
+        final FirebaseUser user=firebaseAuth.getCurrentUser();
+        Log.i("verify",user.isEmailVerified()+"");
+        if(user.isEmailVerified())
+        {
+           // progressDialog.dismiss();
+            Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+            intent.putExtra("signinmethod","email");
+            startActivity(intent);
+            finish();
+        }
         if(k!=0){
             TextView btn=this.findViewById(R.id.verifybtn);
             btn.setText("Resend Email");
@@ -461,15 +480,18 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-        FirebaseUser user=firebaseAuth.getCurrentUser();
+
 
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+
+
                             Toast.makeText(AuthActivity.this, "Email sent to user, please verify!", Toast.LENGTH_SHORT).show();
-                           // Log.d("nibbaa1", "Email sent.");
+                           signOut();
+                            // Log.d("nibbaa1", "Email sent.");
 
                         }
                         else {
@@ -702,7 +724,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         firebaseAuth.signOut();
         mGoogleSignInClient.signOut();
-        loginManager.logOut();
+       // loginManager.logOut();
 
 
         // Google sign out

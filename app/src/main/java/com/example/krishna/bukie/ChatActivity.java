@@ -290,8 +290,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         /*
         emojIcon=new EmojIconActions(this,rootview,chatbox,emoji);
         emojIcon.ShowEmojIcon();
-        emojIcon.setIconsIds(R.drawable.keyboard, R.drawable.emoji);
-        emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
+        emojIcon.setIconsIds(R.drawable.keyboard, R.drawable.emoji);*/
+      /*  emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
             @Override
             public void onKeyboardOpen() {
                 recyclerView.scrollToPosition(messageItemList.size() - 1);
@@ -303,8 +303,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //recyclerView.scrollToPosition(messageItemList.size() - 1);
                 Log.e(TAG, "Keyboard closed");
             }
-        });
-        */
+        });*/
+
 
         fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, userfullname,new IncomingMessageListener() {
             public void receiveIncomingMessage(final MessageItem ch, String id) {
@@ -833,6 +833,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void dispatchTakePictureIntent() {
 
+
         Intent pictureIntent = new Intent(
                 MediaStore.ACTION_IMAGE_CAPTURE);
         if(pictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -884,9 +885,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 }
-                if(!togglesend){
+                else {
                     getStoragePermissions();
-                   // Toast.makeText(context, "hkl", Toast.LENGTH_SHORT).show();
+
+                   //Toast.makeText(context, "hkl", Toast.LENGTH_SHORT).show();
                     dispatchTakePictureIntent();
 
                 }
