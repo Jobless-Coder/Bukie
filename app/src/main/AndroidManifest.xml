@@ -77,7 +77,14 @@
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".HomePageActivity"
             android:launchMode="singleTop">
-
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="books.jc"
+                    android:scheme="https"/>
+            </intent-filter>
             <!--meta-data
                 android:name="android.app.default_searchable"
                 android:value=".SearchActivity" /-->

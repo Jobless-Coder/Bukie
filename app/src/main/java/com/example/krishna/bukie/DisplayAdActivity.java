@@ -244,7 +244,15 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }*/
 
     public void shareAd(View view) {
-        Toast.makeText(this, "Call your friend and talk about this ad", Toast.LENGTH_SHORT).show();
+
+        String deepLink = "https://books.jc/ads/"+bookAds.getAdid();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Firebase Deep Link");
+        intent.putExtra(Intent.EXTRA_TEXT,deepLink);
+
+        startActivity(intent);
+        //Toast.makeText(this, "Call your friend and talk about this ad", Toast.LENGTH_SHORT).show();
     }
 
     class Pair
