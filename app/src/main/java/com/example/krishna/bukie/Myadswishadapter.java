@@ -103,7 +103,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
 
                 Intent intent = new Intent(context, DisplayAdActivity.class);
                 intent.putExtra("bookads", bookAds);
-
+                intent.putExtra("editad", true);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 

@@ -58,6 +58,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.0.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.0.2'
     implementation 'com.jsibbold:zoomage:1.1.0'
+    implementation 'org.adw.library:discrete-seekbar:1.0.1'
 
 
     implementation 'com.google.firebase:firebase-invites:16.0.1'

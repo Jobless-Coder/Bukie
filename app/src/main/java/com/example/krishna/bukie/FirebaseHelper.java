@@ -74,7 +74,6 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
     public ArrayList<MessageItem> getPreviousTexts()
     {
-        //Log.d("MyApp","I am here");
         final ArrayList<MessageItem> chats = new ArrayList<>();
        /* FirebaseDatabase database = FirebaseDatabase.getInstance();
 

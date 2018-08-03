@@ -51,7 +51,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final BookHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final BookHolder holder, final int position) {
         final BookAds bookAds=bookAdsList.get(position);
        // if(bookAds==null)
       //  Log.e("bookads","kll"+position+bookAds.getAdid());
@@ -102,9 +102,12 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
             public void onClick(View v)
             {
 
+                //bookAdsList.get(position).setViewcounter(bookAds.getViewcounter()+1);
+                //notifyDataSetChanged();
+
                 Intent intent = new Intent(context, DisplayAdActivity.class);
                 intent.putExtra("bookads", bookAds);
-
+               // Log.i("noobs",bookAdsList.get(position).getViewcounter()+"");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 //getActivity().finish();
@@ -156,6 +159,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
 
         }
     }
+
 }
 
 
