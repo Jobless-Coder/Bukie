@@ -276,6 +276,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.time1.setText(messageItem.getTime());
             //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
+            if(messageItem.getStatus().equals("seen"))
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
         }
 
         if(messageItem.getType().compareTo("camera")==0){
@@ -284,6 +288,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             cameraViewHolder.time1.setText(messageItem.getTime());
+            if(messageItem.getStatus().equals("seen"))
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
             //holder.cameraview1.setVisibility(View.VISIBLE);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
             // holder.camerapic.setImageResource();
@@ -301,7 +309,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location1);
             Glide.with(context).load(mapurl).into(locationViewHolder.location1);
+
+            if(messageItem.getStatus().equals("seen"))
+                locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
             Log.i("mapppy",mapurl);
+
            // locationViewHolder.location1.setImageResource();
         }
        /* else {
@@ -312,6 +326,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             galleryVieHolder.time1.setText(messageItem.getTime());
+
+            if(messageItem.getStatus().equals("seen"))
+                galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+
             if(messageItem.getImageurl().size()<3) {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*messageItem.getImageurl().size(), r.getDisplayMetrics());
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -377,6 +397,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.time1.setText(messageItem.getTime());
             //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
+            if(messageItem.getStatus().equals("seen"))
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
 
 
         }
@@ -386,6 +410,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             cameraViewHolder.time1.setText(messageItem.getTime());
+            if(messageItem.getStatus().equals("seen"))
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
            // cameraViewHolder.cameraview1.setVisibility(View.VISIBLE);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
            // holder.camerapic.setImageResource();
@@ -399,6 +427,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             Glide.clear(locationViewHolder.location1);
             Glide.with(context).load(mapurl).into(locationViewHolder.location1);
             Log.i("mapppy",mapurl);
+            if(messageItem.getStatus().equals("seen"))
+                locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
             //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
@@ -407,6 +439,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             galleryVieHolder.time1.setText(messageItem.getTime());
+
+            if(messageItem.getStatus().equals("seen"))
+                galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+            else
+                galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
             if(messageItem.getImageurl().size()==2) {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*2, r.getDisplayMetrics());
 
@@ -622,6 +659,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2,day;
         public View dayll;
+        public ImageView seenicon;
 
         public ContactViewHolder(View itemView) {
             super(itemView);
@@ -638,6 +676,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             time2=itemView.findViewById(R.id.time2);
             dayll=itemView.findViewById(R.id.dayll);
             day=itemView.findViewById(R.id.day);
+            seenicon = itemView.findViewById(R.id.seenicon);
 
             savecontact1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -660,6 +699,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2,day;
         public ImageView location1,location2;
+        public ImageView seenicon;
       //  public String mapUrl="https://maps.googleapis.com/maps/api/staticmap?center="+22.7672+","+88.3843+"&zoom=16&size=150x150&markers=color:red|size:mid|"+22.7672+","+88.3843+"&key="+String.valueOf(R.string.API_KEY);
 
         public LocationViewHolder(View itemView) {
@@ -677,6 +717,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             day=itemView.findViewById(R.id.day);
             location1=itemView.findViewById(R.id.location1);
             location2=itemView.findViewById(R.id.location2);
+            seenicon=itemView.findViewById(R.id.seenicon);
 
             locationview1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -703,6 +744,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public View cameraview1,cameraview2,dayll;
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2,day;
+        public ImageView seenicon;
 
         public CameraViewHolder(View itemView) {
             super(itemView);
@@ -717,6 +759,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             day=itemView.findViewById(R.id.day);
             cameraview1=itemView.findViewById(R.id.cameraview1);
             cameraview2=itemView.findViewById(R.id.cameraview2);
+            seenicon = itemView.findViewById(R.id.seenicon);
 
             cameraview1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -738,6 +781,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         public RelativeLayout rlson1,rlson2,rlfather;
         public TextView time1,time2,day;
         public LinearLayout ll1,ll21,dayll;
+        public ImageView seenicon;
         public GalleryVieHolder(View itemView) {
             super(itemView);
             rlson1=(RelativeLayout) itemView.findViewById(R.id.rellayoutson1);
@@ -751,6 +795,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
            gridView2 =  itemView.findViewById(R.id.gridview2);
            ll1=itemView.findViewById(R.id.ll1);
            ll21=itemView.findViewById(R.id.ll21);
+           seenicon = itemView.findViewById(R.id.seenicon);
 
 
         }

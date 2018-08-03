@@ -21,8 +21,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +41,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.Result;
+import com.journeyapps.barcodescanner.ViewfinderView;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -49,6 +53,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class PostnewadActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SELECT_PHOTO = 21;
@@ -72,6 +78,12 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private Uri coverImageUri;
     private String username;
     private DatabaseReference mDatabase;
+    //for scanner
+    private ZXingScannerView scannerView;
+    private FrameLayout frame;
+    boolean attached = false;
+    String scannedCode = "";
+
 
 
     @Override
@@ -135,11 +147,16 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         });
 
         //to display selected image
-
         setSizeOfSquareImageViews();
+
+        //for setting up scanner
+        frame = findViewById(R.id.frame);
+        initiateScanner();
 
 
     }
+
+
     public void addToMyAds(){
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -457,7 +474,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         category.setText("");
 
 
-        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl);
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl,scannedCode);
        // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
         // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
         firebaseFirestore.collection("bookads").document(madid).set(bookAds)
@@ -547,5 +564,62 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+
+    private void initiateScanner()
+    {
+        scannerView = new ZXingScannerView(this);
+
+        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
+            @Override
+            public void handleResult(Result result) {
+                setContents(result.getText(), result.getBarcodeFormat().name());
+                scannerView.stopCamera();
+                hideFrame();
+            }
+        });
+
+        if(!attached)
+            frame.addView(scannerView);
+        else
+        {
+            frame.removeAllViews();
+            frame.addView(scannerView);
+        }
+        attached = true;
+    }
+
+    private void hideFrame() {
+        frame.setVisibility(View.GONE);
+    }
+
+    private void setContents(String text, String codeType) {
+
+        scannedCode = text;
+        ((TextView)findViewById(R.id.barcodetext)).setText(scannedCode);
+
+        initiateScanner();
+    }
+    public void scanCode(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(getLayoutInflater().inflate(R.layout.scanner_dialog,null))
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //stop!
+                        //TODO: dialog to be dismissed after successful scan, automatically
+                        stopScanning();
+
+                    }
+                }).create();
+        builder.show();
+
+        //frame.setVisibility(View.VISIBLE);
+        //scannerView.startCamera();
+    }
+    public void stopScanning()
+    {
+
     }
 }

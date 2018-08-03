@@ -22,7 +22,17 @@ public String adid;
 public String sellerpic;
 public String sellerfullname;
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String isbn;
+
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
@@ -36,6 +46,7 @@ public String sellerfullname;
         this.sellerpic = sellerpic;
         this.sellerfullname = sellerfullname;
         this.bookpicslist = bookpicslist;
+        this.isbn = isbn;
     }
 
 
@@ -71,7 +82,7 @@ public String sellerfullname;
 
     public List<String> bookpicslist=new ArrayList<String>();
 
-public BookAds(){
+    public BookAds(){
 
     }
 
@@ -98,6 +109,7 @@ public BookAds(){
         this.bookauthor=in.readString();
         this.bookpublisher=in.readString();
         this.bookdesc=in.readString();
+        this.isbn = in.readString();
 
 
     }
@@ -171,6 +183,7 @@ public BookAds(){
         dest.writeString(this.bookauthor);
         dest.writeString(this.bookpublisher);
         dest.writeString(this.bookdesc);
+        dest.writeString(this.isbn);
        /* this.bookcoverpic=in.readString();
         this.bookauthor=in.readString();
         this.bookpublisher=in.readString();

@@ -90,21 +90,38 @@
 
     </LinearLayout>
 
-
     </LinearLayout>
-<TextView
-
-    android:paddingRight="10dp"
-    android:paddingBottom="5dp"
-    android:textColor="@color/white"
+    <LinearLayout
+    android:layoutDirection="rtl"
     android:layout_alignRight="@+id/ll1"
     android:layout_alignBottom="@+id/ll1"
-    android:text="3:00 AM"
-    android:id="@+id/time1"
-    android:textSize="8sp"
-    android:textStyle="italic"
+    android:layout_marginTop="2dp"
+    android:layout_marginRight="8dp"
+    android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:visibility="visible"
+        android:src="@drawable/ic_text_sent"
+        android:id="@+id/seenicon"
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ImageView>
+    <TextView
+        android:gravity="left"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/white"
+        android:text="3:00 AM"
+        android:id="@+id/time1"
+        android:textSize="8sp"
+        android:textStyle="italic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
 
 </RelativeLayout>
 <RelativeLayout

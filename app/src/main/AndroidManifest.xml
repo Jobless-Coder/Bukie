@@ -83,7 +83,8 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:host="books.jc"
-                    android:scheme="https"/>
+                    android:scheme="https"
+                    />
             </intent-filter>
             <!--meta-data
                 android:name="android.app.default_searchable"
