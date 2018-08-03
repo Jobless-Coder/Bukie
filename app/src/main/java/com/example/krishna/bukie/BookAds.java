@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class BookAds implements Parcelable{
 
@@ -21,6 +22,15 @@ public  String sellerid;
 public String adid;
 public String sellerpic;
 public String sellerfullname;
+public Integer viewcounter=0;
+
+    public Integer getViewcounter() {
+        return viewcounter;
+    }
+
+    public void setViewcounter(Integer viewcounter) {
+        this.viewcounter = viewcounter;
+    }
 
     public String getIsbn() {
         return isbn;
@@ -36,6 +46,7 @@ public String sellerfullname;
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
+
         this.bookcategory = bookcategory;
         this.bookcoverpic = bookcoverpic;
         this.bookpublisher = bookpublisher;
@@ -46,10 +57,28 @@ public String sellerfullname;
         this.sellerpic = sellerpic;
         this.sellerfullname = sellerfullname;
         this.bookpicslist = bookpicslist;
-        this.isbn = isbn;
+        //this.viewcounter=getViewcounter();
+        //Log.i("helloclass",viewcounter+"");
+
     }
 
-
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, Integer viewcounter, List<String> bookpicslist) {
+        this.date = date;
+        this.booktitle = booktitle;
+        this.price = price;
+        this.bookcategory = bookcategory;
+        this.bookcoverpic = bookcoverpic;
+        this.bookpublisher = bookpublisher;
+        this.bookauthor = bookauthor;
+        this.bookdesc = bookdesc;
+        this.sellerid = sellerid;
+        this.adid = adid;
+        this.sellerpic = sellerpic;
+        this.sellerfullname = sellerfullname;
+        this.viewcounter = viewcounter;
+        this.bookpicslist = bookpicslist;
+        this.isbn = isbn;
+    }
 
     public String getSellerfullname() {
         return sellerfullname;

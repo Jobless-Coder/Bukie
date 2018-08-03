@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.krishna.bukie.BookAds;
+import com.example.krishna.bukie.FilterActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
@@ -172,25 +173,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.homemenu, menu2);
-       /*SearchManager searchManager =
-              (SearchManager) context.getSystemService(Context.SEARCH_SERVICE);
-       SearchView searchView =
-               (SearchView) menu2.findItem(R.id.search).getActionView();
-       searchView.setSearchableInfo(
-               searchManager.getSearchableInfo(getActivity().getComponentName()));*/
-       /* MenuItem searchItem=menu2.findItem(R.id.search);
-       SearchView searchView=(SearchView) searchItem.getActionView();
-       searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-           @Override
-           public boolean onQueryTextSubmit(String query) {
-               return false;
-           }
 
-           @Override
-           public boolean onQueryTextChange(String newText) {
-               return false;
-           }
-       });*/
 
 
 
@@ -213,6 +196,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent,activityOptions.toBundle());
                 break;
             case R.id.filter:
+                Intent intent1=new Intent(getActivity(), FilterActivity.class);
+                startActivity(intent1);
 
                 break;
 
@@ -235,5 +220,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
 
 
+    }
+
+    @Override
+    public void onResume() {
+
+        //homeBookAdsAdapter.notifyDataSetChanged();
+        super.onResume();
     }
 }

@@ -1,7 +1,9 @@
 package com.example.krishna.bukie;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
@@ -10,8 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,15 +48,19 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private LinearLayout gotoleft,gotoright;
     private ViewPagerAdapter viewPagerAdapter;
     private PageIndicatorView pageIndicatorView;
-    Toolbar toolbar;
-    ActionBar actionBar;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
     private BookAds bookAds;
     private LikeButton likeButton;
     private FirebaseFirestore firebaseFirestore;
     private String chatid,uid,userprofilepic;
     private MyChats myChats;
     private MyChatsStatus myChatsStatus;
+    private ProgressBar progressBar;
     private  FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+    private int counter;
+    private TextView price,title,category,date,desc,fullname,author,publisher,viewcounter;
+    boolean editad;
 
 
 
@@ -60,24 +71,15 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
         Bundle bundle = getIntent().getExtras();
         bookAds = bundle.getParcelable("bookads");
-       // Log.i("bookads",bookAds.getSellerid()+"hello");
-        //floatingActionButton=findViewById(R.id.floatingActionButton);
-        //floatingActionButton.setOnClickListener(this);
-        NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
-        /*
-        nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > oldScrollY) {
-                    floatingActionButton.hide();
-                } else {
-                    floatingActionButton.show();
-                }
-            }
-        });*/
+        editad=bundle.getBoolean("editad",false);
 
+        NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
+
+        progressBar=findViewById(R.id.progress_bar);
         firebaseFirestore=FirebaseFirestore.getInstance();
-        TextView price,title,category,date,desc,fullname,author,publisher;
+
+        viewcounter=findViewById(R.id.viewcounter);
+        viewcounter.setText(bookAds.getViewcounter()+"");
         price= findViewById(R.id.price);
         price.setText(bookAds.getPrice());
         title=findViewById(R.id.title);
@@ -116,12 +118,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-
         if(uid.equals(bookAds.getSellerid()))
         {
             findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
             findViewById(R.id.chatbutton).setVisibility(View.GONE);
-
+        }
+        else {
+            increaseViewCounter();
         }
 
         setFavouriteButton();
@@ -138,6 +141,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 removeFromWishList();
             }
         });
+
         List<String> booksUrl=new ArrayList<>();
         booksUrl.add(bookAds.getBookcoverpic());
         booksUrl.addAll(bookAds.getBookpicslist());
@@ -165,11 +169,29 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     }
 
-    @Override
+    private void increaseViewCounter() {
+       // if(bookAds.getViewcounter()==null)
+       // Toast.makeText(this, ""+bookAds.getViewcounter(), Toast.LENGTH_SHORT).show();
+        firebaseFirestore.collection("bookads").document(bookAds.getAdid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                BookAds bookAds1=documentSnapshot.toObject(BookAds.class);
+                counter=bookAds1.getViewcounter();
+                viewcounter.setText(counter+"");
+                firebaseFirestore.collection("bookads").document(bookAds.getAdid()).update("viewcounter",counter+1);
+
+            }
+        });
+       // Log.i("helloll",bookAds.getViewcounter()+"");
+
+    }
+
+
+    /*@Override
     public boolean onSupportNavigateUp(){
         onBackPressed();
         return true;
-    }
+    }*/
 
     @Override
     public void onBackPressed()
@@ -195,7 +217,32 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     }
                 }*/
                 if(dataSnapshot.exists()){
-                    likeButton.setLiked(true);
+                    Handler handler=new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            likeButton.setVisibility(View.VISIBLE);
+
+                            likeButton.setLiked(true);
+
+                        }
+                    },300);
+
+                }
+                else {
+                    Handler handler=new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                           // progressBar.setIndeterminate(false);
+                            progressBar.setVisibility(View.GONE);
+                            likeButton.setVisibility(View.VISIBLE);
+                        }
+                    },300);
+
+
+
                 }
             }
 
@@ -207,23 +254,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void removeFromWishList() {
-       // final ArrayList<Pair> wishList = new ArrayList<>();
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
-       /* dref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data: dataSnapshot.getChildren())
-                {
-                    wishList.add(new Pair(data.getKey(), data.getValue().toString()));
-                }
-                removeIfAvailable(wishList);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
        dref.child(bookAds.getAdid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
            @Override
            public void onSuccess(Void aVoid) {
@@ -232,16 +264,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
        });
     }
 
-    /*private void removeIfAvailable(ArrayList<Pair> wishList) {
-        DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
-        for(Pair adObject: wishList)
-        {
-            if(adObject.value.equals(bookAds.adid))
-            {
-                dref.child(adObject.key).removeValue();
-            }
-        }
-    }*/
+
 
     public void shareAd(View view) {
 
@@ -252,7 +275,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         intent.putExtra(Intent.EXTRA_TEXT,deepLink);
 
         startActivity(intent);
-        //Toast.makeText(this, "Call your friend and talk about this ad", Toast.LENGTH_SHORT).show();
     }
 
     class Pair
@@ -298,18 +320,62 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 else
                     viewPager.setCurrentItem(pos+1,true);
                 break;
-                /*
-                case R.id.floatingActionButton:
-                goToChat();
-                break;
-                */
+
                 default:
                     break;
         }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(editad==true) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_editad, menu);
+
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            /*case R.id.search:
+                View toolbarsearch=findViewById(R.id.transitiontoolbar);
+                View search=.findViewById(R.id.search);
+                android.util.Pair<View, String> p1 = android.util.Pair.create(toolbarsearch, "search");
+                android.util.Pair<View, String> p2 = android.util.Pair.create(search, "searchicon");
+                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(this,p1,p2);
+                Intent intent=new Intent(this, SearchActivity.class);
+                //intent.putExtra(SyncStateContract.Constants.KEY_ANIM_TYPE,)
+                ///Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
+                //         .show();
+                startActivity(intent,activityOptions.toBundle());
+                break;
+            case R.id.filter:
+                Intent intent1=new Intent(this, FilterActivity.class);
+                startActivity(intent1);
+
+                break;*/
+            case R.id.editad:
+
+                break;
+            case R.id.deletead:
+
+                break;
+            case android.R.id.home:
+                onBackPressed();
+                break;
+
+
+
+
+
+            default:
+                break;
+        }
+        return true;
+    }
 
     public void goToChat(View view) {
-       // Toast.makeText(this, "niiga", Toast.LENGTH_SHORT).show();
 
        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
@@ -319,7 +385,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         firebaseFirestore=FirebaseFirestore.getInstance();
         DocumentReference mychatdoc=firebaseFirestore.collection("users").document(uid).collection("mychats").document(chatid);
         if(uid!=null) {
-            //Log.i("kll",bookAds.getSellerid()+"hello");
             if(uid.compareTo(bookAds.getSellerid())!=0) {
 
                 mychatdoc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -344,8 +409,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                                 getApplicationContext().startActivity(intent);
 
                             } else {
-                                //chatid=uid+bookAds.getAdid();
-                                //Toast.makeText(DisplayAdActivity.this, "new chat to be created", Toast.LENGTH_SHORT).show();
+
                                 createNewChat();
 
                             }
@@ -405,7 +469,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     }
 
-    /*public void goToChat(View view) {
 
-    }*/
+
+
 }
