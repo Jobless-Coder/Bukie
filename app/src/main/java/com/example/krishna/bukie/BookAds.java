@@ -23,6 +23,7 @@ public String adid;
 public String sellerpic;
 public String sellerfullname;
 public Integer viewcounter=0;
+private boolean isActive=true;
 
     public Integer getViewcounter() {
         return viewcounter;

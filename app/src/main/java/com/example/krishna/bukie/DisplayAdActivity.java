@@ -60,7 +60,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private  FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private int counter;
     private TextView price,title,category,date,desc,fullname,author,publisher,viewcounter;
-    boolean editad;
+    boolean editad,isHome;
 
 
 
@@ -70,8 +70,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setContentView(R.layout.activity_display_ad_two);
 
         Bundle bundle = getIntent().getExtras();
-        bookAds = bundle.getParcelable("bookads");
+
         editad=bundle.getBoolean("editad",false);
+        bookAds = bundle.getParcelable("bookads");
 
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
 
@@ -122,6 +123,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         {
             findViewById(R.id.nigga).setVisibility(View.GONE);//this is the Heart-fab button, not the viewPagerCard as the id suggests
             findViewById(R.id.chatbutton).setVisibility(View.GONE);
+            getViewCounter();
         }
         else {
             increaseViewCounter();
@@ -167,6 +169,19 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             public void onPageScrollStateChanged(int state) {/*empty*/}
         });
 
+    }
+
+    private void getViewCounter() {
+        firebaseFirestore.collection("bookads").document(bookAds.getAdid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                BookAds bookAds1=documentSnapshot.toObject(BookAds.class);
+                counter=bookAds1.getViewcounter();
+                viewcounter.setText(counter+"");
+               // firebaseFirestore.collection("bookads").document(bookAds.getAdid()).update("viewcounter",counter+1);
+
+            }
+        });
     }
 
     private void increaseViewCounter() {
@@ -277,14 +292,14 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         startActivity(intent);
     }
 
-    class Pair
+    /*class Pair
     {
         String key, value;
         Pair(String k, String v){
             key = k;
             value = v;
         }
-    }
+    }*/
     private void addToWishList() {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         dref.child(bookAds.getAdid()).setValue(bookAds.getAdid());
@@ -338,27 +353,18 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.search:
-                View toolbarsearch=findViewById(R.id.transitiontoolbar);
-                View search=.findViewById(R.id.search);
-                android.util.Pair<View, String> p1 = android.util.Pair.create(toolbarsearch, "search");
-                android.util.Pair<View, String> p2 = android.util.Pair.create(search, "searchicon");
-                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(this,p1,p2);
-                Intent intent=new Intent(this, SearchActivity.class);
-                //intent.putExtra(SyncStateContract.Constants.KEY_ANIM_TYPE,)
-                ///Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
-                //         .show();
-                startActivity(intent,activityOptions.toBundle());
-                break;
-            case R.id.filter:
-                Intent intent1=new Intent(this, FilterActivity.class);
+
+            case R.id.editad:
+                Intent intent1=new Intent(this, PostnewadActivity.class);
+                intent1.putExtra("isHome", false);
+                intent1.putExtra("bookads",bookAds);
                 startActivity(intent1);
 
-                break;*/
-            case R.id.editad:
 
                 break;
             case R.id.deletead:
+                firebaseFirestore.collection("bookads").document(bookAds.getAdid()).update("isactive",false);
+                onBackPressed();
 
                 break;
             case android.R.id.home:

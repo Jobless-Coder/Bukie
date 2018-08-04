@@ -217,6 +217,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Intent intent=new Intent(getContext(), PostnewadActivity.class);
+        intent.putExtra("isHome", true);
+
         startActivity(intent);
 
 
