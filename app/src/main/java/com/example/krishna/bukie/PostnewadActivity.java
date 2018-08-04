@@ -1,16 +1,20 @@
 package com.example.krishna.bukie;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +25,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,6 +33,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -41,8 +46,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.zxing.Result;
-import com.journeyapps.barcodescanner.ViewfinderView;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -50,18 +53,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class PostnewadActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SELECT_PHOTO = 21;
     private static final int EXTRA_PHOTO = 32;
     private static final int PROFILE_IMAGE = 11;
+    private static final int MY_PERMISSIONS_REQUEST_STORAGE = 101;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
+    private TextView toolbar_title;
     private FirebaseStorage firebaseStorage;
     private String path, coverurl;
     private  StorageReference storageReference;
@@ -78,24 +83,25 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private Uri coverImageUri;
     private String username;
     private DatabaseReference mDatabase;
-    //for scanner
-    private ZXingScannerView scannerView;
-    private FrameLayout frame;
-    boolean attached = false;
-    String scannedCode = "";
-
-
+    private BookAds bookAds;
+    boolean isHome;
+    Map<String, Object> bookadsmap;
+    private DocumentReference bookref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_postnewad);
+        setContentView(R.layout.activity_postnewad);;
+        Bundle bundle= getIntent().getExtras();
+        isHome=bundle.getBoolean("isHome");
+
+
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         muid =sharedPreferences.getString("uid",null);
         mprofilepic=sharedPreferences.getString("profilepic",null);
         mfullname=sharedPreferences.getString("fullname",null);
         progressDialog=new ProgressDialog(this);
-        madid= muid +"%"+UUID.randomUUID();
+        madid=muid +"%"+UUID.randomUUID();
         final Toolbar toolbar = findViewById(R.id.toolbar);
 
         username = sharedPreferences.getString("uid", null);
@@ -109,28 +115,34 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         firebaseStorage=FirebaseStorage.getInstance();
         firebaseFirestore=FirebaseFirestore.getInstance();
        storageReference=firebaseStorage.getReference();
-      // documentReference=firebaseFirestore.document("bookads/"+UUID.randomUUID());
-        //bookadscollection = firebaseFirestore.collection("bookads");
 
-        //chooseimg=findViewById(R.id.chooseimg);
         floatingActionButton=findViewById(R.id.fabpostad);
         title=findViewById(R.id.title);
         category=findViewById(R.id.category);
+        toolbar_title=findViewById(R.id.toolbar_title);
         price=findViewById(R.id.price);
         publisher=findViewById(R.id.publisher);
         author=findViewById(R.id.author);
         desc=findViewById(R.id.desc);
+        setSizeOfSquareImageViews();
+        if(isHome==false) {
+            bookAds = bundle.getParcelable("bookads");
+            editMyAds(bookAds);
+        }
         //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
         nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > oldScrollY) {
+                if (scrollY > oldScrollY)
+                {
                     floatingActionButton.hide();
-                } else {
-                    floatingActionButton.show();
                 }
+                else
+                    {
+                    floatingActionButton.show();
+                    }
             }
         });
         desc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -147,15 +159,126 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         });
 
         //to display selected image
-        setSizeOfSquareImageViews();
 
-        //for setting up scanner
-        frame = findViewById(R.id.frame);
-        initiateScanner();
+
 
 
     }
 
+    public void editMyAds(BookAds bookAds) {
+
+        toolbar_title.setText("Edit ad");
+        Glide.with(getApplicationContext()).load(bookAds.getBookcoverpic()).into((ImageView)findViewById(R.id.coverimage));
+
+        title.setText(bookAds.getBooktitle());
+        category.setText(bookAds.getBookcategory());
+        author.setText(bookAds.getBookauthor());
+        publisher.setText(bookAds.getBookpublisher());
+        price.setText(bookAds.getPrice().replace("₹",""));
+        desc.setText(bookAds.getBookdesc());
+       // imageUri = ImageCompressor.compressFromUri(this,imageUri);
+        for(String path:bookAds.getBookpicslist()) {
+            Toast.makeText(this, ""+metrics.toString(), Toast.LENGTH_SHORT).show();
+            SquareImageView sq = new SquareImageView(this, Uri.parse(path), metrics);
+            extraImages.add(sq);
+            flex.addView(sq, 0);
+
+            refreshFlex();
+        }
+
+    }
+    public void editAndPostMyads(){
+        refreshFlex();
+        bookref = firebaseFirestore.collection("bookads").document(bookAds.getAdid());
+        progressDialog.setMessage("Editing ad ...");
+        progressDialog.show();
+// Set the "isCapital" field of the city 'DC'
+        Map<String, Object> bookadsmap = new HashMap<>();
+        downloadurl = new ArrayList<String>();
+        coverurl = null;
+        mtitle = title.getText().toString();
+        if(mtitle.equals(bookAds.getBooktitle())==false)
+           bookadsmap.put("booktitle",mtitle);
+        mcategory = category.getText().toString();
+        if(mcategory.equals(bookAds.getBookcategory())==false)
+            bookadsmap.put("bookcategory",mcategory);
+        mprice = "₹ " + price.getText().toString();
+        if(mprice.equals(bookAds.getPrice())==false)
+            bookadsmap.put("price",mprice);
+        mauthor = author.getText().toString();
+        if(mauthor.equals(bookAds.getBookauthor())==false)
+            bookadsmap.put("bookauthor",mauthor);
+        mdesc = desc.getText().toString();
+        if(mdesc.equals(bookAds.getBookdesc())==false)
+            bookadsmap.put("bookdesc",mdesc);
+        mpublisher = publisher.getText().toString();
+        if(mpublisher.equals(bookAds.getBookpublisher())==false)
+            bookadsmap.put("bookpublisher",mpublisher);
+
+        Date d = new Date();
+
+        SimpleDateFormat ft =
+                new SimpleDateFormat("dd MMMM yyyy");
+        mdate = ft.format(d);
+        if(mdate.equals(bookAds.getDate())==false)
+            bookadsmap.put("date",mdate);
+
+
+        if (mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
+            Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
+        else {
+
+
+            if(coverImageUri!=null&&coverImageUri.equals(bookAds.getBookcoverpic())==false)
+            uploadImage(coverImageUri, true);
+            else
+                coverurl=bookAds.getBookcoverpic();
+            for (int i = 0; i < flex.getChildCount() - 1; i++) {
+                SquareImageView squareImageView = (SquareImageView) flex.getChildAt(i);
+                if (squareImageView != null) {
+
+                    for(String path:bookAds.getBookpicslist()){
+                        if(path.compareTo(squareImageView.getImageLink()+"")!=0){
+                            uploadImage(squareImageView.getImageLink(), false);
+                        }
+                        else {
+                            downloadurl.add(path);
+                        }
+                    }
+
+                }
+                else
+                    Toast.makeText(this, "Null image during upload!", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+        Toast.makeText(this, ""+extraImages.size()+" "+coverurl, Toast.LENGTH_SHORT).show();
+
+        if(downloadurl.size()==extraImages.size()&&coverurl!=null)
+
+        {
+
+                bookadsmap.put("bookpicslist",bookAds.getBookpicslist());
+                bookref.update(bookadsmap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            progressDialog.dismiss();
+                        }
+                        else {
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
+
+
+
+
+        }
+
+
+    }
 
     public void addToMyAds(){
 
@@ -227,6 +350,26 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         //mCurrentPhotoPath = "file:"+image.getAbsolutePath();
         //Log.e("location",mCurrentPhotoPath);
         return image;
+    }
+    private void getStoragePermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
+
+            } else {
+                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_STORAGE);
+            }
+
+        }
+
     }
 
     @Override
@@ -382,38 +525,42 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
 
             case R.id.fabpostad:
+                if(isHome==true) {
 
-                downloadurl=new ArrayList<String>();
-                coverurl=null;
-                mtitle=title.getText().toString();
-                mcategory=category.getText().toString();
-                mprice="₹ "+price.getText().toString();
-                mauthor=author.getText().toString();
-                mdesc=desc.getText().toString();
-                mpublisher=publisher.getText().toString();
+                    downloadurl = new ArrayList<String>();
+                    coverurl = null;
+                    mtitle = title.getText().toString();
+                    mcategory = category.getText().toString();
+                    mprice = "₹ " + price.getText().toString();
+                    mauthor = author.getText().toString();
+                    mdesc = desc.getText().toString();
+                    mpublisher = publisher.getText().toString();
 
-                Date d = new Date();
+                    Date d = new Date();
 
-                SimpleDateFormat ft =
-                        new SimpleDateFormat ("dd MMMM yyyy");
-                mdate=ft.format(d);
+                    SimpleDateFormat ft =
+                            new SimpleDateFormat("dd MMMM yyyy");
+                    mdate = ft.format(d);
 
 
-                if(mprice.isEmpty()||mtitle.isEmpty()||mcategory.isEmpty()/*||mArrayUri!=null*/)
-                    Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
-                else {
-                    progressDialog.setMessage("Posting ad ...");
-                    progressDialog.show();
-                    uploadImage(coverImageUri,true);
-                    for(int i = 0; i<flex.getChildCount()-1; i++)
-                    {
-                        SquareImageView squareImageView = (SquareImageView)flex.getChildAt(i);
-                        if(squareImageView != null)
-                            uploadImage(squareImageView.getImageLink(), false);
-                        else
-                            Toast.makeText(this, "Null image during upload!", Toast.LENGTH_SHORT).show();
+                    if (mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
+                        Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
+                    else {
+                        progressDialog.setMessage("Posting ad ...");
+                        progressDialog.show();
+                        uploadImage(coverImageUri, true);
+                        for (int i = 0; i < flex.getChildCount() - 1; i++) {
+                            SquareImageView squareImageView = (SquareImageView) flex.getChildAt(i);
+                            if (squareImageView != null)
+                                uploadImage(squareImageView.getImageLink(), false);
+                            else
+                                Toast.makeText(this, "Null image during upload!", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
-
+                }
+                else {
+                editAndPostMyads();
                 }
                 break;
 
@@ -451,7 +598,14 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         if(downloadurl.size()==extraImages.size()&&coverurl!=null)
 
                        {
+                           if(isHome==true)
                             postAd();
+                           /*else {
+                               bookadsmap.put("bookcoverpic",coverurl);
+                               bookadsmap.put("bookpicslist",bookAds.getBookpicslist());
+                               bookref.update(bookadsmap);
+                           }*/
+
 
 
                         }
@@ -474,7 +628,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         category.setText("");
 
 
-        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl,scannedCode);
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl);
        // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
         // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
         firebaseFirestore.collection("bookads").document(madid).set(bookAds)
@@ -564,62 +718,5 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-
-    private void initiateScanner()
-    {
-        scannerView = new ZXingScannerView(this);
-
-        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
-            @Override
-            public void handleResult(Result result) {
-                setContents(result.getText(), result.getBarcodeFormat().name());
-                scannerView.stopCamera();
-                hideFrame();
-            }
-        });
-
-        if(!attached)
-            frame.addView(scannerView);
-        else
-        {
-            frame.removeAllViews();
-            frame.addView(scannerView);
-        }
-        attached = true;
-    }
-
-    private void hideFrame() {
-        frame.setVisibility(View.GONE);
-    }
-
-    private void setContents(String text, String codeType) {
-
-        scannedCode = text;
-        ((TextView)findViewById(R.id.barcodetext)).setText(scannedCode);
-
-        initiateScanner();
-    }
-    public void scanCode(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(getLayoutInflater().inflate(R.layout.scanner_dialog,null))
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //stop!
-                        //TODO: dialog to be dismissed after successful scan, automatically
-                        stopScanning();
-
-                    }
-                }).create();
-        builder.show();
-
-        //frame.setVisibility(View.VISIBLE);
-        //scannerView.startCamera();
-    }
-    public void stopScanning()
-    {
-
     }
 }

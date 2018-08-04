@@ -107,7 +107,6 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
 
                 Intent intent = new Intent(context, DisplayAdActivity.class);
                 intent.putExtra("bookads", bookAds);
-               // Log.i("noobs",bookAdsList.get(position).getViewcounter()+"");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 //getActivity().finish();

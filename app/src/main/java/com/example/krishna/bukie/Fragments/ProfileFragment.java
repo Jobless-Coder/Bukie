@@ -31,6 +31,7 @@ import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.Myadswishadapter;
 import com.example.krishna.bukie.R;
 //import com.example.krishna.bukie.mFragmentPagerAdapter;
+import com.example.krishna.bukie.RegistrationActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,9 +53,6 @@ import java.util.List;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     private TabLayout tabLayout;
-    //private ViewPager viewPager;
-   // mFragmentPagerAdapter adapter;
-    //private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     private RecyclerView recyclerView;
     private DatabaseReference mDatabase;
     private FirebaseFirestore firebaseFirestore;
@@ -65,6 +63,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private String uid,ppic,fullname;
     private Myadswishadapter adapter;
     private ListenerRegistration listenerRegistration;
+    private View editprofilebtn;
+    boolean pauseState=false;
 
     public ProfileFragment() {
     }
@@ -111,10 +111,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         myads.setOnClickListener(this);
         mywishlist.setOnClickListener(this);
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
+        editprofilebtn=v.findViewById(R.id.editprofilebutton);
+        editprofilebtn.setOnClickListener(this);
 
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
 
 
 
@@ -134,12 +137,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 .into(imageView);
         myadsfrag=true;
         setupRecyclerViewContent("myads");
-
-
-
-
-
-
         return v;
     }
 
@@ -157,12 +154,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()) {
                     String adid=dataSnapshot1.getValue().toString();
                     getAds(adid,s);
-
                 }
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -194,27 +187,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     }
                 }
             });
-     /* listenerRegistration=book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-          @Override
-          public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-          }
-      });*/
 
 
 
     }
 
-    /* private class setAdapterTask extends AsyncTask<Void,Void,Void> {
-         protected Void doInBackground(Void... params) {
-             return null;
-         }
-
-         @Override
-         protected void onPostExecute(Void result) {
-
-         }
-     }*/
     @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
 
@@ -241,8 +219,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 getActivity().finish();
 
 
-               /* Toast.makeText(getContext(), "logout selected", Toast.LENGTH_SHORT)
-                        .show();*/
+
 
                 break;
             case R.id.settings:
@@ -292,10 +269,44 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
 
                 break;
+            case R.id.editprofilebutton:
+                Intent intent=new Intent(getContext(),RegistrationActivity.class);
+                getContext().startActivity(intent);
+                break;
                 default:
                     break;
         }
 
 
+    }
+
+    @Override
+    public void onPause() {
+        pauseState=true;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if(pauseState==true) {
+            pauseState=false;
+            if (myadsfrag == true) {
+                myads.setSelected(true);
+                mywishlist.setSelected(false);
+                myadslist.clear();
+                adapter.notifyDataSetChanged();
+                setupRecyclerViewContent("myads");
+
+            }
+            if (myadsfrag == false) {
+                myads.setSelected(false);
+                mywishlist.setSelected(true);
+                myadslist.clear();
+                adapter.notifyDataSetChanged();
+                setupRecyclerViewContent("mywishlist");
+            }
+        }
+
+        super.onResume();
     }
 }
