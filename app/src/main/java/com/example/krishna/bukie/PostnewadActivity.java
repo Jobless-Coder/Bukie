@@ -87,6 +87,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     boolean isHome;
     Map<String, Object> bookadsmap;
     private DocumentReference bookref;
+    private String isbn;
+    private SquareImageAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,10 +181,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
        // imageUri = ImageCompressor.compressFromUri(this,imageUri);
         for(String path:bookAds.getBookpicslist()) {
             Toast.makeText(this, ""+metrics.toString(), Toast.LENGTH_SHORT).show();
-            SquareImageView sq = new SquareImageView(this, Uri.parse(path), metrics);
-            extraImages.add(sq);
-            flex.addView(sq, 0);
-
+            adapter.addImage(Uri.parse(path));
+            //SquareImageView sq = new SquareImageView(this, Uri.parse(path), metrics);
+            //extraImages.add(sq);
+            //flex.addView(sq, 0);
             refreshFlex();
         }
 
@@ -304,6 +306,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private void setSizeOfSquareImageViews() {
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        adapter = new SquareImageAdapter(this, flex, metrics);
+        flex.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                refreshFlex();
+            }
+        });
     }
 
 
@@ -391,9 +400,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     imageUri = photoURI;
                 try {
                     imageUri = ImageCompressor.compressFromUri(this,imageUri);
-                    SquareImageView sq = new SquareImageView(this, imageUri, metrics);
-                    extraImages.add(sq);
-                    flex.addView(sq,0);
+                    adapter.addImage(imageUri);
                     refreshFlex();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -549,14 +556,11 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         progressDialog.setMessage("Posting ad ...");
                         progressDialog.show();
                         uploadImage(coverImageUri, true);
-                        for (int i = 0; i < flex.getChildCount() - 1; i++) {
-                            SquareImageView squareImageView = (SquareImageView) flex.getChildAt(i);
-                            if (squareImageView != null)
-                                uploadImage(squareImageView.getImageLink(), false);
-                            else
-                                Toast.makeText(this, "Null image during upload!", Toast.LENGTH_SHORT).show();
-                        }
 
+                        for(Uri link: adapter.getImages())
+                        {
+                            uploadImage(link, false);
+                        }
                     }
                 }
                 else {
@@ -628,7 +632,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         category.setText("");
 
 
-        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl);
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl, isbn);
        // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
         // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
         firebaseFirestore.collection("bookads").document(madid).set(bookAds)
@@ -646,7 +650,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-
                         Toast.makeText(PostnewadActivity.this, "Error posting ad,pls try again later", Toast.LENGTH_SHORT).show();
 
                     }

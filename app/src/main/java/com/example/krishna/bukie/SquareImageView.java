@@ -19,42 +19,28 @@ import java.io.IOException;
 
 public class SquareImageView extends LinearLayout {
 Uri imageLink;
-String imageId;
+ImageUpdateListener listener;
 DisplayMetrics metrics;
-PostnewadActivity context;
-    public SquareImageView(PostnewadActivity context) {
-
-        super(context);
-        this.context = context;
-        init();
-    }
+Context context;
 
     public Uri getImageLink() {
         return imageLink;
     }
 
-    public SquareImageView(PostnewadActivity context, @Nullable AttributeSet attrs) {
+    public SquareImageView(Context context, @Nullable AttributeSet attrs) {
 
         super(context);
         this.context = context;
         init();
     }
 
-    public SquareImageView(PostnewadActivity context, Uri image, DisplayMetrics metrics)
+    public SquareImageView(Context context, Uri image, DisplayMetrics metrics, ImageUpdateListener lis)
     {
         super(context);
         this.metrics = metrics;
         this.imageLink = image;
         this.context = context;
-        init();
-    }
-
-    public SquareImageView(PostnewadActivity context, Uri image, String id)
-    {
-        super(context);
-        imageId = id;
-        imageLink = image;
-        this.context = context;
+        this.listener = lis;
         init();
     }
 
@@ -73,7 +59,7 @@ PostnewadActivity context;
         this.findViewById(R.id.cancelButton).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //adapter.removeItem(imageId);//TODO: not done yet
+                //adapter.removeItem(imageId);
                 //SquareImageView.this.setVisibility(GONE);
                 ((ViewGroup)SquareImageView.this.getParent()).removeView(SquareImageView.this);
                 try {
@@ -81,7 +67,8 @@ PostnewadActivity context;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                context.refreshFlex();
+                listener.removeImage(imageLink);
+                //context.refreshFlex();
             }
         });
 
