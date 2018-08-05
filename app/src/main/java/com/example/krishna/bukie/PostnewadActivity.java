@@ -25,12 +25,14 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.internal.Utility;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCanceledListener;
@@ -46,6 +48,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.Result;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -59,11 +62,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
 public class PostnewadActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SELECT_PHOTO = 21;
     private static final int EXTRA_PHOTO = 32;
     private static final int PROFILE_IMAGE = 11;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 101;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
     private TextView toolbar_title;
@@ -89,6 +95,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private DocumentReference bookref;
     private String isbn;
     private SquareImageAdapter adapter;
+
+    private FrameLayout frame;
+    private ZXingScannerView scannerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -313,6 +322,18 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 refreshFlex();
             }
         });
+        //frame = findViewById(R.id.framepostnewad);
+        //scannerView = new ZXingScannerView(this);
+        //frame.addView(scannerView);
+        /*
+        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
+            @Override
+            public void handleResult(Result result) {
+                frame.removeAllViews();
+                Toast.makeText(PostnewadActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+                scannerView.stopCamera();
+            }
+        });*/
     }
 
 
@@ -378,6 +399,29 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             }
 
         }
+
+    }
+
+    private boolean getCameraPermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+
+            } else {
+                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+
+            return false;
+        }
+        return true;
 
     }
 
@@ -506,7 +550,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 deleteDir(dir);
             }
         } catch (Exception e) {
-            // TODO: handle exception
         }
     }
 
@@ -610,16 +653,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                                bookref.update(bookadsmap);
                            }*/
 
-
-
                         }
-
                     }
                 });
-
             }
-
-
     }
 
 
@@ -660,29 +697,21 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
 
     public void addNewSquareImage(View view) {
-        //TODO: Add imagepicker cropper and all necessary shit here
         selectImage(EXTRA_PHOTO);
     }
 
 
-    /*public void goToImageActivity(View view) {
-        startActivity(new Intent(this, ImageCompressorTestActivity.class));
-    }*/
 
     private void selectImage(final int tag) {//1
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        //builder.setTitle("Select an image");
-
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             @Override
 
             public void onClick(DialogInterface dialog, int item) {
-                //TODO: add permissions
-                //boolean result= Utility.checkPermission(this);
 
                 if (items[item].equals("Take Photo")) {
                     //userChoosenTask ="Take Photo";
@@ -702,7 +731,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void galleryIntent(int tag) {//2
-
+        //TODO: add gallery permission (needed?)
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -710,6 +739,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void cameraIntent(int tag) {
+        //TODO: add camera permission
+        getStoragePermissions();
+        getCameraPermissions();
         dispatchTakePictureIntent(tag);
     }
 
@@ -721,5 +753,22 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    public void scanCode(View view) {
+
+        if(!getCameraPermissions())
+            return;
+
+
+        ScannerDialog dialog = new ScannerDialog();
+        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
+            @Override
+            public void onSuccess(String code) {
+                isbn = code;
+                ((TextView)findViewById(R.id.barcodetext)).setText(isbn);
+            }
+        });
+
     }
 }
