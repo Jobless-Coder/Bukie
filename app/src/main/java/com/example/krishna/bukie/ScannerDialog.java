@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.zxing.Result;
@@ -22,6 +23,7 @@ public class ScannerDialog {
     String scannedCode = "";
     Activity ac;
     Dialog dialog;
+    ScannerResultListener listener;
     public ScannerDialog(){
     }
 
@@ -33,6 +35,7 @@ public class ScannerDialog {
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.scanner_dialog);
 
+        this.listener = listener;
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.copyFrom(dialog.getWindow().getAttributes());
         int dialogWindowWidth = (int) (displayWidth * 0.9f);
@@ -51,31 +54,33 @@ public class ScannerDialog {
 
         dialog.show();
         initiateScanner();
+        scannerView.startCamera();
     }
 
     public void initiateScanner()
     {
         frame = dialog.findViewById(R.id.framescan);
-        scannerView = new ZXingScannerView(ac);
-        //scannerView = dialog.findViewById(R.id.zxing_scanner);
+        scannerView = dialog.findViewById(R.id.xingscan);
+        //ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        //scannerView.setLayoutParams(params);
+        scannerView.setAspectTolerance(1f);
         scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
             @Override
             public void handleResult(Result result) {
                 setContents(result.getText(), result.getBarcodeFormat().name());
                 scannerView.stopCamera();
-                dialog.findViewById(R.id.framescan).setVisibility(View.GONE);
             }
         });
-        frame.addView(scannerView);
+        //frame.addView(scannerView);
 
     }
 
 
     private void setContents(String text, String codeType) {
 
+        listener.onSuccess(text);
         scannedCode = text;
         dialog.dismiss();
-        //initiateScanner();
     }
 
 

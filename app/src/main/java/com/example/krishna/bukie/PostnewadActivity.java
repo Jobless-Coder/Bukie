@@ -20,32 +20,40 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.flexbox.FlexDirection;
+import com.facebook.internal.Utility;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.Result;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -54,15 +62,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class PostnewadActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int SELECT_PHOTO = 21;
     private static final int EXTRA_PHOTO = 32;
     private static final int PROFILE_IMAGE = 11;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 101;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
     private TextView toolbar_title;
@@ -94,6 +106,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private TagPickerAdapter tagPickerAdapter;
     private ChipAdapter chipAdapter;
     //private List
+
+    private FrameLayout frame;
+    private ZXingScannerView scannerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -341,6 +356,18 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 refreshFlex();
             }
         });
+        //frame = findViewById(R.id.framepostnewad);
+        //scannerView = new ZXingScannerView(this);
+        //frame.addView(scannerView);
+        /*
+        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
+            @Override
+            public void handleResult(Result result) {
+                frame.removeAllViews();
+                Toast.makeText(PostnewadActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+                scannerView.stopCamera();
+            }
+        });*/
     }
 
 
@@ -406,6 +433,29 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             }
 
         }
+
+    }
+
+    private boolean getCameraPermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+
+            } else {
+                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+
+            return false;
+        }
+        return true;
 
     }
 
@@ -742,6 +792,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void cameraIntent(int tag) {
+        //TODO: add camera permission
+        getStoragePermissions();
+        getCameraPermissions();
         dispatchTakePictureIntent(tag);
     }
 
@@ -753,6 +806,23 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    public void scanCode(View view) {
+
+        if(!getCameraPermissions())
+            return;
+
+
+        ScannerDialog dialog = new ScannerDialog();
+        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
+            @Override
+            public void onSuccess(String code) {
+                isbn = code;
+                ((TextView)findViewById(R.id.barcodetext)).setText(isbn);
+            }
+        });
+
     }
 
    /* @Override
