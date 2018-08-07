@@ -356,7 +356,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
             case R.id.editad:
                 Intent intent1=new Intent(this, PostnewadActivity.class);
-                intent1.putExtra("isHome", false);
+                intent1.putExtra("isHome", 0);
                 intent1.putExtra("bookads",bookAds);
                 startActivity(intent1);
 

@@ -105,7 +105,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         tabsview.setVisibility(View.VISIBLE);
         toolbargroup.addView(toolbarview);
         //toolbargroup.findViewById(R.id.header).setVisibility(View.VISIBLE);
-
+      /*  FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        firebaseFirestore.setFirestoreSettings(settings);*/
         buy=tabsview.findViewById(R.id.buy);
         sell=tabsview.findViewById(R.id.sell);
         buy.setOnClickListener(this);

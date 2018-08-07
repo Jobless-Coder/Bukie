@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -72,7 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         setHasOptionsMenu(true);
-        firebaseFirestore=FirebaseFirestore.getInstance();
+
         context=getContext();
 
 
@@ -85,6 +87,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         v=inflater2.inflate(R.layout.fragment_home, container,false);
         View tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.GONE);
+        //FirebaseFirestore.setLoggingEnabled(true);
+        firebaseFirestore=FirebaseFirestore.getInstance();
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.simpleSwipeRefreshLayout);
         floatingActionButton=v.findViewById(R.id.floatingActionButton);
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
@@ -92,7 +96,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         toolbargroup.removeAllViews();
         toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
         toolbargroup.addView(toolbarview);
-
+       /* FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        firebaseFirestore.setFirestoreSettings(settings);*/
         //mDrawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
 
@@ -154,6 +161,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             //
                         }
                     }
+
                 });
     }
 
@@ -168,15 +176,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
    @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
-
-
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.homemenu, menu2);
-
-
-
-
        super.onCreateOptionsMenu(menu2,inflater2);
     }
 
@@ -200,11 +202,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent1);
 
                 break;
-
-
-
-
-
             default:
                 break;
         }
@@ -217,7 +214,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Intent intent=new Intent(getContext(), PostnewadActivity.class);
-        intent.putExtra("isHome", true);
+        intent.putExtra("isHome", 1);
 
         startActivity(intent);
 

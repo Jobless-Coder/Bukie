@@ -19,28 +19,28 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,7 +54,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -84,18 +83,24 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private String username;
     private DatabaseReference mDatabase;
     private BookAds bookAds;
-    boolean isHome;
+    int isHome;
     Map<String, Object> bookadsmap;
     private DocumentReference bookref;
     private String isbn;
     private SquareImageAdapter adapter;
+    private View tagpicker;
+    private List<Tuple> chipList=new ArrayList<>();
+    private RecyclerView recyclerView;
+    private TagPickerAdapter tagPickerAdapter;
+    private ChipAdapter chipAdapter;
+    //private List
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_postnewad);;
         Bundle bundle= getIntent().getExtras();
-        isHome=bundle.getBoolean("isHome");
+        isHome=bundle.getInt("isHome");
 
 
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
@@ -111,7 +116,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        recyclerView=findViewById(R.id.recyclerview);
         extraImages = new ArrayList<>();
         flex = findViewById(R.id.flexlayout);
         firebaseStorage=FirebaseStorage.getInstance();
@@ -126,10 +131,20 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         publisher=findViewById(R.id.publisher);
         author=findViewById(R.id.author);
         desc=findViewById(R.id.desc);
+        tagpicker=findViewById(R.id.tagpicker);
+        tagpicker.setOnClickListener(this);
+
         setSizeOfSquareImageViews();
-        if(isHome==false) {
+        if(isHome==0) {
             bookAds = bundle.getParcelable("bookads");
             editMyAds(bookAds);
+        }
+        if(isHome==2){
+            Tuple chips=bundle.getParcelable("chips");
+            chipList=chips.getChipList();
+            //Toast.makeText(this, "size "+chipList.size(), Toast.LENGTH_SHORT).show();
+            addTags();
+
         }
         //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
@@ -160,9 +175,22 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             }
         });
 
-        //to display selected image
+    }
 
+    private void addTags() {
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setJustifyContent(JustifyContent.CENTER);
 
+        recyclerView.setLayoutManager(layoutManager);
+        chipAdapter=new ChipAdapter(this, chipList, new TagItemListener() {
+            @Override
+            public void onRemoveClick(String text, int position) {
+                chipList.remove(new Tuple(text,position));
+                chipAdapter.notifyDataSetChanged();
+            }
+        });
+        recyclerView.setAdapter(chipAdapter);
 
 
     }
@@ -255,7 +283,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
         }
 
-        Toast.makeText(this, ""+extraImages.size()+" "+coverurl, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, ""+extraImages.size()+" ", Toast.LENGTH_SHORT).show();
 
         if(downloadurl.size()==extraImages.size()&&coverurl!=null)
 
@@ -532,7 +560,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
 
             case R.id.fabpostad:
-                if(isHome==true) {
+                if(isHome==1) {
 
                     downloadurl = new ArrayList<String>();
                     coverurl = null;
@@ -566,6 +594,10 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 else {
                 editAndPostMyads();
                 }
+                break;
+            case R.id.tagpicker:
+                Intent intent=new Intent(this,Tag_Picker_Activity.class);
+                startActivity(intent);
                 break;
 
                 default: break;
@@ -602,7 +634,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         if(downloadurl.size()==extraImages.size()&&coverurl!=null)
 
                        {
-                           if(isHome==true)
+                           if(isHome==1)
                             postAd();
                            /*else {
                                bookadsmap.put("bookcoverpic",coverurl);
@@ -722,4 +754,13 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         onBackPressed();
         return true;
     }
+
+   /* @Override
+    protected void onPostResume() {
+        Intent intent=getIntent();
+
+
+
+        super.onPostResume();
+    }*/
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    app:cardCornerRadius="20dp"
+
+    app:cardElevation="6dp"
+    android:layout_margin="8dp"
+    android:id="@+id/tags"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent">
+        <TextView
+            android:id="@+id/tagText"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="dddddd"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" />
+        <android.support.v7.widget.CardView
+            android:id="@+id/close"
+            android:clickable="true"
+            android:foreground="@drawable/ripple_white"
+            app:cardBackgroundColor="@color/brick_red"
+            android:layout_gravity="center_vertical|right"
+            app:cardCornerRadius="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp">
+        <ImageView
+            android:layout_gravity="center"
+            android:tint="@color/white"
+            android:src="@drawable/clear"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+
+
+
+
+</android.support.v7.widget.CardView>

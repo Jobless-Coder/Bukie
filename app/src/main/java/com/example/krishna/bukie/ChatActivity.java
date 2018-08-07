@@ -538,6 +538,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.delete_chat:
+                
+                break;
+            case R.id.block_user:
+                break;
+            case R.id.mark_as_sold:
+                break;
 
             default:
                 break;
