@@ -628,7 +628,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     mdate = ft.format(d);
 
 
-                    if (mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
+                    if (coverImageUri==null || mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
                         Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
                     else {
                         progressDialog.setMessage("Posting ad ...");
@@ -681,7 +681,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                             downloadurl.add(uri + "");
                             else
                                 coverurl=uri+"";
-                        if(downloadurl.size()==extraImages.size()&&coverurl!=null)
+                        if(downloadurl.size()==adapter.getImages().size()&&coverurl!=null)
 
                        {
                            if(isHome==1)
@@ -819,7 +819,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onSuccess(String code) {
                 isbn = code;
-                ((TextView)findViewById(R.id.barcodetext)).setText(isbn);
+                ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
             }
         });
 

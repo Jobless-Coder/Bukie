@@ -58,6 +58,7 @@ private boolean isActive=true;
         this.sellerpic = sellerpic;
         this.sellerfullname = sellerfullname;
         this.bookpicslist = bookpicslist;
+        this.isbn = isbn;
         //this.viewcounter=getViewcounter();
         //Log.i("helloclass",viewcounter+"");
 
@@ -78,7 +79,6 @@ private boolean isActive=true;
         this.sellerfullname = sellerfullname;
         this.viewcounter = viewcounter;
         this.bookpicslist = bookpicslist;
-        this.isbn = isbn;
     }
 
     public String getSellerfullname() {

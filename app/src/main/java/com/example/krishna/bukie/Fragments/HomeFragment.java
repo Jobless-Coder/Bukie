@@ -21,9 +21,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.FilterActivity;
+import com.example.krishna.bukie.FullscreenScannerActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.R;
@@ -45,6 +47,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -171,10 +175,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 110)
+        {
+            if(resultCode == RESULT_OK)
+                Toast.makeText(getContext(), "isbn:"+data.getExtras().getString("isbn"), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getContext(), "No isbn found", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
-   @Override
+
+        @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
         menu2.clear();
        inflater2=getActivity().getMenuInflater();
@@ -213,10 +228,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent intent=new Intent(getContext(), PostnewadActivity.class);
-        intent.putExtra("isHome", 1);
-
-        startActivity(intent);
+        startActivityForResult(new Intent(getContext(), FullscreenScannerActivity.class),110);
+//        Intent intent=new Intent(getContext(), PostnewadActivity.class);
+//        intent.putExtra("isHome", 1);
+//
+//        startActivity(intent);
 
 
     }

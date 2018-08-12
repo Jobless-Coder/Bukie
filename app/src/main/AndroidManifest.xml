@@ -136,8 +136,13 @@
             -->
 
         </activity>
-        <activity android:name=".FilterActivity"></activity>
-        <activity android:name=".Tag_Picker_Activity"></activity>
+        <activity android:name=".FilterActivity" />
+        <activity android:name=".Tag_Picker_Activity" />
+        <activity
+            android:name=".FullscreenScannerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen_scanner"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>
