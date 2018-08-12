@@ -60,7 +60,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private  FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private int counter;
     private TextView price,title,category,date,desc,fullname,author,publisher,viewcounter;
-    boolean editad,isHome;
+    private boolean editad,isHome;
+    private List<String> booksUrl;
 
 
 
@@ -80,7 +81,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         viewcounter=findViewById(R.id.viewcounter);
-        viewcounter.setText(bookAds.getViewcounter()+"");
+        //viewcounter.setText(bookAds.getViewcounter()+"");
         price= findViewById(R.id.price);
         price.setText(bookAds.getPrice());
         title=findViewById(R.id.title);
@@ -144,7 +145,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             }
         });
 
-        List<String> booksUrl=new ArrayList<>();
+        booksUrl=new ArrayList<>();
         booksUrl.add(bookAds.getBookcoverpic());
         booksUrl.addAll(bookAds.getBookpicslist());
         viewPagerAdapter=new ViewPagerAdapter(DisplayAdActivity.this,this,booksUrl);
@@ -317,22 +318,23 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         int pos=viewPager.getCurrentItem();;
         switch (v.getId()){
             case R.id.gotoleft:
-                if(pos==0)
+                if(pos!=0)
                 {
-                    viewPager.setCurrentItem(bookAds.getBookpicslist().size()-1,true);
+                  //  viewPager.setCurrentItem(booksUrl.size()-1,true);
 
-                }
+                //}
 
-                else{
+                //else{
                     viewPager.setCurrentItem(pos-1,true);
 
                 }
 
                 break;
             case  R.id.gotoright:
-                if(pos==bookAds.getBookpicslist().size()-1)
-                    viewPager.setCurrentItem(0,true);
-                else
+                if(pos!=booksUrl.size()-1)
+                  //  Log.i("kk","ll");
+                  //  viewPager.setCurrentItem(0,true);
+               // else
                     viewPager.setCurrentItem(pos+1,true);
                 break;
 

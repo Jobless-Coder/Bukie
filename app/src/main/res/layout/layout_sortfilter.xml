@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/sort"
+        android:orientation="vertical"
+        android:foreground="@drawable/ripplebg"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent">
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <ImageView
+                android:tint="@color/selector_chat1"
+                android:src="@drawable/sort"
+                android:layout_width="15dp"
+                android:layout_height="fill_parent" />
+
+            <TextView
+                android:textColor="@color/selector_chat1"
+                android:layout_marginLeft="15dp"
+                android:text="Sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <!--View
+
+            android:layout_gravity="bottom"
+            android:background="@drawable/selector_chat1"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/-->
+    </LinearLayout>
+    <View
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/grey"
+        android:layout_width="2dp"
+        android:layout_height="fill_parent"/>
+    <!--LinearLayout
+        android:orientation="horizontal"
+        android:foreground="@drawable/ripplebg"
+        android:id="@+id/mywishlist"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"-->
+    <LinearLayout
+        android:id="@+id/filter"
+        android:orientation="vertical"
+        android:foreground="@drawable/ripplebg"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent">
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+            <ImageView
+                android:tint="@color/selector_chat2"
+                android:src="@drawable/filter"
+                android:layout_width="20dp"
+                android:layout_height="fill_parent" />
+
+            <TextView
+                android:textColor="@color/selector_chat2"
+                android:layout_marginLeft="15dp"
+                android:text="Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <!--View
+            android:layout_gravity="bottom"
+            android:background="@drawable/selector_chat2"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"/-->
+    </LinearLayout>
+</LinearLayout>

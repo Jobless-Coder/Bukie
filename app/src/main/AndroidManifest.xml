@@ -80,6 +80,7 @@
         <activity android:name=".RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
+            android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -90,8 +91,7 @@
                 <data
                     android:host="books.jc"
                     android:scheme="https" />
-                android:scheme="https"
-                />
+
             </intent-filter>
         </activity>
         <activity android:name=".PostnewadActivity" />
@@ -119,9 +119,9 @@
         <activity android:name=".SearchActivity">
 
             <!--
-            android:parentActivityName=".HomePageActivity"intent-filter>
+            android:parentActivityName=".HomePageActivity"intent-Filter>
                 <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            </intent-Filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HomePageActivity" />
@@ -137,7 +137,7 @@
 
         </activity>
         <activity android:name=".FilterActivity"></activity>
-        <activity android:name=".Tag_Picker_Activity"></activity>
+        <activity android:name=".TagPickerActivity"></activity>
     </application>
 
 </manifest>

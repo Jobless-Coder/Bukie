@@ -161,23 +161,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()){
             case R.id.searchbtn:
                 if(togglesearch==true){
-                    /*bookAdsList.clear();
-                   bookadslistpath.clear();
-                    homeBookAdsAdapter.notifyDataSetChanged();
-                   // bookAdsList=new ArrayList<>();
-                    //bookadslistpath=new ArrayList<>();
 
-
-
-                    String query=searchbox.getText().toString().trim();
-                    if(query.length()>0){
-                       // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
-                        progressDialog.show();
-                        getMyAdsPaths(query);
-                        togglesearch=false;
-                        search_icon.setVisibility(View.GONE);
-                        clear_icon.setVisibility(View.VISIBLE);
-                    }*/
                     searchAds();
 
 

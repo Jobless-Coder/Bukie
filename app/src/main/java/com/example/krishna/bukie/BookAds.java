@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 public class BookAds implements Parcelable{
@@ -229,4 +230,6 @@ private boolean isActive=true;
         // o.buyerfullname=this.buyerfullname;
 
     }
+
+
 }

@@ -14,5 +14,7 @@ public interface RESTapiinterface {
     @FormUrlEncoded
     @POST("searchfunction/")
     Call<List<String>> searchBook(@Field("text") String text);
+    @POST("searchfunction/")
+    Call<List<String>> filterSortBook(@Body com.example.krishna.bukie.Query query);
 
 }

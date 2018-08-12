@@ -10,12 +10,12 @@
         ></item>
     <!--      app:actionViewClass="android.widget.SearchView" /-->
 
-    <item
-        android:id="@+id/filter"
-        android:icon="@drawable/filter"
+    <!--item
+        android:id="@+id/Filter"
+        android:icon="@drawable/Filter"
 
         android:title="Filter"
         android:orderInCategory="2"
-        app:showAsAction="always" />
+        app:showAsAction="always" /-->
 
 </menu>

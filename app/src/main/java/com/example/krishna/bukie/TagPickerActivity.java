@@ -1,7 +1,6 @@
 package com.example.krishna.bukie;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,12 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.google.firebase.database.DataSnapshot;
@@ -28,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class Tag_Picker_Activity extends AppCompatActivity {
+public class TagPickerActivity extends AppCompatActivity {
     private ListView listView;
     private RecyclerView recyclerView;
     private HashSet<String> tagSet=new HashSet<>();
@@ -67,10 +64,10 @@ public class Tag_Picker_Activity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Tag_Picker_Activity.this, PostnewadActivity.class);
+                Intent intent = new Intent(TagPickerActivity.this, PostnewadActivity.class);
                 intent.putExtra("isHome", 2);
                 Tuple chips=new Tuple(chipList);
-                Toast.makeText(Tag_Picker_Activity.this, ""+chipList.get(0).getText(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(TagPickerActivity.this, ""+chipList.get(0).getText(), Toast.LENGTH_SHORT).show();
 
                 intent.putExtra("chips", chips);
         /*intent.putExtra("latitude", mCurrentLocation.getLatitude()+"");
@@ -84,7 +81,7 @@ public class Tag_Picker_Activity extends AppCompatActivity {
         });
 
 
-        tagPickerAdapter=new TagPickerAdapter(Tag_Picker_Activity.this,tagList,istagList);
+        tagPickerAdapter=new TagPickerAdapter(TagPickerActivity.this,tagList,istagList);
         listView.setAdapter(tagPickerAdapter);
         firebaseDatabase.getReference().child("interests").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -110,7 +107,7 @@ public class Tag_Picker_Activity extends AppCompatActivity {
                     istagList.set(position,true);
                     chipList.add(new Tuple(tagList.get(position),position));
                     chipAdapter.notifyDataSetChanged();
-                    Toast.makeText(Tag_Picker_Activity.this, ""+istagList, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TagPickerActivity.this, ""+istagList, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     istagList.set(position,false);

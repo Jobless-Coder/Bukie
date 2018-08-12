@@ -107,6 +107,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         View v=inflater.inflate(R.layout.fragment_profile, container,false);
         View tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.GONE);
+        getActivity().findViewById(R.id.header2).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.header3).setVisibility(View.GONE);
         myads=v.findViewById(R.id.myads);
         mywishlist=v.findViewById(R.id.mywishlist);
         myads.setOnClickListener(this);

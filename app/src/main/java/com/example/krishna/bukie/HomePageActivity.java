@@ -50,7 +50,7 @@ public class HomePageActivity extends AppCompatActivity {
     AHBottomNavigationItem item1,item2,item3;
     FrameLayout frameLayout;
     View toolbarview,tabsview;
-    Toolbar toolbar;
+    View toolbar;
     ViewGroup toolbargroup;
     private DrawerLayout mDrawerLayout;
     ActionBar actionbar;
@@ -85,7 +85,7 @@ public class HomePageActivity extends AppCompatActivity {
         */
         checkForDynamicLinks();
 
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
         firebaseDatabase=FirebaseDatabase.getInstance();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
