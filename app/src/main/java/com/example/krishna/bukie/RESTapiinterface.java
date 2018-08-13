@@ -13,8 +13,8 @@ public interface RESTapiinterface {
     String BASE_URL="https://us-central1-booksapp-e588d.cloudfunctions.net/";
     @FormUrlEncoded
     @POST("searchfunction/")
-    Call<List<String>> searchBook(@Field("text") String text);
-    @POST("searchfunction/")
-    Call<List<String>> filterSortBook(@Body com.example.krishna.bukie.Query query);
+    Call<List<String>> searchBook(@Field("search") String text);
+   // @POST("searchfunction/")
+   // Call<List<String>> filterSortBook(@Body com.example.krishna.bukie.Query query);
 
 }

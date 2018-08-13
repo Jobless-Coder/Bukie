@@ -17,8 +17,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +29,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -61,7 +67,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,7 +82,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recyclerView;
     private List<BookAds> bookAdsList=new ArrayList<>();
     private Context context;
-    private View v;
+    private View v,searchbtn,search_icon,clear_icon;
+    private EditText searchbox;
     public FloatingActionButton floatingActionButton;
     private FirebaseStorage storage;
     private StorageReference storageReference;
@@ -100,7 +109,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<BookAds> tempBookadsList=new ArrayList<>();
     private ProgressDialog progressDialog;
     private BottomSheetDialog dialog;
-    private boolean isSearch=false;
+    private boolean isSearch=false,togglesearch=false;
+    private List<String> bookadslistPath=new ArrayList<>();
+    private Map<String,Integer> adidMap=new HashMap<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,6 +134,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         filter.setOnClickListener(this);
         sort.setSelected(false);
         filter.setSelected(false);
+        searchbox=getActivity().findViewById(R.id.searchbox);
+        searchbtn=getActivity().findViewById(R.id.searchbtn);
+        searchbtn.setOnClickListener(this);
+        search_icon=getActivity().findViewById(R.id.searchicon);
+        clear_icon=getActivity().findViewById(R.id.clearicon);
         firebaseFirestore=FirebaseFirestore.getInstance();
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.simpleSwipeRefreshLayout);
         floatingActionButton=v.findViewById(R.id.floatingActionButton);
@@ -139,6 +155,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         floatingActionButton.setOnClickListener(this);
         back=getActivity().findViewById(R.id.back);
         back.setOnClickListener(this);
+
         getadvertisements();
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorAccent,
@@ -167,9 +184,117 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     floatingActionButton.show();
             }
         });
+        searchbox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if ( (s.length() <before||s.length()>before)&&togglesearch==false) {
+                    togglesearch=true;
+                    search_icon.setVisibility(View.VISIBLE);
+                    clear_icon.setVisibility(View.GONE);
+
+                }
+                if (before > 0 && s.length() == 0) {
+                    togglesearch=true;
+                    search_icon.setVisibility(View.VISIBLE);
+                    clear_icon.setVisibility(View.GONE);
+
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        searchbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchAds();
+
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
         return v;
+    }
+    public void searchAds(){
+        InputMethodManager in = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchbox.getWindowToken(), 0);
+        tempBookadsList.clear();
+        tempBookadsList.addAll(bookAdsList);
+        bookAdsList.clear();
+        bookadslistPath.clear();
+        homeBookAdsAdapter.notifyDataSetChanged();
+        // bookAdsList=new ArrayList<>();
+        //bookadslistpath=new ArrayList<>();
+
+
+
+        String query=searchbox.getText().toString().trim();
+        if(query.length()>0){
+            // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
+           // progressDialog.show();
+            getMyAdsPathsSearch(query);
+            togglesearch=false;
+            search_icon.setVisibility(View.GONE);
+            clear_icon.setVisibility(View.VISIBLE);
+        }
+        else {
+            searchbox.setText("");
+        }
+
+    }
+    private void getMyAdsPathsSearch(String query) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(RESTapiinterface.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RESTapiinterface resTapiinterface=retrofit.create(RESTapiinterface.class);
+        Call<List<String>> call = resTapiinterface.searchBook(query);
+        call.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if(response.code()==200&&response.body()!=null) {
+                    bookadslistPath=response.body();
+                    getMyAdsSearch(bookadslistPath);
+                  //  progressDialog.dismiss();
+                    // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
+                    //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                progressDialog.dismiss();
+            }
+        });
+
+    }
+
+    private void getMyAdsSearch(List<String> bookadslistPath) {
+        bookAdsList.clear();
+        homeBookAdsAdapter.notifyDataSetChanged();
+        for (String s:bookadslistPath){
+            //adidMap.
+            if(adidMap.containsKey(s)){
+                bookAdsList.add(tempBookadsList.get(adidMap.get(s)));
+                homeBookAdsAdapter.notifyDataSetChanged();
+            }
+        }
+
     }
 
     private void getadvertisements() {
@@ -183,6 +308,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 BookAds bookAds = document.toObject(BookAds.class);
+                                adidMap.put(bookAds.getAdid(),bookAdsList.size());
                                 bookAdsList.add(bookAds);
                                 homeBookAdsAdapter.notifyDataSetChanged();
 
@@ -260,6 +386,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             isSearch=true;
 
         } else {
+            searchbox.setText("");
+            if(tempBookadsList.size()>0) {
+                bookAdsList.clear();
+                homeBookAdsAdapter.notifyDataSetChanged();
+                bookAdsList.addAll(tempBookadsList);
+                tempBookadsList.clear();
+                homeBookAdsAdapter.notifyDataSetChanged();
+            }
 
             Animator anim =
                     ViewAnimationUtils.createCircularReveal(view, cx, cy, endRadius, 0);
@@ -578,6 +712,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.searchbtn:
+                if(togglesearch==true){
+
+                    searchAds();
+
+
+                }
+                else {
+                    searchbox.setText("");
+                    togglesearch=true;
+                    search_icon.setVisibility(View.VISIBLE);
+                    clear_icon.setVisibility(View.GONE);
+                }
+                break;
             case R.id.floatingActionButton:
                 Intent intent = new Intent(getContext(), PostnewadActivity.class);
                 intent.putExtra("isHome", 1);
