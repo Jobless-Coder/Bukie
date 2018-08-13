@@ -91,7 +91,8 @@
                 <data
                     android:host="books.jc"
                     android:scheme="https" />
-
+                android:scheme="https"
+                />
             </intent-filter>
         </activity>
         <activity android:name=".PostnewadActivity" />
@@ -119,9 +120,9 @@
         <activity android:name=".SearchActivity">
 
             <!--
-            android:parentActivityName=".HomePageActivity"intent-Filter>
+            android:parentActivityName=".HomePageActivity"intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
-            </intent-Filter>
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HomePageActivity" />
@@ -138,6 +139,13 @@
         </activity>
         <activity android:name=".FilterActivity"></activity>
         <activity android:name=".TagPickerActivity"></activity>
+        <activity android:name=".FilterActivity" />
+        <activity android:name=".Tag_Picker_Activity" />
+        <activity
+            android:name=".FullscreenScannerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen_scanner"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

@@ -1,10 +1,14 @@
 package com.example.krishna.bukie;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Fade;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -51,6 +56,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private RecyclerView recyclerView;
     private List<BookAds> bookAdsList=new ArrayList<>();
     private Context context;
+    private DisplayMetrics metrics;
+
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 101;
 
 
     @Override
@@ -126,8 +134,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+        metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-       // handleIntent(getIntent());
+
+        // handleIntent(getIntent());
 
     }
     public void searchAds(){
@@ -159,6 +170,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.searchscanicon:
+                scanCode();
+                break;
             case R.id.searchbtn:
                 if(togglesearch==true){
 
@@ -177,6 +191,47 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 onBackPressed();
                 break;
         }
+
+    }
+
+    private boolean getCameraPermissions()
+    {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA)) {
+                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+
+            } else {
+                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+
+            return false;
+        }
+        return true;
+
+    }
+
+    public void scanCode() {
+
+        if(!getCameraPermissions())
+            return;
+
+
+        ScannerDialog dialog = new ScannerDialog();
+        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
+            @Override
+            public void onSuccess(String code) {
+                searchbox.setText("isbn:"+code);
+                searchAds();
+                //((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
+            }
+        });
 
     }
 

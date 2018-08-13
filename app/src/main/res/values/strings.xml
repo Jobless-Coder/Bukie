@@ -8,5 +8,9 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
     <string name="API_KEY">AIzaSyBVLP5gY92V5siw_09TjUkNv3Nkf0rQvyo</string>
+
+    <string name="title_activity_fullscreen_scanner">FullscreenScannerActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
     <!--string name="default_web_client_id">743515921060-qb58ds2qtmq6mflbuejv23hrt8h4aa5j.apps.googleusercontent.com</1string-->
 </resources>

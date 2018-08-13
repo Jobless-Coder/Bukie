@@ -22,4 +22,6 @@
     <color name="deep_grey">#7b7b7b</color>
     <color name="brick_red">#FF6868</color>
 
+    <color name="black_overlay">#66000000</color>
+
 </resources>

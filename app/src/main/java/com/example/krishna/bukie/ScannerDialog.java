@@ -63,7 +63,7 @@ public class ScannerDialog {
         scannerView = dialog.findViewById(R.id.xingscan);
         //ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         //scannerView.setLayoutParams(params);
-        scannerView.setAspectTolerance(1f);
+        //scannerView.setAspectTolerance(0.5f);
         scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
             @Override
             public void handleResult(Result result) {

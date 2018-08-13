@@ -48,6 +48,14 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="fill_parent" />
+    <ImageView
+        android:transitionName="searchicon"
+        android:id="@+id/searchscanicon"
+        android:layout_gravity="center"
+        android:tint="@color/violet"
+        android:src="@drawable/barcodeblack"
+        android:layout_width="30dp"
+        android:layout_height="30dp"></ImageView>
     <android.support.v7.widget.CardView
         android:id="@+id/searchbtn"
         android:layout_gravity="center"
@@ -60,14 +68,14 @@
         app:cardCornerRadius="20dp"
         android:foreground="@drawable/ripplebg"
         android:layout_height="40dp">
-    <ImageView
-        android:transitionName="searchicon"
-        android:id="@+id/searchicon"
-        android:layout_gravity="center"
-        android:tint="@color/violet"
-        android:src="@drawable/search2"
-        android:layout_width="30dp"
-        android:layout_height="30dp"></ImageView>
+        <ImageView
+            android:transitionName="searchicon"
+            android:id="@+id/searchicon"
+            android:layout_gravity="center"
+            android:tint="@color/violet"
+            android:src="@drawable/search2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"></ImageView>
         <ImageView
             android:id="@+id/clearicon"
             android:visibility="gone"
