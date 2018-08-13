@@ -192,7 +192,6 @@
                             android:layout_marginLeft="5dp"
                             android:onClick="scanCode"
                             android:layout_margin="5dp"
-                            android:src="@drawable/barcodeblack"
                             android:layout_width="30dp"
                             android:layout_height="30dp" />
                         <TextView

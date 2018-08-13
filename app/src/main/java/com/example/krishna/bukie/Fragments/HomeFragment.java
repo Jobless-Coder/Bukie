@@ -411,6 +411,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         } else {
             searchbox.setText("");
             if(tempBookadsList.size()>0) {
+                //Toast.makeText(context, ""+tempBookadsList.size(), Toast.LENGTH_SHORT).show();
                 bookAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
                 bookAdsList.addAll(tempBookadsList);
@@ -434,7 +435,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             anim.setDuration(300);
             anim.start();
         }
-    }*/
+    }
     /*public void filterorSortAds(Query query){
         progressDialog.setMessage("wait..");
         progressDialog.show();
