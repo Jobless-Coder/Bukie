@@ -67,6 +67,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private static final int PROFILE_IMAGE = 11;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 101;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
+    private static final int SCANNER = 120;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
     private TextView toolbar_title;
@@ -454,7 +455,12 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
+        if(requestCode == SCANNER && resultCode == RESULT_OK)
+        {
+            isbn = data.getExtras().getString("isbn");
+            ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
+            return;
+        }
              if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK) {
                  if(data != null)
                 sendToUCrop(data.getData(), UCrop.REQUEST_CROP);
@@ -804,16 +810,15 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
         if(!getCameraPermissions())
             return;
-
-
-        ScannerDialog dialog = new ScannerDialog();
-        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
-            @Override
-            public void onSuccess(String code) {
-                isbn = code;
-                ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
-            }
-        });
+        startActivityForResult(new Intent(this, FullscreenScannerActivity.class),SCANNER);
+//        ScannerDialog dialog = new ScannerDialog();
+//        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
+//            @Override
+//            public void onSuccess(String code) {
+//                isbn = code;
+//                ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
+//            }
+//        });
 
     }
 

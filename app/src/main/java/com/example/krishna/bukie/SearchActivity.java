@@ -235,7 +235,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void getMyAdsPaths(String query) {
+    private void    getMyAdsPaths(String query) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RESTapiinterface.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -252,7 +252,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     progressDialog.dismiss();
                    // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
                     //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
-
                }
 
             }

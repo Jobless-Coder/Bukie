@@ -49,6 +49,7 @@
         android:layout_width="0dp"
         android:layout_height="fill_parent" />
     <ImageView
+        android:src="@drawable/barcodeblack"
         android:transitionName="searchicon"
         android:id="@+id/searchscanicon"
         android:layout_gravity="center"

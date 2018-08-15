@@ -153,14 +153,6 @@
                             android:textSize="14sp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
-                        <TextView
-                            android:layout_marginTop="5dp"
-                            android:layout_marginLeft="10dp"
-                            android:id="@+id/fullname"
-                            android:textSize="12sp"
-                            android:textStyle="italic"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
                         <LinearLayout
                             android:orientation="horizontal"
                             android:layout_width="match_parent"
@@ -170,14 +162,15 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:textStyle="italic"
-                                android:textSize="10sp"
+                                android:textSize="12sp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
                             <TextView
                                 android:id="@+id/price"
                                 android:textColor="@color/brick_red"
                                 android:textStyle="bold"
-                                android:textSize="20sp"
+                                android:textSize="22sp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:gravity="end"
                                 android:text="Rs. 30"
@@ -185,18 +178,28 @@
                                 android:layout_height="wrap_content" />
                         </LinearLayout>
                         <View
+                            android:layout_marginTop="6dp"
                             android:layout_marginEnd="8dp"
                             android:layout_marginStart="8dp"
                             android:background="@color/grey"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"/>
+                        <TextView
+                            android:layout_marginTop="3dp"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/light_blue"
+                            android:id="@+id/fullname"
+                            android:textSize="12sp"
+                            android:textStyle="italic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
                         <TextView
                             android:id="@+id/desc"
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="8dp"
                             android:layout_marginBottom="10dp"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="10dp"
                             android:text=""
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />

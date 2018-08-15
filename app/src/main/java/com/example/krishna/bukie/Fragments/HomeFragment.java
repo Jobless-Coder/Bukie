@@ -1,18 +1,22 @@
 package com.example.krishna.bukie.Fragments;
 
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -84,6 +88,8 @@ import static android.app.Activity.RESULT_OK;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 212;
+    private static final int SCAN = 122;
     private RecyclerView recyclerView;
     private List<BookAds> bookAdsList=new ArrayList<>();
     private Context context;
@@ -153,6 +159,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
         toolbargroup.addView(toolbarview);
         progressDialog=new ProgressDialog(context);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Searching...");
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context);
@@ -160,6 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         floatingActionButton.setOnClickListener(this);
         back=getActivity().findViewById(R.id.back);
         back.setOnClickListener(this);
+        getActivity().findViewById(R.id.searchscanicon).setOnClickListener(this);
 
         getadvertisements();
         swipeRefreshLayout.setColorSchemeResources(
@@ -248,7 +257,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         String query=searchbox.getText().toString().trim();
         if(query.length()>0){
             // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
-           // progressDialog.show();
+            progressDialog.show();
             getMyAdsPathsSearch(query);
             togglesearch=false;
             search_icon.setVisibility(View.GONE);
@@ -273,7 +282,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if(response.code()==200&&response.body()!=null) {
                     bookadslistPath=response.body();
                     getMyAdsSearch(bookadslistPath);
-                  //  progressDialog.dismiss();
+                    progressDialog.dismiss();
                     // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
                     //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
 
@@ -284,6 +293,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
                 progressDialog.dismiss();
+                Toast.makeText(getContext(), "Server error!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -329,27 +339,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 });
     }
 
-  /* @Override
-
-
-
-
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 110)
+        if(requestCode == SCAN)
         {
             if(resultCode == RESULT_OK)
-                Toast.makeText(getContext(), "isbn:"+data.getExtras().getString("isbn"), Toast.LENGTH_SHORT).show();
-            else
+            {
+                //Toast.makeText(getContext(), "isbn:"+data.getExtras().getString("isbn"), Toast.LENGTH_SHORT).show();
+                searchbox.setText("isbn:"+data.getExtras().getString("isbn"));
+                searchAds();
+            }
+                 else
                 Toast.makeText(getContext(), "No isbn found", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-
-
+  /* @Override
         @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
         menu2.clear();
@@ -737,11 +742,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.searchbtn:
-                if(togglesearch==true){
-
+                if(togglesearch){
                     searchAds();
-
-
                 }
                 else {
                     searchbox.setText("");
@@ -755,7 +757,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra("isHome", 1);
 
                 startActivity(intent);
-        startActivityForResult(new Intent(getContext(), FullscreenScannerActivity.class),110);
 //        Intent intent=new Intent(getContext(), PostnewadActivity.class);
 //        intent.putExtra("isHome", 1);
 //
@@ -809,13 +810,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.back:
                 showSearch();
                 break;
+            case R.id.searchscanicon:
+                if(!getCameraPermissions())
+                    return;
+                startActivityForResult(new Intent(getContext(), FullscreenScannerActivity.class),SCAN);
+                break;
         }
+    }
+    private boolean getCameraPermissions()
+    {
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
+                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
 
+            } else {
+                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
 
+            return false;
+        }
+        return true;
 
     }
-
     @Override
     public void onResume() {
 
