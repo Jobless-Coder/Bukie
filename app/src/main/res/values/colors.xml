@@ -24,4 +24,7 @@
 
     <color name="black_overlay">#66000000</color>
 
+    <color name="book_loading_background">#414141</color>
+    <color name="book_loading_book">#ff33b5e5</color>
+    <color name="book_loading_page">#414141</color>
 </resources>

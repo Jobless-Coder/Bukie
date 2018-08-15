@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.google.zxing.Result;
+import com.victor.loading.book.BookLoading;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -104,6 +105,7 @@ public class FullscreenScannerActivity extends AppCompatActivity {
         mVisible = true;
         mContentView = findViewById(R.id.fullscreen_content);
         //hide();
+        ((BookLoading)findViewById(R.id.bookloader)).start();
         delayedHide(10);
 
         frame = findViewById(R.id.fullscreenframe);
