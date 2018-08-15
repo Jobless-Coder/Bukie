@@ -123,6 +123,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean isSearch=false,togglesearch=false;
     private List<String> bookadslistPath=new ArrayList<>();
     private Map<String,Integer> adidMap=new HashMap<>();
+    private String searchType;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -258,7 +259,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if(query.length()>0){
             // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
             progressDialog.show();
-            getMyAdsPathsSearch(query);
+            getMyAdsPathsSearch(query,searchType);
             togglesearch=false;
             search_icon.setVisibility(View.GONE);
             clear_icon.setVisibility(View.VISIBLE);
@@ -268,14 +269,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-    private void getMyAdsPathsSearch(String query) {
+    private void getMyAdsPathsSearch(String query,String searchType) {
+        //if (searchType.equals("text"))
+        Query query1=new Query(query,searchType);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RESTapiinterface.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         RESTapiinterface resTapiinterface=retrofit.create(RESTapiinterface.class);
-        Call<List<String>> call = resTapiinterface.searchBook(query);
+        Call<List<String>> call = resTapiinterface.searchBook(query1);
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
@@ -346,7 +349,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if(resultCode == RESULT_OK)
             {
                 //Toast.makeText(getContext(), "isbn:"+data.getExtras().getString("isbn"), Toast.LENGTH_SHORT).show();
-                searchbox.setText("isbn:"+data.getExtras().getString("isbn"));
+                searchbox.setText(data.getExtras().getString("isbn"));
+                searchType="isbn";
                 searchAds();
             }
                  else
@@ -439,6 +443,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             });
             anim.setDuration(300);
             anim.start();
+            searchbox.requestFocus();
         }
     }
     /*public void filterorSortAds(Query query){
@@ -743,7 +748,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.searchbtn:
                 if(togglesearch){
+                    searchType="text";
                     searchAds();
+
                 }
                 else {
                     searchbox.setText("");

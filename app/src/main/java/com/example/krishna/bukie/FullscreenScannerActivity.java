@@ -197,4 +197,8 @@ public class FullscreenScannerActivity extends AppCompatActivity {
         setResult(Activity.RESULT_CANCELED);
         finish();
     }
+
+    public void toggleflash(View view) {
+        scannerView.toggleFlash();
+    }
 }

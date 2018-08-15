@@ -626,8 +626,26 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     mdate = ft.format(d);
 
 
-                    if (coverImageUri==null || mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
-                        Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
+                    if (coverImageUri==null)
+                        Toast.makeText(this, "You should add a cover picture for your book", Toast.LENGTH_SHORT).show();
+                    else if (mprice.isEmpty())
+                        Toast.makeText(this, "Please add a required price for your book", Toast.LENGTH_SHORT).show();
+
+                    else if (mtitle.isEmpty())
+                        Toast.makeText(this, "Enter the book title to continue", Toast.LENGTH_SHORT).show();
+                    else if (mcategory.isEmpty())
+                        Toast.makeText(this, "Enter a category where this book belongs", Toast.LENGTH_SHORT).show();
+                    else if (mpublisher.isEmpty())
+                        Toast.makeText(this, "Enter the publisher for this book", Toast.LENGTH_SHORT).show();
+
+                    else if (mdesc.isEmpty())
+                        Toast.makeText(this, "Enter a short description for this book", Toast.LENGTH_SHORT).show();
+                    ///*||mArrayUri!=null*/)
+                        //Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
+                    else if (adapter.getImages().size()<2)
+                    {
+                        Toast.makeText(this, "Please add atleast 2 additional images", Toast.LENGTH_SHORT).show();
+                    }
                     else {
                         progressDialog.setMessage("Posting ad ...");
                         progressDialog.show();

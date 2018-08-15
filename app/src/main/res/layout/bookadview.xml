@@ -58,7 +58,7 @@
             <TextView
                 android:background="@color/grey"
                 android:minWidth="150dp"
-                android:id="@+id/bookcategory"
+                android:id="@+id/bookauthor"
                 android:layout_marginTop="5dp"
                 android:textStyle="normal"
                 android:textSize="12sp"

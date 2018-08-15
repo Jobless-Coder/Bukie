@@ -5,11 +5,17 @@ public class Query {
 
     private Sort[] sort=new Sort[0];
     private Filter[] filter=new Filter[0];
+    private String type;
 
     public Query(String search, Sort[] sort, Filter[] filter) {
         this.search = search;
         this.sort = sort;
         this.filter = filter;
+    }
+
+    public Query(String search, String type) {
+        this.search = search;
+        this.type = type;
     }
 
     public String getSearch() {

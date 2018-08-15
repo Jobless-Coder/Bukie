@@ -11,7 +11,13 @@
         android:id="@+id/logout"
 
         android:title="Logout"
+        android:orderInCategory="3"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/feedback"
+        android:title="Feedback"
         android:orderInCategory="2"
         app:showAsAction="withText" />
+
 
 </menu>

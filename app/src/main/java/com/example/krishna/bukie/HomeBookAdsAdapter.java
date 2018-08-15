@@ -71,7 +71,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             holder.shimmerFrameLayout.stopShimmerAnimation();
-                            holder.bookcategory.setBackground(null);
+                            holder.bookauthor.setBackground(null);
                             holder.bookpic.setBackground(null);
                             holder.bookdate.setBackground(null);
                             holder.booktitle.setBackground(null);
@@ -79,7 +79,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
                             holder.booktitle.setText(bookAds.getBooktitle());
                             holder.bookprice.setText(bookAds.getPrice());
                             holder.bookdate.setText(bookAds.getDate());
-                            holder.bookcategory.setText(bookAds.getBookcategory());
+                            holder.bookauthor.setText(getSecondaryTextAvailable(bookAds));
                             return false;
                         }
                     })
@@ -94,7 +94,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
             holder.booktitle.setText(bookAds.getBooktitle());
             holder.bookprice.setText(bookAds.getPrice());
             holder.bookdate.setText(bookAds.getDate());
-            holder.bookcategory.setText(bookAds.getBookcategory());
+            holder.bookauthor.setText(getSecondaryTextAvailable(bookAds));
 
         }
         holder.selectad.setOnClickListener(new View.OnClickListener() {
@@ -118,8 +118,17 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
 
     }
 
-
-
+    private String getSecondaryTextAvailable(BookAds bookAds) {
+        if(bookAds.getBookauthor() != null)
+        {
+            return bookAds.getBookauthor();
+        }
+        else if(bookAds.getBookpublisher() != null)
+        {
+            return bookAds.getBookpublisher();
+        }
+        return bookAds.getBookcategory();
+    }
 
 
     @Override
@@ -130,7 +139,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
 
     public class BookHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView bookpic;
-        public TextView bookprice,bookdate,bookcategory,booktitle;
+        public TextView bookprice,bookdate,bookauthor,booktitle;
         public ShimmerFrameLayout shimmerFrameLayout;
         public View selectad;
 
@@ -139,7 +148,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
             super(itemView);
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             bookpic=(ImageView)itemView.findViewById(R.id.bookpic);
-            bookcategory=itemView.findViewById(R.id.bookcategory);
+            bookauthor=itemView.findViewById(R.id.bookauthor);
             bookdate=itemView.findViewById(R.id.bookdate);
             bookprice=itemView.findViewById(R.id.bookprice);
             booktitle=itemView.findViewById(R.id.booktitle);

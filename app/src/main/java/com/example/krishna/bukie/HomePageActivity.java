@@ -16,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -175,10 +177,10 @@ public class HomePageActivity extends AppCompatActivity {
                 ;
             }
         }
-        else
-        {
-            Toast.makeText(this, "No data in intent either!", Toast.LENGTH_SHORT).show();
-        }
+//        else
+//        {
+//            Toast.makeText(this, "No data in intent either!", Toast.LENGTH_SHORT).show();
+//        }
 
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
@@ -299,20 +301,17 @@ public class HomePageActivity extends AppCompatActivity {
                         transaction.addToBackStack(null);
                         transaction.commit()*/;
 
-
                         break;
                         default:
                             break;
 
                 }
-
                 return loadFragment(fragment);
-
-
             }
         });
 
     }
+
 
     private int fetchColor(@ColorRes int color) {
         return ContextCompat.getColor(this, color);

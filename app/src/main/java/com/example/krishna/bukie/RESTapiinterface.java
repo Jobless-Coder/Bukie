@@ -11,9 +11,9 @@ import retrofit2.http.Query;
 
 public interface RESTapiinterface {
     String BASE_URL="https://us-central1-booksapp-e588d.cloudfunctions.net/";
-    @FormUrlEncoded
+   // @FormUrlEncoded
     @POST("searchfunction/")
-    Call<List<String>> searchBook(@Field("search") String text);
+    Call<List<String>> searchBook(@Body com.example.krishna.bukie.Query query);
    // @POST("searchfunction/")
    // Call<List<String>> filterSortBook(@Body com.example.krishna.bukie.Query query);
 

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.krishna.bukie.AuthActivity;
 import com.example.krishna.bukie.BookAds;
+import com.example.krishna.bukie.FeedbackActivity;
 import com.example.krishna.bukie.Myadswishadapter;
 import com.example.krishna.bukie.R;
 //import com.example.krishna.bukie.mFragmentPagerAdapter;
@@ -201,14 +202,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
-
-
         menu2.clear();
         inflater2=getActivity().getMenuInflater();
         inflater2.inflate(R.menu.myprofilemenu, menu2);
-
-
         super.onCreateOptionsMenu(menu2,inflater2);
+        Toast.makeText(getContext(), "here already", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -232,7 +230,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
                    //     .show();
                 break;
-
+            case R.id.feedback:
+                startActivity(new Intent(getContext(), FeedbackActivity.class));
+                break;
             default:
                 break;
         }

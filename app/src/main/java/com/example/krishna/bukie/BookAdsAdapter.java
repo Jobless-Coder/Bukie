@@ -130,7 +130,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
             super(itemView);
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             bookpic=(ImageView)itemView.findViewById(R.id.bookpic);
-            bookcategory=itemView.findViewById(R.id.bookcategory);
+            bookcategory=itemView.findViewById(R.id.bookauthor);
             bookdate=itemView.findViewById(R.id.bookdate);
             bookprice=itemView.findViewById(R.id.bookprice);
             booktitle=itemView.findViewById(R.id.booktitle);

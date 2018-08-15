@@ -119,16 +119,18 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         firebaseFirestore=FirebaseFirestore.getInstance();
         storageReference=firebaseStorage.getReference();
         firebaseUser=firebaseAuth.getCurrentUser();
-        if(firebaseUser.getPhotoUrl()!=null)
-        profilepicurl=firebaseUser.getPhotoUrl().toString();
-        else
-            profilepicurl="";
-        uid=firebaseUser.getUid();
-        fullnameid=firebaseUser.getDisplayName();
-        Glide.with(getApplicationContext()).load(profilepicurl).into(imageView);
-        fullname.setText(fullnameid);
+        interests= new ArrayList<>();
 
-
+        if(firebaseUser != null) {
+            if (firebaseUser.getPhotoUrl() != null)
+                profilepicurl = firebaseUser.getPhotoUrl().toString();
+            else
+                profilepicurl = "";
+            uid = firebaseUser.getUid();
+            fullnameid = firebaseUser.getDisplayName();
+            Glide.with(getApplicationContext()).load(profilepicurl).into(imageView);
+            fullname.setText(fullnameid);
+        }
 
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("interests");
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -147,7 +149,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
             }
         });
-        interests= new ArrayList<>();
         //{"Engineering", "Comics", "Novels", "Inspirational", "Fiction", "Non-fiction","Classics","Religious"};
 
     }

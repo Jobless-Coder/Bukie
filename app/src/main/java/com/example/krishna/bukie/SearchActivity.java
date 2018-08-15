@@ -175,10 +175,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.searchbtn:
                 if(togglesearch==true){
-
                     searchAds();
-
-
                 }
                 else {
                     searchbox.setText("");
@@ -242,7 +239,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 .build();
 
         RESTapiinterface resTapiinterface=retrofit.create(RESTapiinterface.class);
-        Call<List<String>> call = resTapiinterface.searchBook(query);
+        Call<List<String>> call = resTapiinterface.searchBook(new Query(query,"string"));
         call.enqueue(new Callback<List<String>>() {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {

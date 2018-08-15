@@ -253,14 +253,14 @@
             <EditText
                 android:backgroundTint="@color/white"
                 android:id="@+id/publisher"
-                android:hint="Publisher (may be blank)"
+                android:hint="Publisher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:layout_marginRight="5dp"
@@ -271,7 +271,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <android.support.design.widget.TextInputLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
                     android:gravity="center_vertical"
@@ -279,8 +279,7 @@
                     android:backgroundTint="@color/white"
                     android:hint="price"
                     android:inputType="number"
-                    android:ems="5"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </android.support.design.widget.TextInputLayout>
 
