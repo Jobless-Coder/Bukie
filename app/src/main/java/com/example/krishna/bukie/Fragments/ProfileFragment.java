@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,7 +53,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileFragment extends Fragment implements View.OnClickListener {
+public class ProfileFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     private TabLayout tabLayout;
     private RecyclerView recyclerView;
@@ -67,6 +68,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private ListenerRegistration listenerRegistration;
     private View editprofilebtn;
     boolean pauseState=false;
+    private View menu;
 
     public ProfileFragment() {
     }
@@ -117,9 +119,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
         editprofilebtn=v.findViewById(R.id.editprofilebutton);
         editprofilebtn.setOnClickListener(this);
-
+        menu=getActivity().findViewById(R.id.menu);
+        menu.setOnClickListener(this);
         firebaseFirestore=FirebaseFirestore.getInstance();
-
+        setHasOptionsMenu(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
        /* FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -199,14 +202,54 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
 
     }
+    public void showMenu(View v) {
+
+        PopupMenu popup = new PopupMenu(getActivity(), v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.myprofilemenu);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.logout:
+                firebaseAuth.signOut();
+                SharedPreferences settings = getContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+                settings.edit().clear().commit();
+                //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), AuthActivity.class);
+                getContext().startActivity(intent);
+                getActivity().finish();
+
+
+
+
+                break;
+            case R.id.settings:
+                //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
+                //     .show();
+                break;
+            case R.id.feedback:
+                startActivity(new Intent(getContext(), FeedbackActivity.class));
+                break;
+            default:
+                return  false;
+        }
+       return false;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
-        menu2.clear();
+       // menu2.clear();
         inflater2=getActivity().getMenuInflater();
-        inflater2.inflate(R.menu.myprofilemenu, menu2);
         super.onCreateOptionsMenu(menu2,inflater2);
-        Toast.makeText(getContext(), "here already", Toast.LENGTH_SHORT).show();
+        inflater2.inflate(R.menu.myprofilemenu, menu2);
+
+        //Toast.makeText(getContext(), "here already", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -278,6 +321,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.editprofilebutton:
                 Intent intent=new Intent(getContext(),RegistrationActivity.class);
                 getContext().startActivity(intent);
+                break;
+            case R.id.menu:
+                showMenu(v);
                 break;
                 default:
                     break;

@@ -424,6 +424,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
 
                         }
+
                     }
 
                     holder.chatlayout.setOnClickListener(new View.OnClickListener() {
