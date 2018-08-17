@@ -1,5 +1,6 @@
 package com.example.krishna.bukie;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -70,11 +71,13 @@ public class TagPickerActivity extends AppCompatActivity {
 //                Toast.makeText(TagPickerActivity.this, ""+chipList.get(0).getText(), Toast.LENGTH_SHORT).show();
 
                 intent.putExtra("chips", chips);
+                setResult(Activity.RESULT_OK,intent);
         /*intent.putExtra("latitude", mCurrentLocation.getLatitude()+"");
         intent.putExtra("longitude", mCurrentLocation.getLongitude()+"");
         intent.putExtra("locality", result);*/
                 //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                //startActivity(intent);
+
                 finish();
 
             }
@@ -121,5 +124,17 @@ public class TagPickerActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+        super.onBackPressed();
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+        return super.onSupportNavigateUp();
+    }
 }

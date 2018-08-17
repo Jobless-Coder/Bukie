@@ -68,6 +68,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private static final int MY_PERMISSIONS_REQUEST_STORAGE = 101;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 102;
     private static final int SCANNER = 120;
+    private static final int PICKTAGS = 216;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
     private TextView toolbar_title;
@@ -98,6 +99,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private RecyclerView recyclerView;
     private TagPickerAdapter tagPickerAdapter;
     private ChipAdapter chipAdapter;
+    private List<String> tagList;
     //private List
 
     private FrameLayout frame;
@@ -147,13 +149,11 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             bookAds = bundle.getParcelable("bookads");
             editMyAds(bookAds);
         }
-        if(isHome==2){
-            Tuple chips=bundle.getParcelable("chips");
-            chipList=chips.getChipList();
-            //Toast.makeText(this, "size "+chipList.size(), Toast.LENGTH_SHORT).show();
-            addTags();
+        /*if(isHome==2){
 
-        }
+
+        }*/
+
         //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
@@ -454,6 +454,12 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==PICKTAGS && resultCode==RESULT_OK){
+            Tuple chips=data.getParcelableExtra("chips");
+            chipList=chips.getChipList();
+            //Toast.makeText(this, "size "+chipList.size(), Toast.LENGTH_SHORT).show();
+            addTags();
+        }
 
         if(requestCode == SCANNER && resultCode == RESULT_OK)
         {
@@ -461,7 +467,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
             return;
         }
-             if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK) {
+             else if (requestCode == EXTRA_PHOTO && resultCode == RESULT_OK) {
                  if(data != null)
                 sendToUCrop(data.getData(), UCrop.REQUEST_CROP);
                  else if(photoURI != null)
@@ -523,7 +529,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
              }
                 else {
                     Log.e("photoerror", "Request code: "+requestCode+" Result Code: "+resultCode);
-                    Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
                     photoURI = null;
             }
 
@@ -663,7 +669,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.tagpicker:
                 Intent intent=new Intent(this,TagPickerActivity.class);
-                startActivity(intent);
+                //startActivity(intent);
+                startActivityForResult(intent,PICKTAGS);
                 break;
 
                 default: break;
@@ -730,7 +737,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         category.setText("");
 
 
-        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl, isbn);
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl, isbn,tagList);
        // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
         // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
         firebaseFirestore.collection("bookads").document(madid).set(bookAds)

@@ -25,6 +25,7 @@ public String sellerpic;
 public String sellerfullname;
 public Integer viewcounter=0;
 private boolean isActive=true;
+private List<String> tagList;
 
     public Integer getViewcounter() {
         return viewcounter;
@@ -44,11 +45,10 @@ private boolean isActive=true;
 
     public String isbn;
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn) {
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn,List<String> tagList) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
-
         this.bookcategory = bookcategory;
         this.bookcoverpic = bookcoverpic;
         this.bookpublisher = bookpublisher;
@@ -60,12 +60,10 @@ private boolean isActive=true;
         this.sellerfullname = sellerfullname;
         this.bookpicslist = bookpicslist;
         this.isbn = isbn;
-        //this.viewcounter=getViewcounter();
-        //Log.i("helloclass",viewcounter+"");
-
+        this.tagList=tagList;
     }
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, Integer viewcounter, List<String> bookpicslist) {
+    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, Integer viewcounter, List<String> bookpicslist,List<String>tagList) {
         this.date = date;
         this.booktitle = booktitle;
         this.price = price;
@@ -80,6 +78,15 @@ private boolean isActive=true;
         this.sellerfullname = sellerfullname;
         this.viewcounter = viewcounter;
         this.bookpicslist = bookpicslist;
+        this.tagList=tagList;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public List<String> getTagList() {
+        return tagList;
     }
 
     public String getSellerfullname() {
@@ -128,8 +135,6 @@ private boolean isActive=true;
         this.booktitle = in.readString();
         this.bookcategory = in.readString();
         this.price = in.readString();
-
-
         this.bookpicslist = new ArrayList<String>();
         in.readList(bookpicslist,String.class.getClassLoader());
         this.adid=in.readString();
