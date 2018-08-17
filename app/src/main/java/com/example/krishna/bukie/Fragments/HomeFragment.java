@@ -8,7 +8,9 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,11 +45,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toast;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.Filter;
 import com.example.krishna.bukie.FilterActivity;
 import com.example.krishna.bukie.FullscreenScannerActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
+import com.example.krishna.bukie.Last_Message;
+import com.example.krishna.bukie.MyChatsStatus;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.Query;
 import com.example.krishna.bukie.R;
@@ -57,6 +62,11 @@ import com.example.krishna.bukie.Sort;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -123,7 +133,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean isSearch=false,togglesearch=false;
     private List<String> bookadslistPath=new ArrayList<>();
     private Map<String,Integer> adidMap=new HashMap<>();
-    private String searchType;
+    private String searchType,uid;
+    private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+    private ValueEventListener sellerListener,buyerListener;
+    private AHBottomNavigation bottomNavigation;
+    private com.google.firebase.database.Query buyerQuery,sellerQuery;
+    private int count=0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,13 +184,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         floatingActionButton.setOnClickListener(this);
         back=getActivity().findViewById(R.id.back);
         back.setOnClickListener(this);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        uid=sharedPreferences.getString("uid",null);
         getActivity().findViewById(R.id.searchscanicon).setOnClickListener(this);
+        bottomNavigation = (AHBottomNavigation) getActivity().findViewById(R.id.bottom_navigation);
 
+        bottomNavigation.setNotificationBackgroundColor(Color.parseColor("#F63D2B"));
+        //Toast.makeText(context, ""+uid, Toast.LENGTH_SHORT).show();
         getadvertisements();
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorAccent,
                 R.color.yellow,
-                R.color.deep_red);
+                R.color.light_blue);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -239,7 +259,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-
         return v;
     }
     public void searchAds(){
@@ -250,10 +269,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         bookAdsList.clear();
         bookadslistPath.clear();
         homeBookAdsAdapter.notifyDataSetChanged();
-        // bookAdsList=new ArrayList<>();
-        //bookadslistpath=new ArrayList<>();
-
-
 
         String query=searchbox.getText().toString().trim();
         if(query.length()>0){
@@ -270,7 +285,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
     private void getMyAdsPathsSearch(String query,String searchType) {
-        //if (searchType.equals("text"))
         Query query1=new Query(query,searchType);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RESTapiinterface.BASE_URL)
@@ -286,8 +300,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     bookadslistPath=response.body();
                     getMyAdsSearch(bookadslistPath);
                     progressDialog.dismiss();
-                    // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
-                    //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -329,8 +341,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 adidMap.put(bookAds.getAdid(),bookAdsList.size());
                                 bookAdsList.add(bookAds);
                                 homeBookAdsAdapter.notifyDataSetChanged();
-
-
                             }
                             swipeRefreshLayout.setRefreshing(false);
                         } else {
@@ -348,7 +358,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         {
             if(resultCode == RESULT_OK)
             {
-                //Toast.makeText(getContext(), "isbn:"+data.getExtras().getString("isbn"), Toast.LENGTH_SHORT).show();
+
                 searchbox.setText(data.getExtras().getString("isbn"));
                 searchType="isbn";
                 searchAds();
@@ -358,43 +368,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-  /* @Override
-        @Override
-    public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
-        menu2.clear();
-       inflater2=getActivity().getMenuInflater();
-        inflater2.inflate(R.menu.homemenu, menu2);
-       super.onCreateOptionsMenu(menu2,inflater2);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search:
-                View toolbarsearch=getActivity().findViewById(R.id.transitiontoolbar);
-                View search=getActivity().findViewById(R.id.search);
-                Pair<View, String> p1 = Pair.create(toolbarsearch, "search");
-               // Pair<View, String> p2 = Pair.create(search, "searchicon");
-                ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(getActivity(),p1);
-                Intent intent=new Intent(getActivity(), SearchActivity.class);
-                //intent.putExtra(SyncStateContract.Constants.KEY_ANIM_TYPE,)
-                ///Toast.makeText(getContext(), "search selected", Toast.LENGTH_SHORT)
-               //         .show();
-                startActivity(intent,activityOptions.toBundle());*/
-
-            /*case R.id.Filter:
-                showBottomSheetDialog();
-               /* Intent intent1=new Intent(getActivity(), FilterActivity.class);
-                startActivity(intent1);
-
-
-
-                break;
-            default:
-                break;
-        }
-        return true;
-    }*/
 
     private void showSearch() {
         final View view = getActivity().findViewById(R.id.header3);
@@ -610,8 +584,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 int k = Integer.parseInt(bookAds.getPrice().replace(" ", "").replace("₹", ""));
 
             if (k <= price) {
-              //  Log.e("kkr",k+" "+bookAdsList.size());
-               // Toast.makeText(context, "kkkkk"+k+"lll"+bookAdsList.size(), Toast.LENGTH_SHORT).show();
                 bookAdsList.add(bookAds);
                     homeBookAdsAdapter.notifyDataSetChanged();
                     if(dialog.isShowing())
@@ -719,7 +691,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             if (orderbyLocation == -2 && orderbyPrice != -2) {
                                 if (o1.getPrice().replace(" ", "").replace("₹", "").equals("") || o2.getPrice().replace(" ", "").replace("₹", "").equals(""))
                                     return 0;
-                                Log.e("kkkk", "ll" + o1.getPrice() + "ll");
                                 return orderbyPrice * (Integer.parseInt(o1.getPrice().replace(" ", "").replace("₹", "")) - Integer.parseInt(o2.getPrice().replace(" ", "").replace("₹", "")));
                             }
 
@@ -764,17 +735,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra("isHome", 1);
 
                 startActivity(intent);
-//        Intent intent=new Intent(getContext(), PostnewadActivity.class);
-//        intent.putExtra("isHome", 1);
-//
-//        startActivity(intent);
+
 
                 break;
             case R.id.filter:
                 if (toggleFilter == false)
                 {
 
-                    //Filter.setSelected(true);
                     showFilterBottomSheetDialog();
 
         }
@@ -804,7 +771,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     bookAdsList.clear();
                     homeBookAdsAdapter.notifyDataSetChanged();
                     bookAdsList.addAll(tempBookadsList);
-                   // Toast.makeText(context, ""+bookAdsList.size(), Toast.LENGTH_SHORT).show();
                     homeBookAdsAdapter.notifyDataSetChanged();
                     tempBookadsList.clear();
                     sort.setSelected(false);
@@ -830,12 +796,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
-                // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
 
             } else {
-                // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.CAMERA},
                         MY_PERMISSIONS_REQUEST_CAMERA);
@@ -849,7 +813,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
 
-        //homeBookAdsAdapter.notifyDataSetChanged();
         super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+
+
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
     }
 }

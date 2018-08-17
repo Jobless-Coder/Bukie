@@ -32,7 +32,7 @@ public class MyChatsStatus implements Parcelable {
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
-    public Last_Message last_message=null;
+    public Last_Message last_message;
     private String buyerid_isactive;
     private String sellerid_isactive;
 

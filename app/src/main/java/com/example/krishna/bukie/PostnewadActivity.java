@@ -79,7 +79,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private Uri photoURI;
     private FirebaseFirestore firebaseFirestore;
     private String mtitle,mcategory,mprice,mdate,madid, muid,mprofilepic,mfullname,mpublisher,mauthor,mdesc;
-    //private CollectionReference bookadscollection;
     private FloatingActionButton floatingActionButton;
     private ProgressDialog progressDialog;
     private DisplayMetrics metrics;
@@ -89,8 +88,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private String username;
     private DatabaseReference mDatabase;
     private BookAds bookAds;
-    int isHome;
-    Map<String, Object> bookadsmap;
+    private int isHome;
+    private Map<String, Object> bookadsmap;
     private DocumentReference bookref;
     private String isbn;
     private SquareImageAdapter adapter;
@@ -100,10 +99,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private TagPickerAdapter tagPickerAdapter;
     private ChipAdapter chipAdapter;
     private List<String> tagList;
-    //private List
-
     private FrameLayout frame;
     private ZXingScannerView scannerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -770,9 +768,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    /*public void goToImageActivity(View view) {
-        startActivity(new Intent(this, ImageCompressorTestActivity.class));
-    }*/
+
 
     private void selectImage(final int tag) {//1
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
@@ -836,23 +832,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         if(!getCameraPermissions())
             return;
         startActivityForResult(new Intent(this, FullscreenScannerActivity.class),SCANNER);
-//        ScannerDialog dialog = new ScannerDialog();
-//        dialog.showDialog(this, metrics.widthPixels, metrics.heightPixels, new ScannerResultListener() {
-//            @Override
-//            public void onSuccess(String code) {
-//                isbn = code;
-//                ((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
-//            }
-//        });
-
     }
 
-   /* @Override
-    protected void onPostResume() {
-        Intent intent=getIntent();
 
-
-
-        super.onPostResume();
-    }*/
 }

@@ -125,6 +125,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         setHasOptionsMenu(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+
        /* FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build();
@@ -320,6 +321,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
                 break;
             case R.id.editprofilebutton:
                 Intent intent=new Intent(getContext(),RegistrationActivity.class);
+                intent.putExtra("isProfile",true);
                 getContext().startActivity(intent);
                 break;
             case R.id.menu:

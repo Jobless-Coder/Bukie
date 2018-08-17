@@ -8,10 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,35 +23,37 @@ import java.util.List;
 public class ImageViewPagerAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
-    //private int [] images;
-    // private String [] desc;
-    // private BookAds bookAds;
     private  List<String> booksUrl=new ArrayList<>();
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((LinearLayout)object);
-        //super.destroyItem(container, position, object);
+        container.removeView((RelativeLayout)object);
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        //return super.instantiateItem(container, position);
-        // Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show();
+
         layoutInflater=(LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         View view=layoutInflater.inflate(R.layout.view_displayimage,container,false);
-
-
-        //bookAds.getBookpicslist().add(bookAds.getCoverpic());
         com.jsibbold.zoomage.ZoomageView imageView=view.findViewById(R.id.imageView);
-        //TextView textView=view.findViewById(R.id.textview);
-        //if()
+        final LinearLayout ll=view.findViewById(R.id.ll);
+        final me.zhanghai.android.materialprogressbar.MaterialProgressBar progressBar=view.findViewById(R.id.progress_bar);
         Glide.with(context)
-                .load(booksUrl.get(position))
+                .load(booksUrl.get(position)).listener(new RequestListener<String, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+
+                ll.setVisibility(View.GONE);
+                return false;
+            }
+        })
                 .into(imageView);
-        //imageView.setImageResource(images[position]);
-        // textView.setText(desc[position]);
         container.addView(view);
         return view;
     }
@@ -66,7 +72,7 @@ public class ImageViewPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return (view==(LinearLayout)object);
+        return (view==(RelativeLayout)object);
     }
 
 

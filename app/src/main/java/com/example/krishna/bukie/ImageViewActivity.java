@@ -30,6 +30,7 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
         Bundle bundle=getIntent().getExtras();
+        gotoleft.setVisibility(View.GONE);
         ImageUrl=bundle.getStringArrayList("url");
         if(ImageUrl.size()==1){
             gotoleft.setVisibility(View.GONE);
@@ -51,25 +52,33 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                 onBackPressed();
                 break;
             case R.id.gotoleft:
-                if(pos==0)
+                if(pos==1)
                 {
+                    gotoleft.setVisibility(View.GONE);
+                    viewPager.setCurrentItem(pos-1,true);
                     //viewPager.setCurrentItem(ImageUrl.size()-1,true);
 
                 }
 
                 else{
+                    if(pos==ImageUrl.size()-1)
+                        gotoright.setVisibility(View.VISIBLE);
                     viewPager.setCurrentItem(pos-1,true);
 
                 }
 
                 break;
             case R.id.gotoright:
-                if(pos==ImageUrl.size()-1){
-
+                if(pos==ImageUrl.size()-2){
+                gotoright.setVisibility(View.GONE);
+                    viewPager.setCurrentItem(pos + 1, true);
                 }
                    // viewPager.setCurrentItem(0,true);
-                else
-                    viewPager.setCurrentItem(pos+1,true);
+                else {
+                    if(pos==0)
+                        gotoleft.setVisibility(View.VISIBLE);
+                    viewPager.setCurrentItem(pos + 1, true);
+                }
 
                 break;
         }

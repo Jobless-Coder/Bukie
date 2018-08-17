@@ -144,10 +144,15 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 removeFromWishList();
             }
         });
+        gotoleft.setVisibility(View.GONE);
 
         booksUrl=new ArrayList<>();
         booksUrl.add(bookAds.getBookcoverpic());
         booksUrl.addAll(bookAds.getBookpicslist());
+        if(booksUrl.size()==1){
+            gotoleft.setVisibility(View.GONE);
+            gotoright.setVisibility(View.GONE);
+        }
         viewPagerAdapter=new ViewPagerAdapter(DisplayAdActivity.this,this,booksUrl);
 
         viewPager.setAdapter(viewPagerAdapter);
@@ -203,16 +208,11 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
 
-    /*@Override
-    public boolean onSupportNavigateUp(){
-        onBackPressed();
-        return true;
-    }*/
 
     @Override
     public void onBackPressed()
     {
-        //startActivity(new Intent(this, HomePageActivity.class));
+
         finish();
     }
     private void setFavouriteButton() {
@@ -318,7 +318,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         int pos=viewPager.getCurrentItem();;
         switch (v.getId()){
             case R.id.gotoleft:
-                if(pos!=0)
+               /* if(pos!=0)
                 {
                   //  viewPager.setCurrentItem(booksUrl.size()-1,true);
 
@@ -327,15 +327,34 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 //else{
                     viewPager.setCurrentItem(pos-1,true);
 
+                }*/
+                if(pos==1)
+                {
+                    gotoleft.setVisibility(View.GONE);
+                    viewPager.setCurrentItem(pos-1,true);
+                    //viewPager.setCurrentItem(ImageUrl.size()-1,true);
+
+                }
+
+                else{
+                    if(pos==booksUrl.size()-1)
+                        gotoright.setVisibility(View.VISIBLE);
+                    viewPager.setCurrentItem(pos-1,true);
+
                 }
 
                 break;
             case  R.id.gotoright:
-                if(pos!=booksUrl.size()-1)
-                  //  Log.i("kk","ll");
-                  //  viewPager.setCurrentItem(0,true);
-               // else
-                    viewPager.setCurrentItem(pos+1,true);
+
+                if(pos==booksUrl.size()-2){
+                    gotoright.setVisibility(View.GONE);
+                    viewPager.setCurrentItem(pos + 1, true);
+                }
+                else {
+                    if(pos==0)
+                        gotoleft.setVisibility(View.VISIBLE);
+                    viewPager.setCurrentItem(pos + 1, true);
+                }
                 break;
 
                 default:

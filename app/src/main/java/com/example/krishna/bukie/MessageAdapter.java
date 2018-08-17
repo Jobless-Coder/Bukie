@@ -411,9 +411,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
             cameraViewHolder.time1.setText(messageItem.getTime());
             if(messageItem.getStatus().equals("seen"))
-                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
+                cameraViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
-                contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
+                cameraViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
            // cameraViewHolder.cameraview1.setVisibility(View.VISIBLE);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic1);
            // holder.camerapic.setImageResource();

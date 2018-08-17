@@ -307,6 +307,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             {
                                 progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
+                                intent.putExtra("isProfile",true);
                                 intent.putExtra("signinmethod","google");
                                 startActivity(intent);
                                 finish();
@@ -470,6 +471,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
            // progressDialog.dismiss();
             Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
             intent.putExtra("signinmethod","email");
+            intent.putExtra("isProfile",true);
+
             startActivity(intent);
             finish();
         }
@@ -584,6 +587,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                 progressDialog.dismiss();
                                 Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
                                 intent.putExtra("signinmethod","facebook");
+                                intent.putExtra("isProfile",true);
                                 startActivity(intent);
                                 finish();
                             }
