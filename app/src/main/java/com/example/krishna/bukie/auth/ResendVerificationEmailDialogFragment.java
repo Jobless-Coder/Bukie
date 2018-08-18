@@ -25,7 +25,7 @@ public class ResendVerificationEmailDialogFragment extends DialogFragment {
         super.onAttach(activity);
         mListener = (DialogListener) activity;
         Bundle bundle = getArguments();
-        mUser = (FirebaseUser) bundle.getParcelable("user");
+        mUser = bundle.getParcelable("user");
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ResendVerificationEmailDialogFragment extends DialogFragment {
                         mListener.onClickDialogYes(mUser);
                     }
                 })
-               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+               .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // do nothing
                     }
