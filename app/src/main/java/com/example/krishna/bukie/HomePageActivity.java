@@ -42,6 +42,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class HomePageActivity extends AppCompatActivity {
     AHBottomNavigation bottomNavigation;
@@ -62,6 +64,7 @@ public class HomePageActivity extends AppCompatActivity {
     private com.google.firebase.database.Query buyerQuery,sellerQuery;
     private int count=0;
     private ValueEventListener sellerListener,buyerListener;
+    private HashSet<String> unseenChatList=new HashSet<>();
 
 
     @Override
@@ -295,21 +298,31 @@ public class HomePageActivity extends AppCompatActivity {
         buyerListener=new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                MyChatsStatus myChatsStatus=dataSnapshot.getValue(MyChatsStatus.class);
-                // Log.i("klli","seller "+myChatsStatus.getChatid());
-                Last_Message last_message=myChatsStatus.getLast_message();
-                Log.i("klli","ffff");
-                if(last_message!=null) {
-                    if (!last_message.getSender() .equals(uid)  && last_message.getStatus().equals( "sent")) {
-                        count += 1;
-                        bottomNavigation.setNotification("1", count);
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    MyChatsStatus myChatsStatus = postSnapshot.getValue(MyChatsStatus.class);
+                    Last_Message last_message = myChatsStatus.getLast_message();
+                    if (last_message != null) {
+                        if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")&&!unseenChatList.contains(myChatsStatus.getChatid()) ){
+                            count += 1;
+                            unseenChatList.add(myChatsStatus.getChatid());
+                            bottomNavigation.setNotification(count + "", 1);
 
-                    } else if (!last_message.getSender() .equals( uid) && last_message.getStatus().equals( "seen")&&count>0) {
-                        count--;
-                        bottomNavigation.setNotification("1", count);
-                    }
+                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())) {
+                            count--;
+                            unseenChatList.remove(myChatsStatus.getChatid());
+                            if (count == 0)
+                                bottomNavigation.setNotification("", 1);
+                            else
+
+                                bottomNavigation.setNotification("" + count, 1);
+                        }
+                    } /*else if (last_message.getSender() .equals( uid) &&count>0&&unseenChatList.contains(myChatsStatus.getChatid())) {
+
+                    count--;
+                    //unseenChatList.remove(myChatsStatus.getChatid());
+                    bottomNavigation.setNotification("1", count);
+                }*/
                 }
-
 
             }
 
@@ -327,11 +340,11 @@ public class HomePageActivity extends AppCompatActivity {
 
                     MyChatsStatus myChatsStatus = postSnapshot.getValue(MyChatsStatus.class);
                     Last_Message last_message = myChatsStatus.getLast_message();
-                    Log.i("klli", "ffff");
+                  //  Log.i("klli", "ffff");
                     if (last_message != null) {
 
 
-                        if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")) {
+                       /* if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")) {
                             count += 1;
                             bottomNavigation.setNotification(""+count, 1);
                             //  bottomNavigation.setNotification("1", 5);
@@ -343,6 +356,20 @@ public class HomePageActivity extends AppCompatActivity {
                             else
                                 // Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
                                 bottomNavigation.setNotification(""+count, 1);
+                        }*/
+                        if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")&&!unseenChatList.contains(myChatsStatus.getChatid()) ){
+                            count += 1;
+                            unseenChatList.add(myChatsStatus.getChatid());
+                            bottomNavigation.setNotification(count + "", 1);
+
+                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())) {
+                            count--;
+                            unseenChatList.remove(myChatsStatus.getChatid());
+                            if (count == 0)
+                                bottomNavigation.setNotification("", 1);
+                            else
+
+                                bottomNavigation.setNotification("" + count, 1);
                         }
                     }
                 }
