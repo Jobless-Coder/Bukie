@@ -3,9 +3,9 @@ package com.example.krishna.bukie;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+
+import com.example.krishna.bukie.auth.AuthActivity;
 
 public class HomeActivity extends AppCompatActivity {
 

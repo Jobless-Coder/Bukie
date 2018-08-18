@@ -1,4 +1,4 @@
-package com.example.krishna.bukie;
+package com.example.krishna.bukie.auth;
 
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
@@ -53,13 +53,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
 
-public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
+public class AuthActivity extends AppCompatActivity implements View.OnClickListener, ResendVerificationEmailDialogFragment.DialogListener {
 
     private static final String TAG = "AuthActivity";
     private static final int RC_SIGN_IN = 1;
 
     private View mFacebookBtn, mGoogleBtn, mSignInBtn, mSignUpBtn, mSendEmail;
-    private TextView mForgotPass, mVerifyBtn;
+    private TextView mForgotPass;
     private EditText mRegEmail, mRegPass, mRepRegPass, mSignInPass, mSignInEmail;
 
     private GoogleSignInClient mGoogleSignInClient;
@@ -68,13 +68,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     TextView hello, bye;
     boolean helloInMiddle;
     int big, small, hsm, hl, bsm, bl, loginsize, GREY;
-    LinearLayout loginflow, signflow, mVerifyEmail,verifyemail2;
+    LinearLayout loginflow, signflow;
     EditText forgotemail;
-    //String email, password,reppassword, signinmethod;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
     private CallbackManager mCallbackManager;
-    FirebaseUser currentUser;
     private FirebaseFirestore firebaseFirestore;
     LoginManager loginManager;
 
@@ -123,8 +121,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mSignUpBtn = findViewById(R.id.signupbtn);
 
         mSendEmail = findViewById(R.id.sendemail);
-        mVerifyEmail = findViewById(R.id.verifyemail);
-        mVerifyBtn = findViewById(R.id.verifybtn);
 
         mGoogleBtn.setOnClickListener(this);
         mFacebookBtn.setOnClickListener(this);
@@ -132,7 +128,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mSignInBtn.setOnClickListener(this);
         mSendEmail.setOnClickListener(this);
         mSignUpBtn.setOnClickListener(this);
-        mVerifyEmail.setOnClickListener(this);
 
         progressDialog = new ProgressDialog(this);
 
@@ -141,13 +136,12 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         //google sign in
 
 
-
         //facebooksign in
         signOut();
         mCallbackManager = CallbackManager.Factory.create();
         loginManager.registerCallback(
                 mCallbackManager,
-                new FacebookCallback < LoginResult > () {
+                new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // Handle success
@@ -167,7 +161,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
         );
-
 
 
         //animations
@@ -215,9 +208,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim3 = ObjectAnimator.ofFloat(hello, "textSize", small, big);
             ObjectAnimator anim4 = ObjectAnimator.ofFloat(bye, "textSize", big, small);
 
-            Log.e("dimensions","width: "+width+" login w: "+loginflow.getWidth()+" position "+loginflow.getX()+" left: "+loginflow.getLeft());
-            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "X", (width-loginflow.getWidth())/2);
-            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width*2);
+            Log.e("dimensions", "width: " + width + " login w: " + loginflow.getWidth() + " position " + loginflow.getX() + " left: " + loginflow.getLeft());
+            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "X", (width - loginflow.getWidth()) / 2);
+            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width * 2);
 
             ObjectAnimator anim7 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
             ObjectAnimator anim8 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);
@@ -245,8 +238,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim4 = ObjectAnimator.ofFloat(bye, "textSize", small, big);
 
 
-            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", -loginflow.getWidth()*2);
-            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "X", width / 2 - signflow.getWidth()/2);
+            ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", -loginflow.getWidth() * 2);
+            ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "X", width / 2 - signflow.getWidth() / 2);
 
             ObjectAnimator anim7 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
             ObjectAnimator anim8 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);
@@ -268,11 +261,11 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.signinbtn:
-                signInWithEmailPass();
-                break;
             case R.id.signupbtn:
                 signUpWithEmailPass();
+                break;
+            case R.id.signinbtn:
+                signInWithEmailPass();
                 break;
             case R.id.googlebtn:
                 googleSignIn();
@@ -310,131 +303,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * Signs in user into Firebase with email and password. Displays appropriate toast if either
-     * is empty.
-     **/
-    private void signInWithEmailPass() {
-        String email = mSignInEmail.getText().toString();
-        String pass = mSignInPass.getText().toString();
-
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        progressDialog.setMessage("Signing in ...");
-        progressDialog.show();
-        Log.d(TAG, "Signing in user with email/pass = " + email + "/" + pass);
-
-        firebaseAuth
-                .signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressDialog.dismiss();
-                        if (task.isSuccessful()) {
-                            handleSuccesfulSignIn();
-                        }
-                        else {
-                            Toast.makeText(AuthActivity.this, "Sign in failed", Toast.LENGTH_SHORT).show();
-                        }
-                        mSignInEmail.setText("");
-                        mSignInPass.setText("");
-                    }
-                })
-                .addOnCanceledListener(new OnCanceledListener() {
-                    @Override
-                    public void onCanceled() {
-                        progressDialog.dismiss();
-                    }
-                });
-    }
-
-
-    /**
-     * Handles successful Firebase sign in by fetching corresponding document from Firestore.
-     */
-    private void handleSuccesfulSignIn() {
-        final FirebaseUser user = firebaseAuth.getCurrentUser();
-        Log.d(TAG, "Successfully signed in user with uid " + user.getUid());
-
-        firebaseFirestore
-                .collection("users")
-                .whereEqualTo("uid", user.getUid())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot querySnapshot = task.getResult();
-                            int userCount = querySnapshot.size();
-                            switch (userCount) {
-                                case 0:
-                                    handleUnregisteredUser(user, "email");
-                                    break;
-                                case 1:
-                                    DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                                    handleRegisteredUser(document);
-                                    break;
-                                default:
-                                    throw new IllegalStateException("Cannot have more than one user with same uid");
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-    }
-
-
-    /**
-     * Handles an unregistered user. If the user does not have a verified email, displays an
-     * appropriate toast, else launches {@link RegistrationActivity}.
-     *
-     * @param user the Firebase user object.
-     * @param signInMethod a String representing the sign in method.
-     */
-    private void handleUnregisteredUser(FirebaseUser user, String signInMethod) {
-        Log.d(TAG, "Unregistered user with uid/isEmailVerified = " + user.getUid() + "/" + user.isEmailVerified());
-        if (!user.isEmailVerified()) {
-            Toast.makeText(AuthActivity.this, "Please verify your email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(AuthActivity.this, RegistrationActivity.class);
-        intent.putExtra("signinmethod", signInMethod);
-        startActivity(intent);
-        finish();
-    }
-
-
-    /**
-     * Handles a registered user. Extracts user details from provided document, saves them to
-     * shared preferences and launches {@link HomePageActivity}.
-     *
-     * @param document a document representing user details.
-     */
-    private void handleRegisteredUser(DocumentSnapshot document) {
-        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Fetched user document on sign in: " + document.getId() + " => " + document.getData());
-
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserInfo", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("uid", document.getData().get("uid").toString());
-        editor.putString("fullname", document.getData().get("fullname").toString());
-        editor.putString("profilepic", document.getData().get("profilepic").toString());
-        editor.commit();
-        Intent intent = new Intent(AuthActivity.this, HomePageActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
 
     /**
      * Sign up user to Firebase with email and password. Displays appropriate toasts if either is
@@ -464,23 +332,20 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.show();
         Log.d(TAG, "Signing up user with email/pass = " + email + "/" + pass);
 
-        firebaseAuth
-                .createUserWithEmailAndPassword(email, pass)
+        firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         progressDialog.dismiss();
                         if (task.isSuccessful()){
-                            Toast.makeText(AuthActivity.this, "Successfully signed up", Toast.LENGTH_SHORT).show();
-                            //loginflow.setVisibility();
-                            //mVerifyEmail.setVisibility(View.VISIBLE);
-                            handleSuccessfulSignUp();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            sendVerificationEmail(user, true);
                         } else {
-                            Toast.makeText(AuthActivity.this, "Could not register, pleass try again", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, "Could not register, please try again", Toast.LENGTH_SHORT).show();
                         }
+                        mRegEmail.setText("");
                         mRegPass.setText("");
                         mRepRegPass.setText("");
-                        mRegEmail.setText("");
                     }
                 })
                 .addOnCanceledListener(new OnCanceledListener() {
@@ -492,73 +357,204 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void handleSuccessfulSignUp() {
-        this.findViewById(R.id.loginscreen).setVisibility(View.GONE);
-        verifyemail2=findViewById(R.id.verifyemail);
-        verifyemail2.setVisibility(View.VISIBLE);
-        final int[] k = {0};
-        verifyemail2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Log.i("nibbaaa","jkl");
-                //  Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null && user.isEmailVerified()){
-                    verifyEmail(k[0]);
-                    //   Log.i("nibbaaa","hellol");
-                }
-            }
-        });
-        if (!firebaseAuth.getCurrentUser().isEmailVerified()){
-            verifyEmail( k[0]++);
-        }
-        /*else {
-            Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
-
-    }
-
-    private void verifyEmail(int k){
-        FirebaseAuth.getInstance().getCurrentUser().reload();
-        //firebaseAuth=FirebaseAuth.getInstance();
-        final FirebaseUser user=firebaseAuth.getCurrentUser();
-        Log.i("verify",user.isEmailVerified()+"");
-        if(user.isEmailVerified())
-        {
-            // progressDialog.dismiss();
-            Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
-            intent.putExtra("signinmethod","email");
-            intent.putExtra("isProfile",true);
-            startActivity(intent);
-            finish();
-        }
-        if(k!=0){
-            TextView btn=this.findViewById(R.id.verifybtn);
-            btn.setText("Resend Email");
-            Log.i("nibbaa","k="+k);
-        }
-
+    /**
+     * Sends a verification email to the email registered with this user. Also shifts to sign in
+     * screen if {@code moveToSignInScreen} is {@code true}.
+     *
+     * @param user               the Firebase user object.
+     * @param moveToSignInScreen whether to move to the sign in screen
+     */
+    private void sendVerificationEmail(final FirebaseUser user, final boolean moveToSignInScreen) {
+        Log.d(TAG, "Sending verification email to " + user.getEmail());
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-
-
-                            Toast.makeText(AuthActivity.this, "Email sent to user, please verify!", Toast.LENGTH_SHORT).show();
-                            signOut();
-                            // Log.d("nibbaa1", "Email sent.");
-
-                        }
-                        else {
-                            //  Log.d("nibbaa1", "Email not sent.");
+                            Toast.makeText(AuthActivity.this, "Verification email sent, please check your inbox", Toast.LENGTH_SHORT).show();
+                            if (moveToSignInScreen) {
+                                translate(hello);
+                                mSignInEmail.setText(user.getEmail());
+                            }
+                        } else {
+                            Toast.makeText(AuthActivity.this, "Failed to send verification email, please retry", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
     }
+
+
+    /**
+     * Signs in user into Firebase with email and password. Displays appropriate toast if either
+     * is empty.
+     **/
+    private void signInWithEmailPass() {
+        String email = mSignInEmail.getText().toString();
+        String pass = mSignInPass.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(pass)) {
+            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressDialog.setMessage("Signing in...");
+        progressDialog.show();
+        Log.d(TAG, "Signing in user with email/pass = " + email + "/" + pass);
+
+        firebaseAuth.signInWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
+                        if (task.isSuccessful()) {
+                            handleSuccesfulSignIn(firebaseAuth.getCurrentUser());
+                        } else {
+                            Toast.makeText(AuthActivity.this, "Sign in failed", Toast.LENGTH_SHORT).show();
+                        }
+                        mSignInPass.setText("");
+                    }
+                })
+                .addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
+
+    /**
+     * Handles successful Firebase sign in by fetching corresponding document from Firestore.
+     *
+     * @param user the Firebase user object.
+     */
+    private void handleSuccesfulSignIn(final FirebaseUser user) {
+        Log.d(TAG, "Successfully signed in user with uid " + user.getUid());
+        firebaseFirestore.collection("users")
+                .whereEqualTo("uid", user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            int userCount = querySnapshot.size();
+                            switch (userCount) {
+                                case 0:
+                                    reloadAndHandleUnregisteredUser(user, "email");
+                                    break;
+                                case 1:
+                                    DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                                    handleRegisteredUser(document);
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Cannot have more than one user with same uid");
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+
+    /**
+     * Reloads the Firebase user object and calls {@link #handleUnregisteredUser}. Intended for use
+     * when rechecking if email has been verified.
+     *
+     * @param user         the Firebase user object.
+     * @param signInMethod a String representing the sign in method.
+     */
+    private void reloadAndHandleUnregisteredUser(final FirebaseUser user, final String signInMethod) {
+        progressDialog.setMessage("Verifying account...");
+        progressDialog.show();
+        user.reload()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "FirebaseUser reload failed: " + task.getException());
+                        }
+                        handleUnregisteredUser(user, signInMethod);
+                    }
+                });
+    }
+
+
+    /**
+     * Handles an unregistered user. If the user does not have a verified email, displays a dialog
+     * allowing the user to resend the verification email, otherwise launches a
+     * {@link RegistrationActivity}.
+     *
+     * @param user         the Firebase user object.
+     * @param signInMethod a String representing the sign in method.
+     */
+    private void handleUnregisteredUser(FirebaseUser user, String signInMethod) {
+        Log.d(TAG, "Unregistered user with uid/isEmailVerified = " + user.getUid() + "/" + user.isEmailVerified());
+        if (!user.isEmailVerified()) {
+            showResendVerificationEmailDialog(user);
+            return;
+        }
+
+        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(AuthActivity.this, RegistrationActivity.class);
+        intent.putExtra("signinmethod", signInMethod);
+        startActivity(intent);
+        finish();
+    }
+
+
+    /**
+     * Displays a dialog which allows the user to choose to receive a verification email.
+     *
+     * @param user the Firebase user object to be passed to the dialog fragment.
+     */
+    private void showResendVerificationEmailDialog(FirebaseUser user) {
+        ResendVerificationEmailDialogFragment dialog = new ResendVerificationEmailDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "email_verification");
+    }
+
+
+    /**
+     * Overrides {@link ResendVerificationEmailDialogFragment.DialogListener#onClickDialogYes}.
+     *
+     * @param user the Firebase user object to send the email to.
+     */
+    @Override
+    public void onClickDialogYes(FirebaseUser user) {
+        sendVerificationEmail(user, false);
+    }
+
+
+    /**
+     * Handles a registered user. Extracts user details from provided document, saves them to
+     * shared preferences and launches {@link HomePageActivity}.
+     *
+     * @param document a document representing user details.
+     */
+    private void handleRegisteredUser(DocumentSnapshot document) {
+        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Fetched user document on sign in: " + document.getId() + " => " + document.getData());
+
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserInfo", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("uid", document.getData().get("uid").toString());
+        editor.putString("fullname", document.getData().get("fullname").toString());
+        editor.putString("profilepic", document.getData().get("profilepic").toString());
+        editor.commit();
+        Intent intent = new Intent(AuthActivity.this, HomePageActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     //google sign in
     private void googleSignIn() {
@@ -667,13 +663,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 progressDialog.dismiss();
             }
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        currentUser = firebaseAuth.getCurrentUser();
-        // updateUI(currentUser);
     }
 
     //facebook sign in

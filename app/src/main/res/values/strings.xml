@@ -13,4 +13,10 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <!--string name="default_web_client_id">743515921060-qb58ds2qtmq6mflbuejv23hrt8h4aa5j.apps.googleusercontent.com</1string-->
+
+    <string name="resend_verification_email">
+        Your email must be verified before signing in. Please check your inbox.\n\nWould you like to resend the verification email?
+    </string>
+    <string name="yes">YES</string>
+    <string name="cancel">CANCEL</string>
 </resources>

@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/violet"
-    tools:context=".AuthActivity">
+    tools:context=".auth.AuthActivity">
     <!--TextView
         android:textSize="16sp"
         android:textStyle="bold"
@@ -338,21 +338,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <include layout="@layout/layout_forgotpassword"></include>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/verifyemail"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/verifybtn"
-                android:background="@color/white"
-                android:text="Verify email"
-                android:padding="20dp"
-                android:textColor="@color/violet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
 
 </LinearLayout>
