@@ -34,6 +34,9 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private static final String TAG = "MyFirebaseIIDService";
     String uid;
 
+    public MyFirebaseInstanceIDService() {
+    }
+
     public MyFirebaseInstanceIDService(String uid) {
         this.uid=uid;
     }

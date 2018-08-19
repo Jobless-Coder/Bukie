@@ -8,7 +8,7 @@ public class MyChatsStatus implements Parcelable {
     private String buyerid;
     private String adid;
 
-    public Last_Message getLast_message() {
+    public LastMessage getLast_message() {
         return last_message;
     }
 
@@ -25,14 +25,14 @@ public class MyChatsStatus implements Parcelable {
 
     private String sellerpic;
 
-    public void setLast_message(Last_Message last_message) {
+    public void setLast_message(LastMessage last_message) {
         this.last_message = last_message;
     }
 
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
-    public Last_Message last_message;
+    public LastMessage last_message;
     private String buyerid_isactive;
     private String sellerid_isactive;
 
@@ -47,7 +47,7 @@ public class MyChatsStatus implements Parcelable {
 
 
 
-    public MyChatsStatus(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname, Last_Message last_message) {
+    public MyChatsStatus(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname, LastMessage last_message) {
         this.sellerid = sellerid;
         this.buyerid = buyerid;
         this.adid = adid;
@@ -99,7 +99,7 @@ public class MyChatsStatus implements Parcelable {
         sellerpic=in.readString();
         sellerfullname = in.readString();
         buyerfullname = in.readString();
-       // last_message= (Last_Message) in.readValue(Last_Message.class.getClassLoader());
+       // last_message= (LastMessage) in.readValue(LastMessage.class.getClassLoader());
     }
 
     public static final Creator<MyChatsStatus> CREATOR = new Creator<MyChatsStatus>() {
@@ -167,7 +167,7 @@ public class MyChatsStatus implements Parcelable {
         dest.writeString(sellerpic);
         dest.writeString(sellerfullname);
         dest.writeString(buyerfullname);
-       // dest.writeValue(Last_Message.class);
+       // dest.writeValue(LastMessage.class);
     }
 
     public void setSellerfullname(String sellerfullname) {

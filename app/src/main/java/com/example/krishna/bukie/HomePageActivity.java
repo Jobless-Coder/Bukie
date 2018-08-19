@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -37,12 +36,8 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class HomePageActivity extends AppCompatActivity {
@@ -300,7 +295,7 @@ public class HomePageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     MyChatsStatus myChatsStatus = postSnapshot.getValue(MyChatsStatus.class);
-                    Last_Message last_message = myChatsStatus.getLast_message();
+                    LastMessage last_message = myChatsStatus.getLast_message();
                     if (last_message != null) {
                         if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")&&!unseenChatList.contains(myChatsStatus.getChatid()) ){
                             count += 1;
@@ -339,7 +334,7 @@ public class HomePageActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
 
                     MyChatsStatus myChatsStatus = postSnapshot.getValue(MyChatsStatus.class);
-                    Last_Message last_message = myChatsStatus.getLast_message();
+                    LastMessage last_message = myChatsStatus.getLast_message();
                   //  Log.i("klli", "ffff");
                     if (last_message != null) {
 

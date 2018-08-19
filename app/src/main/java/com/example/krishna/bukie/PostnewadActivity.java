@@ -98,7 +98,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private RecyclerView recyclerView;
     private TagPickerAdapter tagPickerAdapter;
     private ChipAdapter chipAdapter;
-    private List<String> tagList;
+    private List<String> tagList=new ArrayList<>();
     private FrameLayout frame;
     private ZXingScannerView scannerView;
 
@@ -660,6 +660,14 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                             uploadImage(link, false);
                         }
                     }
+                    if(chipList.size()<3){
+                        Toast.makeText(this, "Enter atleast 3 tags", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        for (Tuple tuple:chipList){
+                            tagList.add(tuple.getText());
+                        }
+                    }
                 }
                 else {
                 editAndPostMyads();
@@ -707,11 +715,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                        {
                            if(isHome==1)
                             postAd();
-                           /*else {
-                               bookadsmap.put("bookcoverpic",coverurl);
-                               bookadsmap.put("bookpicslist",bookAds.getBookpicslist());
-                               bookref.update(bookadsmap);
-                           }*/
+
 
 
 

@@ -16,18 +16,22 @@
 
 package com.example.krishna.bukie;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -35,6 +39,12 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -80,7 +90,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            sendNotification(remoteMessage.getNotification());
+            try {
+                sendNotification(remoteMessage.getNotification());
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -114,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(RemoteMessage.Notification messageBody) {
+    private void sendNotification(RemoteMessage.Notification messageBody) throws ExecutionException, InterruptedException {
       //  messageBody.
         Intent intent = new Intent(this, HomePageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -123,9 +139,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+       // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
+        Bitmap bitmap;
+        if(messageBody.getIcon()!=null)
+         bitmap= Glide.with(getApplication()).load(messageBody.getIcon()).asBitmap().into(50,50).get();
+        else
+             bitmap= Glide.with(getApplication()).load(R.drawable.profile).asBitmap().into(50,50).get();
+
+
+
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.profile)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setLargeIcon(bitmap)
                         .setContentTitle(messageBody.getTitle())
                         .setContentText(messageBody.getBody())
                         .setAutoCancel(true)
@@ -145,17 +171,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+    public Bitmap getBitmapFromURL(String strURL) {
+        try {
+            URL url = new URL(strURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
-        /*SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        String uid=sharedPreferences.getString("uid",null);
-        if(uid!=null)
-        {
-            FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
-        }
-        Log.e("Token: ",token);*/
+
 
     }
 }

@@ -4,7 +4,6 @@ package com.example.krishna.bukie.Fragments;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -25,13 +24,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -39,37 +33,26 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.example.krishna.bukie.BookAds;
-import com.example.krishna.bukie.Filter;
-import com.example.krishna.bukie.FilterActivity;
 import com.example.krishna.bukie.FullscreenScannerActivity;
 import com.example.krishna.bukie.HomeBookAdsAdapter;
-import com.example.krishna.bukie.Last_Message;
-import com.example.krishna.bukie.MyChatsStatus;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.Query;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.RESTapiinterface;
-import com.example.krishna.bukie.SearchActivity;
-import com.example.krishna.bukie.Sort;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.firestore.ListenerRegistration;
@@ -81,7 +64,6 @@ import com.google.firebase.storage.StorageReference;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -111,8 +93,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ViewGroup toolbargroup;
     private View toolbarview;
     private BookItemClickListener bookItemClickListener;
-    private DrawerLayout mDrawerLayout;
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
+   // private DrawerLayout mDrawerLayout;
+    //private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
     private FirebaseFirestore firebaseFirestore;
     private HomeBookAdsAdapter homeBookAdsAdapter;
     private ListenerRegistration listenerRegistration;
@@ -120,26 +102,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private CollectionReference db;
     private DiscreteSeekBar price,location;
     private TextView price1,location1;
-    private List<String> searchBookadsList=new ArrayList<>();
+    private List<String> searchPathList =new ArrayList<>();
     private View sort,filter,search,back;
     private boolean toggleSort,toggleFilter;
     private RadioButton option1,option2,option3,option4,option5;
     private RadioGroup radioGroup,radioGroup2;
     private int orderbyLocation=-2,orderbyPrice=-2;
-    private List<String> filterSortBookadsListPath=new ArrayList<>();
     private List<BookAds> tempBookadsList=new ArrayList<>();
     private ProgressDialog progressDialog;
     private BottomSheetDialog dialog;
     private boolean isSearch=false,togglesearch=false;
-    private List<String> bookadslistPath=new ArrayList<>();
+   // private List<String> bookadslistPath=new ArrayList<>();
     private Map<String,Integer> adidMap=new HashMap<>();
     private String searchType,uid;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-    private ValueEventListener sellerListener,buyerListener;
+    //private ValueEventListener sellerListener,buyerListener;
     private AHBottomNavigation bottomNavigation;
-    private com.google.firebase.database.Query buyerQuery,sellerQuery;
+   // private com.google.firebase.database.Query buyerQuery,sellerQuery;
+    private List<BookAds> sortAdsList=new ArrayList<>();
+    private List<BookAds> filterAdsList=new ArrayList<>();
+    private List<BookAds> searchAdsList=new ArrayList<>();
     private int count=0;
-
+    private LinearLayout linearLayout;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,6 +145,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         filter.setOnClickListener(this);
         sort.setSelected(false);
         filter.setSelected(false);
+        linearLayout=v.findViewById(R.id.error);
         searchbox=getActivity().findViewById(R.id.searchbox);
         searchbtn=getActivity().findViewById(R.id.searchbtn);
         searchbtn.setOnClickListener(this);
@@ -190,7 +175,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         bottomNavigation = (AHBottomNavigation) getActivity().findViewById(R.id.bottom_navigation);
 
         bottomNavigation.setNotificationBackgroundColor(Color.parseColor("#F63D2B"));
-        //Toast.makeText(context, ""+uid, Toast.LENGTH_SHORT).show();
         getadvertisements();
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.colorAccent,
@@ -264,14 +248,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void searchAds(){
         InputMethodManager in = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(searchbox.getWindowToken(), 0);
-        tempBookadsList.clear();
-        tempBookadsList.addAll(bookAdsList);
+        searchAdsList.clear();
+        searchAdsList.addAll(bookAdsList);
         bookAdsList.clear();
-        bookadslistPath.clear();
+        searchPathList.clear();
         homeBookAdsAdapter.notifyDataSetChanged();
 
         String query=searchbox.getText().toString().trim();
         if(query.length()>0){
+            linearLayout.setVisibility(View.GONE);
             // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
             progressDialog.show();
             getMyAdsPathsSearch(query,searchType);
@@ -297,10 +282,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call<List<String>> call, Response<List<String>> response) {
                 if(response.code()==200&&response.body()!=null) {
-                    bookadslistPath=response.body();
-                    getMyAdsSearch(bookadslistPath);
+                    searchPathList =response.body();
+                    if(searchPathList.size()>0) {
+                        //swipeRefreshLayout.setEnabled(false);
+                        getMyAdsSearch(searchPathList);
+                    }
+                    else {
+                        linearLayout.setVisibility(View.VISIBLE);
+                    }
                     progressDialog.dismiss();
-
                 }
 
             }
@@ -314,13 +304,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void getMyAdsSearch(List<String> bookadslistPath) {
+    private void getMyAdsSearch(List<String> searchBookadsList) {
         bookAdsList.clear();
         homeBookAdsAdapter.notifyDataSetChanged();
-        for (String s:bookadslistPath){
-            //adidMap.
+        for (String s:searchBookadsList){
             if(adidMap.containsKey(s)){
-                bookAdsList.add(tempBookadsList.get(adidMap.get(s)));
+                bookAdsList.add(searchAdsList.get(adidMap.get(s)));
                 homeBookAdsAdapter.notifyDataSetChanged();
             }
         }
@@ -358,7 +347,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         {
             if(resultCode == RESULT_OK)
             {
-
                 searchbox.setText(data.getExtras().getString("isbn"));
                 searchType="isbn";
                 searchAds();
@@ -372,33 +360,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void showSearch() {
         final View view = getActivity().findViewById(R.id.header3);
-
-
         int w = view.getWidth();
         int h = view.getHeight();
-
         int endRadius = (int) Math.hypot(w, h);
-
         int cx = (int) (search.getX() + (search.getWidth()/2));
         int cy = (int) (search.getY())+ search.getHeight()/2;
-
-
         if(!isSearch){
+            swipeRefreshLayout.setEnabled(false);
             Animator revealAnimator = ViewAnimationUtils.createCircularReveal(view, cx,cy, 0, endRadius);
-
             view.setVisibility(View.VISIBLE);
             revealAnimator.setDuration(300);
             revealAnimator.start();
             isSearch=true;
 
         } else {
+            swipeRefreshLayout.setEnabled(true);
             searchbox.setText("");
-            if(tempBookadsList.size()>0) {
-                //Toast.makeText(context, ""+tempBookadsList.size(), Toast.LENGTH_SHORT).show();
+            if(searchAdsList.size()>0) {
                 bookAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
-                bookAdsList.addAll(tempBookadsList);
-                tempBookadsList.clear();
+                bookAdsList.addAll(searchAdsList);
+                searchAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
             }
 
@@ -409,10 +391,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    //dialog.dismiss();
                     view.setVisibility(View.GONE);
                     isSearch=false;
-
                 }
             });
             anim.setDuration(300);
@@ -420,6 +400,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             searchbox.requestFocus();
         }
     }
+    ///Initially written for filter/sort through cloud function/rest api
     /*public void filterorSortAds(Query query){
         progressDialog.setMessage("wait..");
         progressDialog.show();
@@ -511,7 +492,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                price1.setText(value+"");
-               // Toast.makeText(context, ""+value, Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -551,15 +532,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     toggleFilter = true;
 
                     swipeRefreshLayout.setEnabled(false);
-                    tempBookadsList.clear();
-                    tempBookadsList.addAll(bookAdsList);
-                    bookAdsList.clear();
+
+                        filterAdsList.clear();
+                        filterAdsList.addAll(bookAdsList);
+                        bookAdsList.clear();
+
                     homeBookAdsAdapter.notifyDataSetChanged();
                     filterBookads(location,price);
 
                 }
-
-
 
                 dialog.dismiss();
 
@@ -572,15 +553,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void filterBookads(int location, int price) {
         if(price==1000){
-            //Toast.makeText(context, "kkk", Toast.LENGTH_SHORT).show();
-            bookAdsList.addAll(tempBookadsList);
+
+            bookAdsList.addAll(filterAdsList);
             homeBookAdsAdapter.notifyDataSetChanged();
             dialog.dismiss();
 
         }
         else {
 
-            for (BookAds bookAds : tempBookadsList) {
+            for (BookAds bookAds : filterAdsList) {
                 int k = Integer.parseInt(bookAds.getPrice().replace(" ", "").replace("₹", ""));
 
             if (k <= price) {
@@ -635,12 +616,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId){
-                    /*case R.id.option1:
-
-                        break;*/
                     case R.id.option2:
                         orderbyPrice=1;
-                       // option3.setChecked(false);
                         option1.setChecked(false);
                         //price low to high
                         break;
@@ -679,27 +656,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 sort.setSelected(true);
                 toggleSort=true;
-                tempBookadsList.clear();
-                tempBookadsList.addAll(bookAdsList);
+                sortAdsList.clear();
+                sortAdsList.addAll(bookAdsList);
+                sortAds(bookAdsList);
 
 
-                if(orderbyLocation==-2||orderbyPrice==-2) {
-
-                    Collections.sort(bookAdsList, new Comparator<BookAds>() {
-                        @Override
-                        public int compare(BookAds o1, BookAds o2) {
-                            if (orderbyLocation == -2 && orderbyPrice != -2) {
-                                if (o1.getPrice().replace(" ", "").replace("₹", "").equals("") || o2.getPrice().replace(" ", "").replace("₹", "").equals(""))
-                                    return 0;
-                                return orderbyPrice * (Integer.parseInt(o1.getPrice().replace(" ", "").replace("₹", "")) - Integer.parseInt(o2.getPrice().replace(" ", "").replace("₹", "")));
-                            }
-
-
-                            return 0;
-                        }
-                    });
-                    homeBookAdsAdapter.notifyDataSetChanged();
-                }
 
                 dialog.dismiss();
 
@@ -707,6 +668,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             }
         });
+
+    }
+    public void sortAds(List<BookAds> bookAdsList1){
+        if(orderbyLocation==-2||orderbyPrice==-2) {
+
+
+            Collections.sort(bookAdsList1, new Comparator<BookAds>() {
+                @Override
+                public int compare(BookAds o1, BookAds o2) {
+                    if (orderbyLocation == -2 && orderbyPrice != -2) {
+                        if (o1.getPrice().replace(" ", "").replace("₹", "").equals("") || o2.getPrice().replace(" ", "").replace("₹", "").equals(""))
+                            return 0;
+                        return orderbyPrice * (Integer.parseInt(o1.getPrice().replace(" ", "").replace("₹", "")) - Integer.parseInt(o2.getPrice().replace(" ", "").replace("₹", "")));
+                    }
+
+
+                    return 0;
+                }
+            });
+            homeBookAdsAdapter.notifyDataSetChanged();
+        }
 
     }
 
@@ -746,13 +728,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         }
                 else {
-                    swipeRefreshLayout.setEnabled(true);
+                    if(!isSearch&&!toggleSort) {
+                      //  Toast.makeText(context, ""+toggleSort+""+isSearch, Toast.LENGTH_SHORT).show();
+                        swipeRefreshLayout.setEnabled(true);
+                    }
                     bookAdsList.clear();
                     homeBookAdsAdapter.notifyDataSetChanged();
-                    bookAdsList.addAll(tempBookadsList);
-                  //  Toast.makeText(context, ""+bookAdsList.size(), Toast.LENGTH_SHORT).show();
+                    bookAdsList.addAll(filterAdsList);
                     homeBookAdsAdapter.notifyDataSetChanged();
-                    tempBookadsList.clear();
+                    filterAdsList.clear();
                     filter.setSelected(false);
                     toggleFilter=false;
                     //tempBookadsList.clear();
@@ -767,13 +751,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 }
                 else {
+                    if(!isSearch&&!toggleFilter)
                     swipeRefreshLayout.setEnabled(true);
                     bookAdsList.clear();
                     homeBookAdsAdapter.notifyDataSetChanged();
-                    bookAdsList.addAll(tempBookadsList);
+
+
+                        bookAdsList.addAll(sortAdsList);
+
                     homeBookAdsAdapter.notifyDataSetChanged();
-                    tempBookadsList.clear();
+                    sortAdsList.clear();
                     sort.setSelected(false);
+
                     toggleSort=false;
                 }
                 break;
@@ -810,22 +799,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return true;
 
     }
-    @Override
-    public void onResume() {
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
 
 
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
-    }
 }

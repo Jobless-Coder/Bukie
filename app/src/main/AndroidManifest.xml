@@ -76,7 +76,6 @@
             android:theme="@style/NoActionTheme" />
         <!-- activity android:name=".LoginActivity" / -->
         <activity android:name=".ChatActivity" />
-        <activity android:name=".HomeActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
@@ -91,8 +90,7 @@
                 <data
                     android:host="books.jc"
                     android:scheme="https" />
-                android:scheme="https"
-                />
+
             </intent-filter>
         </activity>
         <activity android:name=".PostnewadActivity" />
@@ -119,28 +117,10 @@
         <activity android:name=".ImageCompressorTestActivity" />
         <activity android:name=".SearchActivity">
 
-            <!--
-            android:parentActivityName=".HomePageActivity"intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HomePageActivity" />
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable" /
-            -->
 
-
-            <!--
-                meta-data android:name="android.app.default_searchable"
-                android:value=".HomePageActivity" /
-            -->
 
         </activity>
-        <activity android:name=".FilterActivity"></activity>
-        <activity android:name=".TagPickerActivity"></activity>
-        <activity android:name=".FilterActivity" />
-        <activity android:name=".Tag_Picker_Activity" />
+        <activity android:name=".TagPickerActivity"/>
         <activity
             android:name=".FullscreenScannerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

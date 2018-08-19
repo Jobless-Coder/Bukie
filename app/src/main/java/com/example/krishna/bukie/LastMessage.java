@@ -1,10 +1,10 @@
 package com.example.krishna.bukie;
 
-public class Last_Message {
+public class LastMessage {
     private String message_body,type,sender,status;
     private Long time;
 
-    /*protected Last_Message(Parcel in) {
+    /*protected LastMessage(Parcel in) {
         message_body = in.readString();
         time = in.readString();
         type = in.readString();
@@ -12,15 +12,15 @@ public class Last_Message {
         status = in.readString();
     }
 
-    public final Creator<Last_Message> CREATOR = new Creator<Last_Message>() {
+    public final Creator<LastMessage> CREATOR = new Creator<LastMessage>() {
         @Override
-        public Last_Message createFromParcel(Parcel in) {
-            return new Last_Message(in);
+        public LastMessage createFromParcel(Parcel in) {
+            return new LastMessage(in);
         }
 
         @Override
-        public Last_Message[] newArray(int size) {
-            return new Last_Message[size];
+        public LastMessage[] newArray(int size) {
+            return new LastMessage[size];
         }
     };*/
 
@@ -40,12 +40,12 @@ public class Last_Message {
     public Long getTime() {
         return time;
     }
-    public Last_Message(){
+    public LastMessage(){
 
     }
 
 
-    public Last_Message(String message_body, Long time, String type, String sender, String status) {
+    public LastMessage(String message_body, Long time, String type, String sender, String status) {
         this.message_body = message_body;
         this.time = time;
         this.type = type;

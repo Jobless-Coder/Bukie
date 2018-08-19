@@ -3,26 +3,30 @@ package com.example.krishna.bukie;
 public class Query {
     private String search;
 
-    private Sort[] sort=new Sort[0];
-    private Filter[] filter=new Filter[0];
+    /*private Sort[] sort=new Sort[0];
+    private Filter[] filter=new Filter[0];*/
     private String type;
 
-    public Query(String search, Sort[] sort, Filter[] filter) {
+   /* public Query(String search, Sort[] sort, Filter[] filter) {
         this.search = search;
         this.sort = sort;
         this.filter = filter;
-    }
+    }*/
 
     public Query(String search, String type) {
         this.search = search;
         this.type = type;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public String getSearch() {
         return search;
     }
 
-    public Sort[] getSort() {
+   /* public Sort[] getSort() {
         return sort;
     }
 
@@ -41,7 +45,7 @@ public class Query {
     }
     public String toString2(){
         return "search: "+getSearch()+" sort: "+getSort().toString()+" filter: "+getFilter().toString();
-    }
+    }*/
 }
 
 

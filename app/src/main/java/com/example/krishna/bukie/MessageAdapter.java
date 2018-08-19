@@ -120,14 +120,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         return null;
     }
-    /*private void resizeGridView(GridView gridView, int items, int columns) {
-        ViewGroup.LayoutParams params = gridView.getLayoutParams();
-        int oneRowHeight = gridView.getHeight();
-        int rows = (int) (items / columns);
-        params.height = oneRowHeight * rows;
-        params.width=100;
-        gridView.setLayoutParams(params);
-    }*/
+
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
@@ -156,10 +149,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
         SharedPreferences sharedPreferences=context.getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         String uid=sharedPreferences.getString("uid",null);
         Resources r = context.getResources();
-
-       // float set= (float) Math.ceil(messageItem.getImageurl().size()/3);
-       // float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100*set, r.getDisplayMetrics());
-
 
     if(position>0) {
         previous_user=messageItemList.get(position - 1).getUid();
@@ -274,6 +263,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
             contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             contactViewHolder.time1.setText(messageItem.getTime());
+            if(messageItem.getContact().getPicture()!=null)
+                Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto1);
+
             //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
             if(messageItem.getStatus().equals("seen"))
@@ -337,15 +329,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
 
-                //galleryVieHolder.gridView1.setColumnWidth();
-            }
-           /* else if(messageItem.getImageurl().size()==1){
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
-                float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, r.getDisplayMetrics());
-                galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int)height));
-                galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
 
-            }*/
+            }
+
             else {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 315, r.getDisplayMetrics());
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -354,9 +340,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
 
         }
-        /*else {
-            galleryVieHolder.rlson1.setVisibility(View.GONE);
-        }*/
 
     }
     else if(current_user.compareTo(uid)==0&&(current_user.compareTo(previous_user)!=0)){
@@ -397,6 +380,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.time1.setText(messageItem.getTime());
             //contactViewHolder.contactview1.setVisibility(View.VISIBLE);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
+            if(messageItem.getContact().getPicture()!=null)
+                Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto1);
+
             if(messageItem.getStatus().equals("seen"))
                 contactViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
@@ -426,12 +412,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location1);
             Glide.with(context).load(mapurl).into(locationViewHolder.location1);
-            Log.i("mapppy",mapurl);
+          //  Log.i("mapppy",mapurl);
             if(messageItem.getStatus().equals("seen"))
                 locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
                 locationViewHolder.seenicon.setImageResource(R.drawable.ic_text_sent);
-            //locationViewHolder.locationview1.setVisibility(View.VISIBLE);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
         }
         if(messageItem.getType().compareTo("gallery")==0){
@@ -450,22 +435,16 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView1.setNumColumns(2);
 
-                //galleryVieHolder.gridView1.setColumnWidth();
-            }
-            /*else if(messageItem.getImageurl().size()==1){
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
-                float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, r.getDisplayMetrics());
-                galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int)height));
-                galleryVieHolder.gridView1.setNumColumns(messageItem.getImageurl().size());
 
-            }*/
+            }
+
             else {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 315, r.getDisplayMetrics());
                 galleryVieHolder.ll1.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView1.setNumColumns(3);
             }
             galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
-            //galleryVieHolder.gridView1.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
+
 
 
         }
@@ -490,7 +469,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson1.setVisibility(View.GONE);
             contactViewHolder.rlson2.setVisibility(View.VISIBLE);
             contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
+
             contactViewHolder.time2.setText(messageItem.getTime());
+            if(messageItem.getContact().getPicture()!=null)
+                Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto2);
+
             //contactViewHolder.contactview2.setVisibility(View.VISIBLE);
             contactViewHolder.contactname2.setText(messageItem.getContact().getName());
 
@@ -528,15 +511,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView2.setNumColumns(messageItem.getImageurl().size());
 
-                //galleryVieHolder.gridView1.setColumnWidth();
-            }
-            /*else if(messageItem.getImageurl().size()==1){
-                float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, r.getDisplayMetrics());
-                float height = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, r.getDisplayMetrics());
-                galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int)height));
-                galleryVieHolder.gridView2.setNumColumns(messageItem.getImageurl().size());
 
-            }*/
+            }
+
             else {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 315, r.getDisplayMetrics());
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -565,6 +542,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.time2.setText(messageItem.getTime());
            // contactViewHolder.contactview2.setVisibility(View.VISIBLE);
             contactViewHolder.contactname2.setText(messageItem.getContact().getName());
+            if(messageItem.getContact().getPicture()!=null)
+                Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto2);
+
 
 
         }
@@ -585,7 +565,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson2.setVisibility(View.VISIBLE);
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
             locationViewHolder.time2.setText(messageItem.getTime());
-            //locationViewHolder.locationview2.setVisibility(View.VISIBLE);
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location2);
             Glide.with(context).load(mapurl).into(locationViewHolder.location2);
@@ -602,7 +581,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView2.setNumColumns(2);
 
-                //galleryVieHolder.gridView1.setColumnWidth();
+
             }
 
             else {
@@ -610,7 +589,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
                 galleryVieHolder.gridView2.setNumColumns(3);
             }
-            //Log.i("niggaparis",messageItem.getImageurl()+""+messageItem.getType());
+
             galleryVieHolder.gridView2.setAdapter(new ImageAdapter(context,messageItem.getImageurl()));
 
         }

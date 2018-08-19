@@ -3,8 +3,6 @@ package com.example.krishna.bukie;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,13 +26,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class FirebaseHelper {
 private String adID;
 private String seller;
 private String buyer;
-private String username,receiver,userfullname;
+private String username,receiver,userfullname,profilepic;
 private String refID;//this id is the node key for this entire chat section
 private IncomingMessageListener listener;
 private boolean isListening;
@@ -46,7 +43,7 @@ private ListenerRegistration listenerRegistration;
 private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
 
-    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener)
+    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener,String profilepic)
     {
 
         adID = ad;
@@ -57,6 +54,7 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
         isListening = false;
         this.userfullname=userfullname;
         createRefID();
+        this.profilepic=profilepic;
 
     }
 
@@ -75,22 +73,7 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     public ArrayList<MessageItem> getPreviousTexts()
     {
         final ArrayList<MessageItem> chats = new ArrayList<>();
-       /* FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference dref = database.getReference().child("chats/"+refID);
-        dref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data:dataSnapshot.getChildren()) {
-                    chats.add(data.getValue(MessageItem.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -100,11 +83,8 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 MessageItem item= document.toObject(MessageItem.class);
                                 chats.add(item);
-                                //Log.i("ghjkl",item.getMessage_body());
-                                //Log.d(TAG, document.getId() + " => " + document.getData());
+
                             }
-                        } else {
-                           // Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
@@ -114,7 +94,7 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
     public void sendMessage(final MessageItem message)//add to recyclerview then send
     {
-        final Last_Message[] last_message = new Last_Message[1];
+        final LastMessage[] last_message = new LastMessage[1];
 
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)
@@ -146,7 +126,7 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue()!=null) {
-                                   // last_message[0] = (Last_Message) dataSnapshot.getValue();
+                                   // last_message[0] = (LastMessage) dataSnapshot.getValue();
                                     time[0] =Long.parseLong(dataSnapshot.getValue().toString());
                                 }
                             }
@@ -173,7 +153,7 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                 if(dataSnapshot.getValue()==null||dataSnapshot.getValue().toString().equals("false")){
-                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname);
+                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname,profilepic);
                                     firebaseDatabase.getReference().child("notifications").push().setValue(chatNotifs);
                                 }
                             }

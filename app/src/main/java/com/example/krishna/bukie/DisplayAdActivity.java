@@ -62,6 +62,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private TextView price,title,category,date,desc,fullname,author,publisher,viewcounter;
     private boolean editad,isHome;
     private List<String> booksUrl;
+    private View back;
 
 
 
@@ -100,12 +101,13 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         category.setText(bookAds.getBookcategory());
         desc.setText(bookAds.getBookdesc());
         fullname.setText("by "+bookAds.getSellerfullname());
-
+        back=findViewById(R.id.back);
+        back.setOnClickListener(this);
 
         //floatingActionButton.setOnClickListener(this);
 
-        if(getActionBar()!=null)
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        //if(getActionBar()!=null)
+       // getActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager=findViewById(R.id.viewPager);
         gotoleft=findViewById(R.id.gotoleft);
         gotoright=findViewById(R.id.gotoright);
@@ -113,7 +115,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setTitle("");
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setDisplayHomeAsUpEnabled(true);
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
         likeButton=findViewById(R.id.favourites);
@@ -144,7 +146,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 removeFromWishList();
             }
         });
-        gotoleft.setVisibility(View.GONE);
+
 
         booksUrl=new ArrayList<>();
         booksUrl.add(bookAds.getBookcoverpic());
@@ -164,7 +166,16 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                pageIndicatorView.setSelection(position);/*empty*/}
+                if(position>0)
+                    gotoleft.setVisibility(View.VISIBLE);
+                else if(position==0)
+                    gotoleft.setVisibility(View.GONE);
+                 if(position==booksUrl.size()-1)
+                    gotoright.setVisibility(View.GONE);
+                else if(position<booksUrl.size()-1)
+                    gotoright.setVisibility(View.VISIBLE);
+                pageIndicatorView.setSelection(position);/*empty*/
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -184,15 +195,14 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 BookAds bookAds1=documentSnapshot.toObject(BookAds.class);
                 counter=bookAds1.getViewcounter();
                 viewcounter.setText(counter+"");
-               // firebaseFirestore.collection("bookads").document(bookAds.getAdid()).update("viewcounter",counter+1);
+
 
             }
         });
     }
 
     private void increaseViewCounter() {
-       // if(bookAds.getViewcounter()==null)
-       // Toast.makeText(this, ""+bookAds.getViewcounter(), Toast.LENGTH_SHORT).show();
+
         firebaseFirestore.collection("bookads").document(bookAds.getAdid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -203,7 +213,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
             }
         });
-       // Log.i("helloll",bookAds.getViewcounter()+"");
 
     }
 
@@ -222,16 +231,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                /*for(DataSnapshot data: dataSnapshot.getChildren())
-                {
-                    Log.e("Comparing", data.getValue().toString()+" And "+bookAds.getAdid());
-                    if(data.getValue().toString().equals(bookAds.getAdid()))
-                    {
-                        likeButton.setLiked(true);
-                        //Toast.makeText(DisplayAdActivity.this, bookAds.getAdid(), Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(DisplayAdActivity.this, "Liked before!", Toast.LENGTH_SHORT).show();
-                    }
-                }*/
+
                 if(dataSnapshot.exists()){
                     Handler handler=new Handler();
                     handler.postDelayed(new Runnable() {
@@ -293,14 +293,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         startActivity(intent);
     }
 
-    /*class Pair
-    {
-        String key, value;
-        Pair(String k, String v){
-            key = k;
-            value = v;
-        }
-    }*/
+
     private void addToWishList() {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist");
         dref.child(bookAds.getAdid()).setValue(bookAds.getAdid());
@@ -318,7 +311,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         int pos=viewPager.getCurrentItem();;
         switch (v.getId()){
             case R.id.gotoleft:
-               /* if(pos!=0)
+                if(pos!=0)
                 {
                   //  viewPager.setCurrentItem(booksUrl.size()-1,true);
 
@@ -327,8 +320,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 //else{
                     viewPager.setCurrentItem(pos-1,true);
 
-                }*/
-                if(pos==1)
+                }
+               /* if(pos==1)
                 {
                     gotoleft.setVisibility(View.GONE);
                     viewPager.setCurrentItem(pos-1,true);
@@ -341,12 +334,22 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                         gotoright.setVisibility(View.VISIBLE);
                     viewPager.setCurrentItem(pos-1,true);
 
-                }
+                }*/
 
                 break;
             case  R.id.gotoright:
+                if(pos!=booksUrl.size()-1)
+                {
+                    //  viewPager.setCurrentItem(booksUrl.size()-1,true);
 
-                if(pos==booksUrl.size()-2){
+                    //}
+
+                    //else{
+                    viewPager.setCurrentItem(pos+1,true);
+
+                }
+
+                /*if(pos==booksUrl.size()-2){
                     gotoright.setVisibility(View.GONE);
                     viewPager.setCurrentItem(pos + 1, true);
                 }
@@ -354,7 +357,10 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     if(pos==0)
                         gotoleft.setVisibility(View.VISIBLE);
                     viewPager.setCurrentItem(pos + 1, true);
-                }
+                }*/
+                break;
+            case R.id.back:
+                onBackPressed();
                 break;
 
                 default:
@@ -388,9 +394,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 onBackPressed();
 
                 break;
-            case android.R.id.home:
+            /*case android.R.id.home:
                 onBackPressed();
-                break;
+                break;*/
 
 
 

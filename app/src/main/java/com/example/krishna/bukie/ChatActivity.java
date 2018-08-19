@@ -88,6 +88,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.ToDoubleBiFunction;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
@@ -111,8 +112,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private int count;
     private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
     private TextView username2,status;
-   // private MyChats myChats;
-    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn;
+    private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn,back;
    // EmojiPopup emojiPopup;
     private boolean emojikeyboard=true;
     private final Handler handler = new Handler();
@@ -140,6 +140,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private MyChatsStatus myChats;
     private DatabaseReference connectedRef;
     private ValueEventListener listener;
+    private String contactnumber,contactname,contactpic,profilepicuser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,9 +152,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
         username = sharedPreferences.getString("uid", null);
         userfullname=sharedPreferences.getString("fullname",null);
+        profilepicuser=sharedPreferences.getString("profilepic",null);
         Bundle bundle = getIntent().getExtras();
         String isMap = bundle.getString("isMap");
-
         myChats = bundle.getParcelable("mychats");
         identity = bundle.getString("identity");
         if (identity.compareTo("buyer") == 0) {
@@ -169,12 +170,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             sendtouid=myChats.getBuyerid();
 
         }
-       // firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(identity).setValue(userfullname);
-
-
+        back=findViewById(R.id.back);
+        back.setOnClickListener(this);
         chatbox = findViewById(R.id.chatbox);
-
-
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         TextView username2 = (TextView) findViewById(R.id.username);
         ImageView pp = (ImageView) findViewById(R.id.profile_pic);
@@ -189,7 +187,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         context = getApplicationContext();
         firebaseDatabase.getReference().child("users").child(sendtouid).child("last_seen").addValueEventListener(new ValueEventListener() {
             @Override
@@ -220,20 +218,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = (RecyclerView) findViewById(R.id.reyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-       // recyclerView.getLayoutManager().set
-
-        //recyclerView.setR
         messageItemList = new ArrayList<>();
         adapter = new MessageAdapter(messageItemList, context, new MessageItemClickListener() {
             @Override
             public void onSaveContact(View view, int position) {
-                //Toast.makeText(context, "new", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
                 intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
                 intent.putExtra(ContactsContract.Intents.Insert.PHONE, messageItemList.get(position).getContact().getPhoneno());
                 intent.putExtra(ContactsContract.Intents.Insert.NAME, messageItemList.get(position).getContact().getName());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //intent.putExtra(ContactsContract.Intents.Insert.EMAIL, bean.getEmailID());
                 getApplicationContext().startActivity(intent);
 
             }
@@ -262,7 +255,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onCameraImage(View view, int position) {
                 ArrayList<String> imagelist= (ArrayList<String>) messageItemList.get(position).getImageurl();
                 Intent intent=new Intent(context,ImageViewActivity.class);
-                //  ActivityOptions activityOptions=ActivityOptions.makeSceneTransitionAnimation(activity,view,"image");
                 intent.putExtra("position",0);
                 intent.putStringArrayListExtra("url", (ArrayList<String>) imagelist);
                 context.startActivity(intent/*,activityOptions.toBundle()*/);
@@ -285,6 +277,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //camerabtn.setOnClickListener(this);
         attach.setOnClickListener(this);
         sendbtn.setOnClickListener(this);
+        //emoji keyboard
         //emojiPopup = EmojiPopup.Builder.fromRootView(rootview).build((EmojiEditText) chatbox);
         //Emoji
         /*
@@ -352,12 +345,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 }
-
-
                 messageItemList.add(ch);
-
                 adapter.notifyDataSetChanged();
-
                 recyclerView.scrollToPosition(messageItemList.size() - 1);
             }
 
@@ -374,8 +363,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
 
-        });
-        //fh.getPreviousTexts();
+        },profilepicuser);
         fh.startListening();
         //TODO :this too
         /*recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -407,83 +395,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 if (before == 0 && s.length() > 0) {
-                    /*int cx = camera.getWidth() / 2;
-                    int cy = camera.getHeight() / 2;
-                    float initialRadius = (float) Math.hypot(cx, cy);
-                    Animator anim = ViewAnimationUtils.createCircularReveal(camera, cx, cy, initialRadius, 0);
-                    anim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            camera.setVisibility(View.INVISIBLE);
-                            send.setVisibility(View.VISIBLE);
-                            togglesend = true;
-                        }
-                    });*/
-                    /*AnimatorSet animationSet = new AnimatorSet();
-
-                    ObjectAnimator scaleY = ObjectAnimator.ofFloat(camera,"scaleY", 1f, 0.5f);
-                    ObjectAnimator scaleX = ObjectAnimator.ofFloat(camera,"scaleX", 1f, 0.5f);
-
-                    animationSet.playTogether(scaleX, scaleY);
-                    animationSet.setDuration(300);
-                    animationSet.start();
-
-                    AnimatorSet animationSet2 = new AnimatorSet();
-                    ObjectAnimator scaleY2 = ObjectAnimator.ofFloat(send,"scaleY", 0.5f, 1f);
-                    ObjectAnimator scaleX2 = ObjectAnimator.ofFloat(send,"scaleX", 0.5f, 15f);
-
-                    animationSet2.playTogether(scaleX2, scaleY2);
-                    animationSet2.setDuration(300);
-                    animationSet2.start();*/
                     camera.setVisibility(View.INVISIBLE);
-
-
-
-
-
                     send.setVisibility(View.VISIBLE);
-
-
-
                     togglesend = true;
-
                 }
                 if (before > 0 && s.length() == 0) {
-                    /*int cx = send.getWidth() / 2;
-                    int cy = send.getHeight() / 2;
-                    float initialRadius = (float) Math.hypot(cx, cy);
-                    Animator anim = ViewAnimationUtils.createCircularReveal(send, cx, cy, initialRadius, 0);
-                    anim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            send.setVisibility(View.INVISIBLE);
-                            camera.setVisibility(View.VISIBLE);
-                            togglesend = false;
-                        }
-                    });
-
-
-                    anim.start();*/
-
-
                     send.setVisibility(View.INVISIBLE);
-
                     camera.setVisibility(View.VISIBLE);
-
-
                     togglesend = false;
-
                 }
 
             }
         });
         chatbox.setImeOptions(EditorInfo.IME_ACTION_SEND);
         chatbox.setRawInputType(InputType.TYPE_CLASS_TEXT);
-
-
-
         chatbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -492,15 +417,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     msg = chatbox.getText().toString().trim();
                     if (TextUtils.isEmpty(msg) == false) {
                         sendMessage("message");
-
                     }
                     handled = true;
                 }
                 return handled;
             }
         });
-
-
         rootview.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
 
@@ -516,28 +438,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-
-
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chatactivitymenu, menu);
-
-
-
-
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
             case R.id.delete_chat:
                 
                 break;
@@ -577,12 +486,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-               // Toast.makeText(context, "kll2", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
 
             } else {
-               // Toast.makeText(context, "kll", Toast.LENGTH_SHORT).show();
+
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_STORAGE);
@@ -650,7 +558,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case REQUEST_IMAGE_CAPTURE:
 
-                    uploadImage(mCurrentPhotoPath);
+                    uploadImage(mCurrentPhotoPath,"camera");
 
                     break;
                 case PICK_IMAGE_MULTIPLE:
@@ -670,7 +578,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                         imageEncoded  = cursor.getString(columnIndex);
                         cursor.close();
-                        uploadImages(pathsurilist);
+                        uploadImages(pathsurilist,"gallery");
 
                     } else {
                         if (data.getClipData() != null) {
@@ -692,7 +600,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 cursor.close();
 
                             }
-                            uploadImages(pathsurilist);
+                            uploadImages(pathsurilist,"camera");
 
                         }
 
@@ -702,7 +610,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-    private void uploadImages(final List<Uri> photoPaths) {
+    private void uploadImages(final List<Uri> photoPaths, final String type) {
         imagepaths=new ArrayList<>();
         for(Uri photo:photoPaths) {
             String path = "chatimages/" + myChats.getChatid() + "/" + UUID.randomUUID() + ".png";
@@ -727,76 +635,85 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
                     imagepaths.add(uri + "");
                     //mImageView.setImageBitmap(mImageBitmap);
-                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()!=1)
+                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()!=1&&type.equals("gallery"))
                     sendMessage("gallery");
-                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1)
+                    if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1&&type.equals("camera"))
                         sendMessage("camera");
+                   /* if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1&&type.equals("contact"))
+                        sendMessage("contact");*/
 
                 }
             });
         }
     }
 
-    private void uploadImage(final String mCurrentPhotoPath) {
+    private void uploadImage(final String mCurrentPhotoPath, final String type) {
        String path = "chatimages/" + myChats.getChatid()+"/"+ UUID.randomUUID() + ".png";
-       //Log.e("nigga",path);
         final StorageReference riversRef = storageReference.child(path);
         imagepaths=new ArrayList<>();
-
         Uri imageToUpload  = Uri.parse(mCurrentPhotoPath);
         imageToUpload = ImageCompressor.compressFromUri(this, imageToUpload);
         UploadTask uploadTask = riversRef.putFile(imageToUpload);
-        //UploadTask uploadTask = riversRef.putFile(Uri.parse(mCurrentPhotoPath));
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
-                   // progressDialog.dismiss();                        //throw task.getException();
                     Toast.makeText(ChatActivity.this, "Error uploading photo,checck internet connection", Toast.LENGTH_SHORT).show();
                 }
-
-
                 return riversRef.getDownloadUrl();
             }
         }).addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
                 imagepaths.add(uri+"");
-                //mImageView.setImageBitmap(mImageBitmap);
+                if(type.equals("camera"))
                 sendMessage("camera");
-
-
-
+                else if(type.equals("contact")) {
+                    contactpic=uri+"";
+                    sendMessage("contact");
+                }
             }
         });
     }
 
     private void sendMessage(String type) {
-        //Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
-        //imagepaths.add(mCurrentPhotoPath);
         Date d = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("hh:mm a");
         date = ft.format(d);
         if(type.compareTo("camera")==0){
 
-            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths);
+            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths,"Sent a photo");
             fh.sendMessage(m);
         }
-        if(type.compareTo("message")==0){
+        else if(type.compareTo("message")==0){
             MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
             fh.sendMessage(m);
             chatbox.setText("");
         }
-        if(type.compareTo("location")==0){
+        else if(type.compareTo("location")==0){
            //Geopoint geopoint=new Geopoint(latitude,longitude);
-            MessageItem m=new MessageItem(date,username,d.getTime()+"",geopoint,type);
+            MessageItem m=new MessageItem(date,username,d.getTime()+"",geopoint,type,"Sent a location");
             fh.sendMessage(m);
         }
-        if(type.compareTo("gallery")==0){
+        else if(type.compareTo("gallery")==0){
 
-            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths);
+            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths,"Sent photos");
             fh.sendMessage(m);
+        }
+        else if(type.equals("contact")){
+
+            if(contactpic==null) {
+                Contact contact = new Contact(contactname, contactnumber);
+                MessageItem m = new MessageItem(date, username, d.getTime() + "", contact, "contact", "Sent a contact");
+                fh.sendMessage(m);
+            }
+            else {
+                Contact contact = new Contact(contactname, contactnumber,contactpic);
+                MessageItem m = new MessageItem(date, username, d.getTime() + "", contact, "contact", "Sent a contact");
+                fh.sendMessage(m);
+            }
+
+
         }
 
     }
@@ -816,19 +733,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             // column index of the contact name
             int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
             int photouti=cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI);
-            phoneNo = cursor.getString(phoneIndex);
-            name = cursor.getString(nameIndex);
-            String photouri=cursor.getString(photouti);
-            Toast.makeText(context, ""+photouri, Toast.LENGTH_SHORT).show();
-            Contact contact=new Contact(name,phoneNo);
-            Date d = new Date();
+            contactnumber = cursor.getString(phoneIndex);
+            contactname = cursor.getString(nameIndex);
+            contactpic =cursor.getString(photouti);
+           /////
+           // Toast.makeText(context, ""+photouri, Toast.LENGTH_SHORT).show();
+            if(contactpic!=null)
+            uploadImage(contactpic,"contact");
+            else
+                sendMessage("contact");
 
-            SimpleDateFormat ft =
-                    new SimpleDateFormat("hh:mm a");
-            date = ft.format(d);
-            //MessageItem m2 = new MessageItem(contact, date, uid, d.getTime() + "","contact");
-            MessageItem m=new MessageItem(date,username,d.getTime() + "",contact,"contact");
-            fh.sendMessage(m);
 
             // Set the value to the textviews
 
@@ -949,6 +863,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }*/
 
                 break;
+            case R.id.back:
+                onBackPressed();
+                break;
             case R.id.popupcamera:
                 popup.dismiss();
                 //getCameraPermissions();
@@ -1063,7 +980,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
                     firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
-                    //onDisconnectRef.cancel();
+
                 } else {
 
                 }
@@ -1071,7 +988,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onCancelled(DatabaseError error) {
-                //  System.err.println("Listener was cancelled");
             }
         });
         connectedRef.addValueEventListener(listener);

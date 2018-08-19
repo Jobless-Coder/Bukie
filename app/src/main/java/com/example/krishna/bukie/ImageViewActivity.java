@@ -38,9 +38,32 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
         }
         position=bundle.getInt("position");
         ImageViewPagerAdapter imageViewPagerAdapter=new ImageViewPagerAdapter(this,ImageUrl);
+        //viewPager.addOnPageChangeListener(ViewPager.OnPageChangeListener);
         viewPager.setAdapter(imageViewPagerAdapter);
         viewPager.setCurrentItem(position);
-       // startPostponedEnterTransition();
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(position>0)
+                    gotoleft.setVisibility(View.VISIBLE);
+                else if(position==0)
+                    gotoleft.setVisibility(View.GONE);
+                if(position==ImageUrl.size()-1)
+                    gotoright.setVisibility(View.GONE);
+                else if(position<ImageUrl.size()-1)
+                    gotoright.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 
@@ -52,33 +75,33 @@ public class ImageViewActivity extends AppCompatActivity implements View.OnClick
                 onBackPressed();
                 break;
             case R.id.gotoleft:
-                if(pos==1)
+                if(pos!=0)
                 {
-                    gotoleft.setVisibility(View.GONE);
+                    //gotoleft.setVisibility(View.GONE);
                     viewPager.setCurrentItem(pos-1,true);
                     //viewPager.setCurrentItem(ImageUrl.size()-1,true);
 
                 }
 
-                else{
+               /* else{
                     if(pos==ImageUrl.size()-1)
                         gotoright.setVisibility(View.VISIBLE);
                     viewPager.setCurrentItem(pos-1,true);
 
-                }
+                }*/
 
                 break;
             case R.id.gotoright:
-                if(pos==ImageUrl.size()-2){
-                gotoright.setVisibility(View.GONE);
+                if(pos!=ImageUrl.size()-1){
+               // gotoright.setVisibility(View.GONE);
                     viewPager.setCurrentItem(pos + 1, true);
                 }
                    // viewPager.setCurrentItem(0,true);
-                else {
+                /*else {
                     if(pos==0)
                         gotoleft.setVisibility(View.VISIBLE);
                     viewPager.setCurrentItem(pos + 1, true);
-                }
+                }*/
 
                 break;
         }
