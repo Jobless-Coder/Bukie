@@ -32,10 +32,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,7 +50,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
@@ -56,7 +57,8 @@ import java.util.Arrays;
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener, ResendVerificationEmailDialogFragment.DialogListener {
 
     private static final String TAG = "AuthActivity";
-    private static final int RC_SIGN_IN = 1;
+
+    private static final int GOOGLE_SIGN_IN = 1;
 
     private View mFacebookBtn, mGoogleBtn, mSignInBtn, mSignUpBtn, mSendEmail;
     private TextView mForgotPass;
@@ -70,11 +72,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     int big, small, hsm, hl, bsm, bl, loginsize, GREY;
     LinearLayout loginflow, signflow;
     EditText forgotemail;
-    private ProgressDialog progressDialog;
+    private ProgressDialog mProgressDialog;
     private FirebaseAuth firebaseAuth;
     private CallbackManager mCallbackManager;
-    private FirebaseFirestore firebaseFirestore;
-    LoginManager loginManager;
+    private FirebaseFirestore mFirebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,24 +89,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         }
 
+        setContentView(R.layout.activity_auth);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
-        // Google
-        GoogleSignInOptions gso =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        // Facebook
-        loginManager = LoginManager.getInstance();
-        if (BuildConfig.DEBUG) {
-            FacebookSdk.setIsDebugEnabled(true);
-            FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-        }
-
-        setContentView(R.layout.activity_auth);
         mRegEmail = findViewById(R.id.regemail);
         mRegPass = findViewById(R.id.regpass);
         mRepRegPass = findViewById(R.id.repregpass);
@@ -129,39 +116,46 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mSendEmail.setOnClickListener(this);
         mSignUpBtn.setOnClickListener(this);
 
-        progressDialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(this);
 
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        mFirebaseFirestore = FirebaseFirestore.getInstance();
 
-        //google sign in
+        // Google
+        GoogleSignInOptions gso =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-
-        //facebooksign in
-        signOut();
+        // Facebook
+        if (BuildConfig.DEBUG) {
+            FacebookSdk.setIsDebugEnabled(true);
+            FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+        }
         mCallbackManager = CallbackManager.Factory.create();
-        loginManager.registerCallback(
-                mCallbackManager,
-                new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance()
+                .registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        // Handle success
-                        handleFacebookAccessToken(loginResult.getAccessToken());
-
-
+                        handleFacebookSignIn(loginResult.getAccessToken());
                     }
 
                     @Override
                     public void onCancel() {
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
+                        Log.d(TAG, "Facebook sign in failed with exception: " + exception);
+                        Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
                     }
-                }
-        );
+                });
 
+
+        signOut();
 
         //animations
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -258,6 +252,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -268,15 +263,10 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 signInWithEmailPass();
                 break;
             case R.id.googlebtn:
-                googleSignIn();
+                initGoogleSignIn();
                 break;
             case R.id.facebookbtn:
-                progressDialog.setMessage("Signing in ...");
-                progressDialog.show();
-                LoginManager.getInstance().logInWithReadPermissions(
-                        this,
-                        Arrays.asList("email", "public_profile")
-                );
+                initFacebookSignIn();
                 break;
             case R.id.forgotpass:
                 forgotPassword();
@@ -284,22 +274,29 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.sendemail:
                 sendEmailForForgotPassword();
                 break;
-            /*case R.id.verifyemail2:
-                Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
-                int k=0;
-                while (!firebaseAuth.getCurrentUser().isEmailVerified()){
-                    verifyEmail(k);
-                    k++;
-                }
+        }
+    }
 
-                Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
-                intent.putExtra("signinmethod","email");
-                startActivity(intent);
-                finish();
 
-                break;*/
-            default:
+    /**
+     * Method override required for Google and Facebook sign in.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case GOOGLE_SIGN_IN:
+                handleGoogleSignIn(data);
                 break;
+            default:
+                // Documentation instructs always forwarding to mCallbackManager regardless of
+                // requestCode. Not sure why, not doing that for now.
+                mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -314,34 +311,33 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         String repPass = mRepRegPass.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.email_empty, Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.password_empty, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!TextUtils.equals(pass, repPass)) {
-            Toast.makeText(this, "Passwords should match", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.passwords_dont_match, Toast.LENGTH_SHORT).show();
             mRegPass.setText("");
             mRepRegPass.setText("");
             return;
         }
 
-        progressDialog.setMessage("Signing up ...");
-        progressDialog.show();
-        Log.d(TAG, "Signing up user with email/pass = " + email + "/" + pass);
+        mProgressDialog.setMessage(getString(R.string.signing_up));
+        mProgressDialog.show();
+        Log.d(TAG, "Signing up user with email/pass: " + email + "/" + pass);
 
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressDialog.dismiss();
                         if (task.isSuccessful()){
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            sendVerificationEmail(user, true);
+                            sendVerificationEmail(firebaseAuth.getCurrentUser(), true);
                         } else {
-                            Toast.makeText(AuthActivity.this, "Could not register, please try again", Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
+                            Toast.makeText(AuthActivity.this, R.string.sign_up_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                         mRegEmail.setText("");
                         mRegPass.setText("");
@@ -351,7 +347,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnCanceledListener(new OnCanceledListener() {
                     @Override
                     public void onCanceled() {
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
                     }
                 });
     }
@@ -365,19 +361,20 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      * @param moveToSignInScreen whether to move to the sign in screen
      */
     private void sendVerificationEmail(final FirebaseUser user, final boolean moveToSignInScreen) {
-        Log.d(TAG, "Sending verification email to " + user.getEmail());
+        Log.d(TAG, "Sending verification email to: " + user.getEmail());
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        mProgressDialog.dismiss();
                         if (task.isSuccessful()) {
-                            Toast.makeText(AuthActivity.this, "Verification email sent, please check your inbox", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, R.string.send_verification_email_success, Toast.LENGTH_SHORT).show();
                             if (moveToSignInScreen) {
                                 translate(hello);
                                 mSignInEmail.setText(user.getEmail());
                             }
                         } else {
-                            Toast.makeText(AuthActivity.this, "Failed to send verification email, please retry", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, R.string.send_verification_email_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -393,27 +390,27 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         String pass = mSignInPass.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.email_empty, Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.password_empty, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        progressDialog.setMessage("Signing in...");
-        progressDialog.show();
-        Log.d(TAG, "Signing in user with email/pass = " + email + "/" + pass);
+        mProgressDialog.setMessage(getString(R.string.signing_in));
+        mProgressDialog.show();
+        Log.d(TAG, "Signing in user with email/pass: " + email + "/" + pass);
 
         firebaseAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressDialog.dismiss();
                         if (task.isSuccessful()) {
-                            handleSuccesfulSignIn(firebaseAuth.getCurrentUser());
+                            handleSuccesfulSignIn(firebaseAuth.getCurrentUser(), "email");
                         } else {
-                            Toast.makeText(AuthActivity.this, "Sign in failed", Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
+                            Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                         mSignInPass.setText("");
                     }
@@ -421,20 +418,115 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnCanceledListener(new OnCanceledListener() {
                     @Override
                     public void onCanceled() {
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
                     }
                 });
     }
 
 
     /**
-     * Handles successful Firebase sign in by fetching corresponding document from Firestore.
-     *
-     * @param user the Firebase user object.
+     * Launches Google sign in fragment.
      */
-    private void handleSuccesfulSignIn(final FirebaseUser user) {
-        Log.d(TAG, "Successfully signed in user with uid " + user.getUid());
-        firebaseFirestore.collection("users")
+    private void initGoogleSignIn() {
+        mProgressDialog.setMessage(getString(R.string.please_wait));
+        mProgressDialog.show();
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
+    }
+
+
+    /**
+     * Handles Google sign in by generating an {@link AuthCredential} and passing it to
+     * {@link #firebaseAuthWithCredential}.
+     *
+     * @param data the data received from {@link #onActivityResult}.
+     */
+    private void handleGoogleSignIn(Intent data) {
+        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            Log.d(TAG, "handleGoogleSignIn:" + account.getId());
+            AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+            firebaseAuthWithCredential(credential, "google");
+        } catch (ApiException e) {
+            mProgressDialog.dismiss();
+            Log.d(TAG, "Google sign in failed, status code: " + e.getStatusCode());
+            if (e.getStatusCode() != GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+                // Not cancelled by user.
+                Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    /**
+     * Begins Facebook sign in.
+     */
+    private void initFacebookSignIn() {
+        mProgressDialog.setMessage(getString(R.string.please_wait));
+        mProgressDialog.show();
+        LoginManager.getInstance().logInWithReadPermissions(AuthActivity.this, Arrays.asList("email", "public_profile"));
+    }
+
+
+    /**
+     * Handles Facebook sign in by generating an {@link AuthCredential} and passing it to
+     * {@link #firebaseAuthWithCredential}.
+     *
+     * @param token the {@link AccessToken} received from {@link FacebookCallback#onSuccess}.
+     */
+    private void handleFacebookSignIn(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        firebaseAuthWithCredential(credential, "facebook");
+    }
+
+
+    /**
+     * Sign in to Firebase with provided credential.
+     *
+     * @param credential   the credential to sign in with.
+     * @param signInMethod a String representing the sign in method.
+     */
+    private void firebaseAuthWithCredential(AuthCredential credential, final String signInMethod) {
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            Log.d(TAG, "Successfully sign in user with uid: " + user.getUid());
+                            if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                                // Saves one call to Firestore to check if user exists.
+                                handleUnregisteredUser(user, signInMethod);
+                            } else{
+                                handleSuccesfulSignIn(user, signInMethod);
+                            }
+                        } else {
+                            mProgressDialog.dismiss();
+                            Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
+                            Log.d(TAG,"Firebase auth failed with exception: " + task.getException());
+                        }
+                    }
+                })
+                .addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        mProgressDialog.dismiss();
+                    }
+                });
+    }
+
+
+    /**
+     * Handles successful Firebase sign in by fetching user document from Firestore.
+     *
+     * @param user         the Firebase user object.
+     * @param signInMethod a String representing the sign in method.
+     */
+    private void handleSuccesfulSignIn(final FirebaseUser user, final String signInMethod) {
+        Log.d(TAG, "Successfully signed in user with uid: " + user.getUid());
+        mFirebaseFirestore.collection("users")
                 .whereEqualTo("uid", user.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -445,7 +537,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             int userCount = querySnapshot.size();
                             switch (userCount) {
                                 case 0:
-                                    reloadAndHandleUnregisteredUser(user, "email");
+                                    // User is not registered in database.
+                                    maybeReloadAndHandleUnregisteredUser(user, signInMethod);
                                     break;
                                 case 1:
                                     DocumentSnapshot document = querySnapshot.getDocuments().get(0);
@@ -455,7 +548,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                     throw new IllegalStateException("Cannot have more than one user with same uid");
                             }
                         } else {
+                            mProgressDialog.dismiss();
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -463,20 +558,21 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
-     * Reloads the Firebase user object and calls {@link #handleUnregisteredUser}. Intended for use
-     * when rechecking if email has been verified.
+     * Reloads the Firebase user object if email is not verified. Calls
+     * {@link #handleUnregisteredUser} directly if reload is not required or on reload.
      *
      * @param user         the Firebase user object.
      * @param signInMethod a String representing the sign in method.
      */
-    private void reloadAndHandleUnregisteredUser(final FirebaseUser user, final String signInMethod) {
-        progressDialog.setMessage("Verifying account...");
-        progressDialog.show();
+    private void maybeReloadAndHandleUnregisteredUser(final FirebaseUser user, final String signInMethod) {
+        if (user.isEmailVerified()) {
+            handleUnregisteredUser(user, signInMethod);
+            return;
+        }
         user.reload()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
                         if (!task.isSuccessful()) {
                             Log.d(TAG, "FirebaseUser reload failed: " + task.getException());
                         }
@@ -495,13 +591,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      * @param signInMethod a String representing the sign in method.
      */
     private void handleUnregisteredUser(FirebaseUser user, String signInMethod) {
-        Log.d(TAG, "Unregistered user with uid/isEmailVerified = " + user.getUid() + "/" + user.isEmailVerified());
+        mProgressDialog.dismiss();
+        Log.d(TAG, "Unregistered user with uid: " + user.getUid());
         if (!user.isEmailVerified()) {
+            Log.d(TAG, "User has unverified email, launching dialog");
             showResendVerificationEmailDialog(user);
             return;
         }
 
-        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
+        Toast.makeText(AuthActivity.this, R.string.sign_in_success, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(AuthActivity.this, RegistrationActivity.class);
         intent.putExtra("signinmethod", signInMethod);
         startActivity(intent);
@@ -541,7 +639,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      * @param document a document representing user details.
      */
     private void handleRegisteredUser(DocumentSnapshot document) {
-        Toast.makeText(AuthActivity.this, "Success signing in", Toast.LENGTH_SHORT).show();
+        mProgressDialog.dismiss();
+        Toast.makeText(AuthActivity.this, R.string.sign_in_success, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Fetched user document on sign in: " + document.getId() + " => " + document.getData());
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserInfo", MODE_PRIVATE);
@@ -556,198 +655,16 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    //google sign in
-    private void googleSignIn() {
-        progressDialog.setMessage("Signing in ...");
-        progressDialog.show();
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if(requestCode!= RC_SIGN_IN)
-            mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed, status code = " + e.getStatusCode());
-                // ...
-            }
-        }
-    }
-
-    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-
-
-
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-
-                            Toast.makeText(AuthActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Log.d(TAG, "Signed in uid " + user.getUid());
-                            boolean isNew=task.getResult().getAdditionalUserInfo().isNewUser();
-                            if(isNew)
-                            {
-                                progressDialog.dismiss();
-                                Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
-                                intent.putExtra("isProfile",true);
-                                intent.putExtra("signinmethod","google");
-                                startActivity(intent);
-                                finish();
-                            }
-                            else{
-                                firebaseFirestore.collection("users")
-                                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid()+"")
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "found users " + task.getResult().size());
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        String UID=document.getData().get("uid").toString();
-
-                                                        SharedPreferences sharedPreferences=getApplicationContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
-                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("uid",document.getData().get("uid").toString());
-                                                        editor.putString("fullname",document.getData().get("fullname").toString());
-                                                        editor.putString("profilepic",document.getData().get("profilepic").toString());
-                                                        editor.commit();
-                                                        progressDialog.dismiss();
-                                                        Intent intent=new Intent(AuthActivity.this,HomePageActivity.class);
-                                                        startActivity(intent);
-                                                        finish();
-
-                                                        Log.d(TAG, document.getId() + " => " + document.getData());
-                                                    }
-                                                } else {
-                                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                                }
-                                            }
-                                        });
-
-                            }
-
-
-
-                        } else {
-                            progressDialog.dismiss();
-                            /*Toast.makeText(AuthActivity.this, "Sign in failure , please try again"+task.getResult()+task.getException(),
-                                    Toast.LENGTH_SHORT).show();*/
-                            Log.e("jkl",task.getResult()+"except"+task.getException());
-
-                        }
-
-
-                    }
-                }).addOnCanceledListener(new OnCanceledListener() {
-            @Override
-            public void onCanceled() {
-                progressDialog.dismiss();
-            }
-        });
-    }
-
-    //facebook sign in
-    private void handleFacebookAccessToken(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-
-
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-
-                            Toast.makeText(AuthActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
-
-                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
-                            if (isNew) {
-                                progressDialog.dismiss();
-                                Intent intent = new Intent(AuthActivity.this, RegistrationActivity.class);
-                                intent.putExtra("signinmethod", "facebook");
-                                intent.putExtra("isProfile",true);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                firebaseFirestore.collection("users")
-                                        .whereEqualTo("uid", firebaseAuth.getCurrentUser().getUid() + "")
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        String UID = document.getData().get("uid").toString();
-                                                        Toast.makeText(AuthActivity.this, "" + UID, Toast.LENGTH_SHORT).show();
-                                                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserInfo", MODE_PRIVATE);
-                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                        editor.putString("uid", document.getData().get("uid").toString());
-                                                        editor.putString("fullname", document.getData().get("fullname").toString());
-                                                        editor.putString("profilepic", document.getData().get("profilepic").toString());
-                                                        editor.commit();
-                                                        progressDialog.dismiss();
-                                                        Intent intent = new Intent(AuthActivity.this, HomePageActivity.class);
-                                                        startActivity(intent);
-                                                        finish();
-
-                                                        Log.d(TAG, document.getId() + " => " + document.getData());
-                                                    }
-                                                } else {
-                                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                                }
-                                            }
-                                        });
-
-                            }
-
-                        } else {
-                            progressDialog.dismiss();
-
-                            Toast.makeText(AuthActivity.this, "Sign in failure,please try again",
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-
-
-                    }
-                }).addOnCanceledListener(new OnCanceledListener() {
-            @Override
-            public void onCanceled() {
-                progressDialog.dismiss();
-            }
-        });
-    }
-
     private void sendEmailForForgotPassword() {
         forgotemail=this.findViewById(R.id.forgotemail);
         String email=forgotemail.getText().toString();
-        progressDialog.setMessage("Sending password change email ...");
-        progressDialog.show();
+        mProgressDialog.setMessage("Sending password change email ...");
+        mProgressDialog.show();
         firebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
+                        mProgressDialog.dismiss();
                         if (task.isSuccessful()) {
 
                             Toast.makeText(AuthActivity.this, "Password reset email sent to your email address", Toast.LENGTH_SHORT).show();
@@ -761,7 +678,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 }).addOnCanceledListener(new OnCanceledListener() {
             @Override
             public void onCanceled() {
-                progressDialog.dismiss();
+                mProgressDialog.dismiss();
             }
         });
         forgotemail.setText("");
@@ -784,18 +701,4 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         // Google sign out
     }
-
-    /*public void onVerifyButtonClick(View view) {
-        int k=0;
-        Toast.makeText(this, "kkkk", Toast.LENGTH_SHORT).show();
-        while (!firebaseAuth.getCurrentUser().isEmailVerified()){
-            verifyEmail(k);
-            k++;
-        }
-
-        Intent intent=new Intent(AuthActivity.this,RegistrationActivity.class);
-        intent.putExtra("signinmethod","email");
-        startActivity(intent);
-        finish();
-    }*/
 }
