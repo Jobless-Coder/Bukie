@@ -7,7 +7,7 @@
     android:background="@color/deep_blue"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".RegistrationActivity">
+    tools:context=".registration.RegistrationActivity">
 
     <android.support.v7.widget.CardView
         android:layout_width="120dp"

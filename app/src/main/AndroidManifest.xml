@@ -76,7 +76,7 @@
             android:theme="@style/NoActionTheme" />
         <!-- activity android:name=".LoginActivity" / -->
         <activity android:name=".ChatActivity" />
-        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".registration.RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
             android:windowSoftInputMode="adjustPan"
