@@ -88,13 +88,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="books.jc"
+                    android:host="booksapp-e588d.firebaseapp.com"
                     android:scheme="https" />
 
             </intent-filter>
         </activity>
-        <activity android:name=".PostnewadActivity" />
-        <activity android:name=".DisplayAdActivity" />
         <activity android:name=".MapActivity" />
         <activity android:name=".ImageViewActivity" />
 
