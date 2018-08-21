@@ -75,7 +75,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         toolbargroup=findViewById(R.id.toolbar_layout);
 
-        checkForDynamicLinks();
+        //checkForDynamicLinks();
         bottomNavigation=findViewById(R.id.bottom_navigation);
         firebaseDatabase=FirebaseDatabase.getInstance();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);

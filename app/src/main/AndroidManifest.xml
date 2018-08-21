@@ -74,7 +74,7 @@
             android:theme="@style/NoActionTheme" />
         <!-- activity android:name=".LoginActivity" / -->
         <activity android:name=".ChatActivity" />
-        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".registration.RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
             android:launchMode="singleTop"
@@ -86,12 +86,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="books.jc"
+                    android:host="booksapp-e588d.firebaseapp.com"
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".PostnewadActivity" />
-        <activity android:name=".DisplayAdActivity" />
         <activity android:name=".MapActivity" />
         <activity android:name=".ImageViewActivity" />
 

@@ -24,7 +24,8 @@ import com.example.krishna.bukie.BuildConfig;
 import com.example.krishna.bukie.HomePageActivity;
 import com.example.krishna.bukie.MyFirebaseInstanceIDService;
 import com.example.krishna.bukie.R;
-import com.example.krishna.bukie.RegistrationActivity;
+import com.example.krishna.bukie.User;
+import com.example.krishna.bukie.registration.RegistrationActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,7 +34,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -338,10 +338,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        mProgressDialog.dismiss();
                         if (task.isSuccessful()){
-                            sendVerificationEmail(firebaseAuth.getCurrentUser(), true);
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            // Shift to sign in screen.
+                            translate(hello);
+                            mSignInEmail.setText(user.getEmail());
+                            sendVerificationEmail(user);
                         } else {
-                            mProgressDialog.dismiss();
+                            Log.d(TAG, "Create user with email/pass failed: " + task.getException());
                             Toast.makeText(AuthActivity.this, R.string.sign_up_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                         mRegEmail.setText("");
@@ -359,26 +364,20 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
-     * Sends a verification email to the email registered with this user. Also shifts to sign in
-     * screen if {@code moveToSignInScreen} is {@code true}.
+     * Sends a verification email to the email registered with this user.
      *
-     * @param user               the Firebase user object.
-     * @param moveToSignInScreen whether to move to the sign in screen
+     * @param user the Firebase user object.
      */
-    private void sendVerificationEmail(final FirebaseUser user, final boolean moveToSignInScreen) {
+    private void sendVerificationEmail(final FirebaseUser user) {
         Log.d(TAG, "Sending verification email to: " + user.getEmail());
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        mProgressDialog.dismiss();
                         if (task.isSuccessful()) {
                             Toast.makeText(AuthActivity.this, R.string.send_verification_email_success, Toast.LENGTH_SHORT).show();
-                            if (moveToSignInScreen) {
-                                translate(hello);
-                                mSignInEmail.setText(user.getEmail());
-                            }
                         } else {
+                            Log.d(TAG, "Send verification email failed: " + task.getException());
                             Toast.makeText(AuthActivity.this, R.string.send_verification_email_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -547,7 +546,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                                     break;
                                 case 1:
                                     DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                                    handleRegisteredUser(document);
+                                    User user = document.toObject(User.class);
+                                    handleRegisteredUser(user);
                                     break;
                                 default:
                                     throw new IllegalStateException("Cannot have more than one user with same uid");
@@ -633,26 +633,26 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onClickDialogYes(FirebaseUser user) {
-        sendVerificationEmail(user, false);
+        sendVerificationEmail(user);
     }
 
 
     /**
-     * Handles a registered user. Extracts user details from provided document, saves them to
-     * shared preferences and launches {@link HomePageActivity}.
+     * Handles a registered user. Saves user details to shared preferences and launches
+     * {@link HomePageActivity}.
      *
-     * @param document a document representing user details.
+     * @param user the user object
      */
-    private void handleRegisteredUser(DocumentSnapshot document) {
+    private void handleRegisteredUser(User user) {
         mProgressDialog.dismiss();
         Toast.makeText(AuthActivity.this, R.string.sign_in_success, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Fetched user document on sign in: " + document.getId() + " => " + document.getData());
+        Log.d(TAG, "Fetched user details on sign in: " + user);
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserInfo", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("uid", document.getData().get("uid").toString());
-        editor.putString("fullname", document.getData().get("fullname").toString());
-        editor.putString("profilepic", document.getData().get("profilepic").toString());
+        editor.putString("uid", user.getUid());
+        editor.putString("fullname", user.getFullname());
+        editor.putString("profilepic", user.getProfilepic());
         editor.commit();
         Intent intent = new Intent(AuthActivity.this, HomePageActivity.class);
         startActivity(intent);

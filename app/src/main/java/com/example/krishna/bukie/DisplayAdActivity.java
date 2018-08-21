@@ -3,6 +3,7 @@ package com.example.krishna.bukie;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -31,6 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,6 +41,7 @@ import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.rd.PageIndicatorView;
 import com.rd.draw.controller.DrawController;
+import com.victor.loading.book.BookLoading;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +66,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private TextView price,title,category,date,desc,fullname,author,publisher,viewcounter;
     private boolean editad,isHome;
     private List<String> booksUrl;
+    private BookLoading bookloader;
+    private boolean wasReferredBylink = false;
     private View back;
 
 
@@ -70,12 +76,22 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_ad_two);
+        bookloader = findViewById(R.id.bookloader);
+        bookloader.start();
 
-        Bundle bundle = getIntent().getExtras();
 
-        editad=bundle.getBoolean("editad",false);
-        bookAds = bundle.getParcelable("bookads");
 
+        if(!checkForDynamicLinks())
+        {
+            Bundle bundle = getIntent().getExtras();
+            editad=bundle.getBoolean("editad",false);
+            bookAds = bundle.getParcelable("bookads");
+            initEverything();
+        }
+
+    }
+
+    private void initEverything() {
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
 
         progressBar=findViewById(R.id.progress_bar);
@@ -93,9 +109,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         date=findViewById(R.id.date);
         fullname=findViewById(R.id.fullname);
         if(bookAds.getBookauthor()!=null)
-        author.setText("written by "+bookAds.getBookauthor());
+            author.setText("written by "+bookAds.getBookauthor());
         if(bookAds.getBookpublisher()!=null)
-        publisher.setText("published by "+bookAds.getBookpublisher());
+            publisher.setText("published by "+bookAds.getBookpublisher());
         title.setText(bookAds.getBooktitle());
         date.setText("uploaded on "+bookAds.getDate());
         category.setText(bookAds.getBookcategory());
@@ -106,6 +122,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
         //floatingActionButton.setOnClickListener(this);
 
+        //if(getActionBar()!=null)
+            //getActionBar().setDisplayHomeAsUpEnabled(true);
         //if(getActionBar()!=null)
        // getActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager=findViewById(R.id.viewPager);
@@ -185,7 +203,69 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             @Override
             public void onPageScrollStateChanged(int state) {/*empty*/}
         });
+        bookloader.stop();
+        bookloader.setVisibility(View.GONE);
+    }
 
+
+    private boolean checkForDynamicLinks() {
+
+        Intent intent = getIntent();
+        if(intent!=null && intent.getData()!=null)
+        {
+
+            String link = intent.getData().toString();
+            if(link.contains("ads"))
+            {
+                link = link.substring(link.indexOf("ads/")+4);
+                FirebaseFirestore.getInstance().
+                        collection("bookads").
+                        document(link).
+                        get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        BookAds b = documentSnapshot.toObject(BookAds.class);
+                        //Intent intent = new Intent(DisplayAdActivity.this, DisplayAdActivity.class);
+                        //intent.putExtra("bookads", b);
+                        bookAds = b;
+                        wasReferredBylink = true;
+                        initEverything();
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //DisplayAdActivity.this.startActivity(intent);
+                    }
+                });
+                return true;
+            }
+            return false;
+        }
+
+
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                        }
+
+
+                        if (deepLink != null) {
+                            Toast.makeText(DisplayAdActivity.this, "Deep link found!"+deepLink.toString(), Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Log.d("Dynamic links", "getDynamicLink: no link found");
+                        }
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Dynamic links", "getDynamicLink:onFailure", e);
+                    }
+                });
+        return false;
     }
 
     private void getViewCounter() {
@@ -221,7 +301,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     @Override
     public void onBackPressed()
     {
-
+        if(wasReferredBylink)
+            startActivity(new Intent(this, HomePageActivity.class));
         finish();
     }
     private void setFavouriteButton() {
@@ -284,7 +365,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     public void shareAd(View view) {
 
-        String deepLink = "https://books.jc/ads/"+bookAds.getAdid();
+        String deepLink = "https://booksapp-e588d.firebaseapp.com/ads/"+bookAds.getAdid();
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Firebase Deep Link");

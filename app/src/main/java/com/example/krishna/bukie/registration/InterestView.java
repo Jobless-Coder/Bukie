@@ -1,4 +1,4 @@
-package com.example.krishna.bukie;
+package com.example.krishna.bukie.registration;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -13,21 +13,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.krishna.bukie.R;
+
 public class InterestView extends LinearLayout{
 
-    private String interest="hey you";
-    private boolean selected = false;
-    private CardView cv;TextView tv;
+    private String mInterest = "hey you";
+    private boolean mSelected = false;
+    private CardView mCardView;
+    private TextView mTextView;
 
     public InterestView(@NonNull Context context) {
         //super(context);
         this(context, "hey you");
     }
 
-    public InterestView(Context context, String inte)
-    {
+    public InterestView(Context context, String interest) {
         super(context);
-        interest = inte;
+        this.mInterest = interest;
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,34 +37,30 @@ public class InterestView extends LinearLayout{
             }
         });
 
-
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        if(inflater != null)
-        {
+        if(inflater != null) {
             inflater.inflate(R.layout.interest_bubble, this);
-        }
-        else {
+        } else {
             Toast.makeText(context, "Error inflating the class", Toast.LENGTH_SHORT).show();
             return;
         }
 
-
         /*
-        TextView tv = new TextView(context);
-        tv.setText(interest);
+        TextView mTextView = new TextView(context);
+        mTextView.setText(interest);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(10,10,10,10);
-        tv.setLayoutParams(params);
-        tv.setTextSize(20);
-        this.addView(tv);
+        mTextView.setLayoutParams(params);
+        mTextView.setTextSize(20);
+        this.addView(mTextView);
         setLayoutParams(params);
         */
 
-        tv = this.findViewById(R.id.interest);
-        tv.setText(inte);
-        cv = findViewById(R.id.intercard);
-        //cv.setRadius(cv.getHeight()/2);
-        //Toast.makeText(context, "height obtained is "+cv.getHeight(), Toast.LENGTH_SHORT).show();
+        mTextView = this.findViewById(R.id.interest);
+        mTextView.setText(interest);
+        mCardView = findViewById(R.id.intercard);
+        //mCardView.setRadius(mCardView.getHeight()/2);
+        //Toast.makeText(context, "height obtained is "+mCardView.getHeight(), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -71,28 +69,23 @@ public class InterestView extends LinearLayout{
         this(context, "hey you");
     }
 
-    public void toggle(){
-        selected = !selected;
-        if(selected)
-        {
-            cv.setCardBackgroundColor(getResources().getColor(R.color.deep_grey));
-            tv.setTextColor(getResources().getColor(R.color.white));
-        }
-        else
-        {
-            tv.setTextColor(getResources().getColor(R.color.deep_grey));
-            cv.setCardBackgroundColor(getResources().getColor(R.color.white));
+    public String getInterest() {
+        return mInterest;
+    }
+
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    public void toggle() {
+        mSelected = !mSelected;
+        if (mSelected) {
+            mCardView.setCardBackgroundColor(getResources().getColor(R.color.deep_grey));
+            mTextView.setTextColor(getResources().getColor(R.color.white));
+        } else {
+            mTextView.setTextColor(getResources().getColor(R.color.deep_grey));
+            mCardView.setCardBackgroundColor(getResources().getColor(R.color.white));
         }
         //Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
-    }
-
-    public String getInterest()
-    {
-        return interest;
-    }
-
-    public boolean isSelected()
-    {
-        return selected;
     }
 }

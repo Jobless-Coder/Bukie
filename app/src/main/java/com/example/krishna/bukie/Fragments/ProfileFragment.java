@@ -31,7 +31,7 @@ import com.example.krishna.bukie.FeedbackActivity;
 import com.example.krishna.bukie.Myadswishadapter;
 import com.example.krishna.bukie.R;
 //import com.example.krishna.bukie.mFragmentPagerAdapter;
-import com.example.krishna.bukie.RegistrationActivity;
+import com.example.krishna.bukie.registration.RegistrationActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

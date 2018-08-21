@@ -1,45 +1,50 @@
 package com.example.krishna.bukie;
 
 public class User {
-    //private String uid;
+    private String uid;
+    private String fullname;
     private String profilepic;
     private String signinmethod;
-    private String UID;
-    private String fullname;
 
-    public User( String profilepic, String signinmethod, String UID, String fullname) {
-       // this.uid = uid;
+    public User() {}
+
+    public User(String uid, String fullname, String profilepic, String signinmethod) {
+        this.uid = uid;
+        this.fullname = fullname;
         this.profilepic = profilepic;
         this.signinmethod = signinmethod;
-        this.UID = UID;
-        this.fullname = fullname;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     public String getFullname() {
         return fullname;
     }
 
-    public String getUID() {
-        return UID;
+    public String getProfilepic() {
+        return profilepic;
     }
-
-
 
     public String getSigninmethod() {
         return signinmethod;
-
     }
 
-   public User(String username, String profilepic) {
-        //this.uid = uid;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public void setProfilepic(String profilepic) {
         this.profilepic = profilepic;
     }
 
-    /*public String getUid() {
-        return uid;
-    }*/
-
-    public String getProfilepic() {
-        return profilepic;
+    @Override
+    public String toString() {
+        return "{" + this.getClass().getCanonicalName() + ": "
+                + "uid=" + uid + ", "
+                + "fullname=" + fullname + ", "
+                + "profilepic=" + profilepic + ", "
+                + "signinmethod=" + signinmethod + "}";
     }
 }
