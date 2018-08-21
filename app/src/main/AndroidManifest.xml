@@ -77,8 +77,12 @@
         <activity android:name=".registration.RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".PostnewadActivity"/>
+        <activity android:name=".DisplayAdActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -90,6 +94,7 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
         <activity android:name=".MapActivity" />
         <activity android:name=".ImageViewActivity" />
 

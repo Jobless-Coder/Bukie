@@ -3,7 +3,7 @@ package com.example.krishna.bukie;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MyChatsStatus implements Parcelable {
+public class    MyChatsStatus implements Parcelable {
     private  String sellerid;
     private String buyerid;
     private String adid;

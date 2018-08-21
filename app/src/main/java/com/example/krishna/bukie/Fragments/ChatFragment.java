@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,6 +57,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ChatFragment extends Fragment implements View.OnClickListener {
     private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
@@ -121,7 +125,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo", MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
 
         getMyChats("buyerid");
@@ -148,6 +152,22 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
                     final String timecast = simpleDateFormat.format(d);
 
+                    //added by Krishna : 21st August, 2018
+                    //the following code makes sure unread texts are highlighted
+                    if(!myChats.last_message.getStatus().equalsIgnoreCase("seen"))
+                    {
+                        SharedPreferences sharedPreferences=getContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
+                        uid=sharedPreferences.getString("uid",null);
+                        if(!myChats.last_message.getSender().equals(uid))
+                        {
+                            holder.message.setTypeface(null, Typeface.BOLD);
+                            holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                            holder.username.setTypeface(null, Typeface.BOLD);
+                            holder.time.setTypeface(null, Typeface.BOLD);
+                            holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+
+                        }
+                    }
                     //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
                     if (holder.username.getBackground() != null) {
                         holder.shimmerFrameLayout.startShimmerAnimation();
@@ -286,6 +306,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                           //  intent.putExtra("isMap", "0");
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
+                            refresh();
 
                         }
 
@@ -314,6 +335,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(firebaseRecyclerAdapter);
 
 
+    }
+    public void refresh(){
+        firebaseRecyclerAdapter.notifyDataSetChanged();
     }
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ppic,adpic,status;
