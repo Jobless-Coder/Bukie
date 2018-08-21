@@ -7,44 +7,24 @@ public class MyChatsStatus implements Parcelable {
     private  String sellerid;
     private String buyerid;
     private String adid;
-
-    public LastMessage getLast_message() {
-        return last_message;
-    }
-
-    private String coverpic;
-    private String chatid;
-
-    public String getSellerid_isactive() {
-        return sellerid_isactive;
-    }
-
-    public String getBuyerid_isactive() {
-        return buyerid_isactive;
-    }
-
-    private String sellerpic;
-
-    public void setLast_message(LastMessage last_message) {
-        this.last_message = last_message;
-    }
-
     private String buyerpic;
     private String sellerfullname;
     private String buyerfullname;
     public LastMessage last_message;
     private String buyerid_isactive;
     private String sellerid_isactive;
-
-   /* public void setActive(boolean active) {
-        isActive = active;
+    private String coverpic;
+    private String chatid;
+    public LastMessage getLast_message() {
+        return last_message;
     }
-
-    public boolean isActive() {
-        return isActive;
-    }*/
-    //private int i;
-
+    public String getSellerid_isactive() {
+        return sellerid_isactive;
+    }
+    public String getBuyerid_isactive() {
+        return buyerid_isactive;
+    }
+    private String sellerpic;
 
 
     public MyChatsStatus(String sellerid, String buyerid, String adid, String coverpic, String chatid, String sellerpic, String buyerpic, String sellerfullname, String buyerfullname, LastMessage last_message) {
@@ -63,7 +43,6 @@ public class MyChatsStatus implements Parcelable {
     public String getSellerfullname() {
         return sellerfullname;
     }
-
     public String getBuyerfullname() {
         return buyerfullname;
     }
@@ -82,9 +61,6 @@ public class MyChatsStatus implements Parcelable {
         sellerid_isactive=sellerid+"_false";
     }
 
-
-
-
     public MyChatsStatus(){
 
     }
@@ -99,7 +75,6 @@ public class MyChatsStatus implements Parcelable {
         sellerpic=in.readString();
         sellerfullname = in.readString();
         buyerfullname = in.readString();
-       // last_message= (LastMessage) in.readValue(LastMessage.class.getClassLoader());
     }
 
     public static final Creator<MyChatsStatus> CREATOR = new Creator<MyChatsStatus>() {
@@ -125,13 +100,6 @@ public class MyChatsStatus implements Parcelable {
     public String getBuyerpic() {
         return buyerpic;
     }
-    /* public MyChats(String sellerid, String buyerid, String adid, String coverpic) {
-        this.sellerid = sellerid;
-        buyerid = buyerid;
-        this.adid = adid;
-
-        this.coverpic = coverpic;
-    }*/
 
     public String getSellerid() {
         return sellerid;
@@ -170,22 +138,14 @@ public class MyChatsStatus implements Parcelable {
        // dest.writeValue(LastMessage.class);
     }
 
-    public void setSellerfullname(String sellerfullname) {
-        this.sellerfullname = sellerfullname;
-    }
 
-    public void setBuyerfullname(String buyerfullname) {
-        this.buyerfullname = buyerfullname;
-    }
 
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
         if (!(obj instanceof MyChats)) return false;
         MyChatsStatus o = (MyChatsStatus) obj;
-
         return this.getChatid() .equals(o.getChatid());
-        // o.buyerfullname=this.buyerfullname;
 
     }
 

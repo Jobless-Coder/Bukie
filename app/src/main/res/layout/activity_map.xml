@@ -20,7 +20,14 @@
         android:theme="@style/BaseTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         >
-        <include layout="@layout/toolbar_mychats"/>
+        <TextView
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="Share Location"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
     </android.support.v7.widget.Toolbar>
 </android.support.design.widget.AppBarLayout>
     <RelativeLayout

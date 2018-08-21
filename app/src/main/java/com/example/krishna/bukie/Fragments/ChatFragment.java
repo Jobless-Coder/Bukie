@@ -283,7 +283,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             Intent intent = new Intent(context, ChatActivity.class);
                             intent.putExtra("mychats", myChats);
                             intent.putExtra("identity", identity);
-                            intent.putExtra("isMap", "0");
+                          //  intent.putExtra("isMap", "0");
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
 

@@ -6,17 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.location.gps" />
-
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <!--
-        uses-feature
-        android:name="android.hardware.CAMERA"
-        android:required="false" /
-    -->
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -36,6 +28,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -79,8 +77,8 @@
         <activity android:name=".RegistrationActivity" />
         <activity
             android:name=".HomePageActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -90,7 +88,6 @@
                 <data
                     android:host="books.jc"
                     android:scheme="https" />
-
             </intent-filter>
         </activity>
         <activity android:name=".PostnewadActivity" />
@@ -115,17 +112,14 @@
         </service>
 
         <activity android:name=".ImageCompressorTestActivity" />
-        <activity android:name=".SearchActivity">
-
-
-
-        </activity>
-        <activity android:name=".TagPickerActivity"/>
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".TagPickerActivity" />
         <activity
             android:name=".FullscreenScannerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_scanner"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".MapActivity2"></activity>
     </application>
 
 </manifest>

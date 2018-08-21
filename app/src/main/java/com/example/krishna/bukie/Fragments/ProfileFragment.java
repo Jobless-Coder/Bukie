@@ -1,8 +1,10 @@
 package com.example.krishna.bukie.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,7 +45,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,12 +124,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-       /* FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        firebaseFirestore.setFirestoreSettings(settings);*/
-
-
         myads.setSelected(true);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         fullname=sharedPreferences.getString("fullname",null);
@@ -169,19 +167,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
 
     }
 
-    public void getAds(/*final List<String> myadspathlist*/final String path, final String s) {
-        /*adapter=new Myadswishadapter(myadslist,getContext());
-        recyclerView.setAdapter(adapter);
-        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(manager);*/
-       // for (String path:myadspathlist){
+    public void getAds(final String path, final String s) {
+
             DocumentReference book=firebaseFirestore.collection("bookads").document(path);
             book.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task< DocumentSnapshot > task) {
 
                     if (task.isSuccessful()) {
-                       // Toast.makeText(getContext(), ""+path.equals("myads")+s, Toast.LENGTH_SHORT).show();
                         if(s.equals("myads")&&myadsfrag==true||s.equals("mywishlist")&&myadsfrag==false) {
                             DocumentSnapshot snapshot = task.getResult();
                             BookAds bookAds = snapshot.toObject(BookAds.class);
@@ -251,7 +244,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
+                disableFCM();
                 firebaseAuth.signOut();
+
+               // FirebaseMessagingService.
                 SharedPreferences settings = getContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
                 settings.edit().clear().commit();
                 //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
@@ -356,5 +352,47 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         }
 
         super.onResume();
+    }
+    @SuppressLint("StaticFieldLeak")
+    public void disableFCM(){
+       // FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+       /* new Thread(() -> {
+            try {
+                // Remove InstanceID initiate to unsubscribe all topic
+                // TODO: May be a better way to use FirebaseMessaging.getInstance().unsubscribeFromTopic()
+                FirebaseInstanceId.getInstance().deleteInstanceId();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();*/
+      /* Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("kkk","lll");
+                try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    Log.i("kkk","lll");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i("kkk","lll2");
+                }
+            }
+        });
+       thread.start();*/
+        /*new AsyncTask<Void, Void, Void>()
+        {
+            @Override
+            protected Void doInBackground(Void... params)
+            {
+
+
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result)
+            {
+
+            }
+        }.execute();*/
     }
 }

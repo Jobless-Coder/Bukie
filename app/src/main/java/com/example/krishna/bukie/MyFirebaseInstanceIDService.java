@@ -77,6 +77,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         {
             FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("token").setValue(token);
         }
-        Log.e("Token: ",token);
+       // Log.e("Token: ",token);
     }
 }

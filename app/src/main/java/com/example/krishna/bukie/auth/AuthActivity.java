@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.krishna.bukie.BuildConfig;
 import com.example.krishna.bukie.HomePageActivity;
+import com.example.krishna.bukie.MyFirebaseInstanceIDService;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.RegistrationActivity;
 import com.facebook.AccessToken;
@@ -51,6 +52,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 
@@ -120,6 +122,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
 
+        MyFirebaseInstanceIDService myFirebaseInstanceIDService=new MyFirebaseInstanceIDService();
+        myFirebaseInstanceIDService.onTokenRefresh();
+       // FirebaseInstanceId.getInstance().getInstanceId();
         // Google
         GoogleSignInOptions gso =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

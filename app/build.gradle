@@ -12,7 +12,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.jsibbold:zoomage:1.1.0'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
+    implementation 'com.google.android.gms:play-services-places:15.0.1'
 
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'com.journeyapps:zxing-android-embedded:3.5.0'

@@ -1,6 +1,7 @@
 package com.example.krishna.bukie;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -86,8 +87,9 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         myChats = bundle.getParcelable("mychats");
         identity=bundle.getString("identity");
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
-        TextView username2=(TextView)findViewById(R.id.username);
-        username2.setText("Share Location");
+        toolbar.setTitle("");
+      //  TextView username2=(TextView)findViewById(R.id.username);
+        //username2.setText("Share Location");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -283,43 +285,32 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             }
             Geopoint geopoint = new Geopoint(mCurrentLocation.getLatitude() + "", mCurrentLocation.getLongitude() + "", result);
             Intent intent = new Intent(MapActivity.this, ChatActivity.class);
-            intent.putExtra("mychats", myChats);
-            intent.putExtra("identity", identity);
-            intent.putExtra("isMap", "1");
+            //intent.putExtra("mychats", myChats);
+            //intent.putExtra("identity", identity);
+            //intent.putExtra("isMap", "1");
             intent.putExtra("geopoint", geopoint);
-        /*intent.putExtra("latitude", mCurrentLocation.getLatitude()+"");
-        intent.putExtra("longitude", mCurrentLocation.getLongitude()+"");
-        intent.putExtra("locality", result);*/
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            setResult(Activity.RESULT_OK,intent);
+          //  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+           // startActivity(intent);
             finish();
         }
     }
     @Override
     public void onBackPressed()
     {
-       /* Intent intent = new Intent(MapActivity.this, ChatActivity.class);
-        intent.putExtra("mychats", myChats);
-        intent.putExtra("identity", identity);
-        intent.putExtra("isMap", "0");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
+        setResult(Activity.RESULT_CANCELED);
+
         finish();
-        //super.onBackPressed();
+
 
     }
     @Override
     public boolean onSupportNavigateUp(){
-        /*Intent intent = new Intent(MapActivity.this, ChatActivity.class);
-        intent.putExtra("mychats", myChats);
-        intent.putExtra("identity", identity);
-        intent.putExtra("isMap", "0");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
-        //finish();
+        setResult(Activity.RESULT_CANCELED);
+
         finish();
 
-        //finish();
+
         return true;
     }
 

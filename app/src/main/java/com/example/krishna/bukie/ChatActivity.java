@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -61,6 +62,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -103,6 +106,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_IMAGE_CAPTURE = 5;
     private static final int PICK_IMAGE_MULTIPLE = 14;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE =111 ;
+    private static final int SHARE_LOCATION = 199;
+    private static final int ERROR_DIALOG = 97 ;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<MessageItem> messageItemList;
@@ -154,7 +159,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         userfullname=sharedPreferences.getString("fullname",null);
         profilepicuser=sharedPreferences.getString("profilepic",null);
         Bundle bundle = getIntent().getExtras();
-        String isMap = bundle.getString("isMap");
+        //String isMap = bundle.getString("isMap");
         myChats = bundle.getParcelable("mychats");
         identity = bundle.getString("identity");
         if (identity.compareTo("buyer") == 0) {
@@ -363,7 +368,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
 
-        },profilepicuser);
+        },profilepicuser,identity,myChats);
         fh.startListening();
         //TODO :this too
         /*recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -374,11 +379,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 //Toast.makeText(ChatActivity.this, "hello", Toast.LENGTH_SHORT).show();
             }
         });*/
-        if (isMap.compareTo("1") == 0) {
+        //TODO:
+       /* if (isMap.compareTo("1") == 0) {
             geopoint = bundle.getParcelable("geopoint");
 
             sendMessage("location");
-        }
+        }*/
         chatbox.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -515,7 +521,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void shareLocation() {
-        LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(mListener != null){
             isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -526,24 +532,46 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if(isGPSLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.GPS_PROVIDER);
-                    intent.putExtra("mychats", myChats);
-                    intent.putExtra("identity", identity);
-                    startActivity(intent);
-                   finish();
+                   // intent.putExtra("mychats", myChats);
+                   // intent.putExtra("identity", identity);
+                   // startActivity(intent);
+                    startActivityForResult(intent,SHARE_LOCATION);
+                  // finish();
                 }else if(isNetworkLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
-                    intent.putExtra("mychats", myChats);
-                    intent.putExtra("identity", identity);
-                    startActivity(intent);
+                    startActivityForResult(intent,SHARE_LOCATION);
+                   // intent.putExtra("mychats", myChats);
+                   // intent.putExtra("identity", identity);
+                   // startActivity(intent);
 
-                    finish();
+                    //finish();
                 }else{
                     //Device location is not set
                     PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
                 }
             }
-        }, 1000);
+        }, 1000);*/
+        if(isServicesOk()) {
+            Intent intent = new Intent(ChatActivity.this, MapActivity2.class);
+            startActivityForResult(intent, SHARE_LOCATION);
+        }
+    }
+    public boolean isServicesOk(){
+        int available= GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ChatActivity.this);
+        if(available== ConnectionResult.SUCCESS)
+        {
+            return true;
+
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            Dialog dialog=GoogleApiAvailability.getInstance().getErrorDialog(ChatActivity.this,available,ERROR_DIALOG);
+            dialog.show();
+        }
+        else {
+            Toast.makeText(this, "Error in play services,can't load map!", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     @Override
@@ -559,6 +587,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 case REQUEST_IMAGE_CAPTURE:
 
                     uploadImage(mCurrentPhotoPath,"camera");
+
+                    break;
+                case SHARE_LOCATION:
+                    geopoint = data.getParcelableExtra("geopoint");
+
+                    sendMessage("location");
+
 
                     break;
                 case PICK_IMAGE_MULTIPLE:

@@ -2,7 +2,16 @@ package com.example.krishna.bukie;
 
 public class ChatNotifs
 {
-    String message,receiver_uid,sender_fullname,proilepic;
+    String message,receiver_uid,sender_fullname,proilepic,identity;
+    MyChatsStatus myChatsStatus;
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public MyChatsStatus getMyChatsStatus() {
+        return myChatsStatus;
+    }
 
     /*public ChatNotifs(String message, String receiver_uid, String sender_fullname) {
         this.message = message;
@@ -14,38 +23,29 @@ public class ChatNotifs
         return proilepic;
     }
 
-    public void setProilepic(String proilepic) {
-        this.proilepic = proilepic;
-    }
 
-    public ChatNotifs(String message, String receiver_uid, String sender_fullname, String proilepic) {
+    public ChatNotifs(String message, String receiver_uid, String sender_fullname, String proilepic,MyChatsStatus myChatsStatus,String identity) {
         this.message = message;
         this.receiver_uid = receiver_uid;
         this.sender_fullname = sender_fullname;
         this.proilepic = proilepic;
+        this.identity=identity;
+        this.myChatsStatus=myChatsStatus;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public String getReceiver_uid() {
         return receiver_uid;
     }
 
-    public void setReceiver_uid(String receiver_uid) {
-        this.receiver_uid = receiver_uid;
-    }
 
     public String getSender_fullname() {
         return sender_fullname;
     }
 
-    public void setSender_fullname(String sender_fullname) {
-        this.sender_fullname = sender_fullname;
-    }
+
 }

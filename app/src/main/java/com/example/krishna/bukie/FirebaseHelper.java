@@ -41,9 +41,11 @@ private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
 private CollectionReference collectionReference;
 private ListenerRegistration listenerRegistration;
 private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+private MyChatsStatus myChatsStatus;
+private String identity;
 
 
-    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener,String profilepic)
+    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener,String profilepic,String identity,MyChatsStatus myChatsStatus)
     {
 
         adID = ad;
@@ -55,6 +57,8 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
         this.userfullname=userfullname;
         createRefID();
         this.profilepic=profilepic;
+        this.myChatsStatus=myChatsStatus;
+        this.identity=identity;
 
     }
 
@@ -126,7 +130,6 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue()!=null) {
-                                   // last_message[0] = (LastMessage) dataSnapshot.getValue();
                                     time[0] =Long.parseLong(dataSnapshot.getValue().toString());
                                 }
                             }
@@ -153,8 +156,9 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                 if(dataSnapshot.getValue()==null||dataSnapshot.getValue().toString().equals("false")){
-                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname,profilepic);
+                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname,profilepic,myChatsStatus,identity);
                                     firebaseDatabase.getReference().child("notifications").push().setValue(chatNotifs);
+                                    firebaseDatabase.getReference().child("fake_notifications").push().setValue(chatNotifs);
                                 }
                             }
 
@@ -164,7 +168,6 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                             }
                         });
 
-                        //documentReference.getId();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -182,7 +185,6 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
-                    // Log.w(TAG, "listen:error", e);
                     return;
                 }
 
@@ -190,18 +192,15 @@ private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
                     switch (dc.getType()) {
                         case ADDED:
                             MessageItem chat=dc.getDocument().toObject(MessageItem.class);
-                            //Log.i("MessageChati",chat.getMessage_body());
+
                             listener.receiveIncomingMessage(chat, dc.getDocument().getId());
-                            // Log.d(TAG, "New city: " + dc.getDocument().getData());
                             break;
                         case MODIFIED:
                             MessageItem ch = dc.getDocument().toObject(MessageItem.class);
                             listener.updateMessageStatus(ch);
 
-                            // Log.d(TAG, "Modified city: " + dc.getDocument().getData());
                             break;
                         case REMOVED:
-                            //Log.d(TAG, "Removed city: " + dc.getDocument().getData());
                             break;
                     }
 

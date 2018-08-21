@@ -66,17 +66,9 @@ public class TagPickerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TagPickerActivity.this, PostnewadActivity.class);
-                intent.putExtra("isHome", 2);
                 Tuple chips=new Tuple(chipList);
-//                Toast.makeText(TagPickerActivity.this, ""+chipList.get(0).getText(), Toast.LENGTH_SHORT).show();
-
                 intent.putExtra("chips", chips);
                 setResult(Activity.RESULT_OK,intent);
-        /*intent.putExtra("latitude", mCurrentLocation.getLatitude()+"");
-        intent.putExtra("longitude", mCurrentLocation.getLongitude()+"");
-        intent.putExtra("locality", result);*/
-                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //startActivity(intent);
 
                 finish();
 
@@ -93,7 +85,6 @@ public class TagPickerActivity extends AppCompatActivity {
                     tagList.add(dataSnapshot1.getValue().toString());
                     istagList.add(false);
                     tagPickerAdapter.notifyDataSetChanged();
-                   Log.d("Locations updated", "location: " +istagList.toString()); //log
                 }
             }
 
