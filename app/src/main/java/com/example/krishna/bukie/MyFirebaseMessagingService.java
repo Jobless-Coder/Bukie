@@ -31,6 +31,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.jobdispatcher.Constraint;
@@ -143,7 +144,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
        // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
-
+        Log.i("notifs",messageBody.getNotification().getIcon());//bal getIcon null asche
+        //Toast.makeText(this, ""+messageBody.getNotification().getIcon(), Toast.LENGTH_SHORT).show();
         Bitmap bitmap;
         if(messageBody.getNotification().getIcon()!=null)
          bitmap= Glide.with(getApplication()).load(messageBody.getNotification().getIcon()).asBitmap().into(-1,-1).get();

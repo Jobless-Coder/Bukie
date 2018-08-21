@@ -88,8 +88,6 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         identity=bundle.getString("identity");
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         toolbar.setTitle("");
-      //  TextView username2=(TextView)findViewById(R.id.username);
-        //username2.setText("Share Location");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -285,13 +283,9 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             }
             Geopoint geopoint = new Geopoint(mCurrentLocation.getLatitude() + "", mCurrentLocation.getLongitude() + "", result);
             Intent intent = new Intent(MapActivity.this, ChatActivity.class);
-            //intent.putExtra("mychats", myChats);
-            //intent.putExtra("identity", identity);
-            //intent.putExtra("isMap", "1");
+
             intent.putExtra("geopoint", geopoint);
             setResult(Activity.RESULT_OK,intent);
-          //  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-           // startActivity(intent);
             finish();
         }
     }

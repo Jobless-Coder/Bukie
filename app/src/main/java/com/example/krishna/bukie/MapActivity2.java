@@ -3,6 +3,7 @@ package com.example.krishna.bukie;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,6 +43,7 @@ import java.util.List;
 public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
     private static final float DEFAULT_ZOOM = 15f;
     //private static final int ERROR_DIALOG = 25;
+    private SupportMapFragment mapFragment;
     protected GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
     private GoogleApiClient mGoogleApiClient;
@@ -55,13 +58,13 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map2);
         autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.input_search);
-        imageView = (ImageView) findViewById(R.id.ic_gps);
+      //  imageView = (ImageView) findViewById(R.id.ic_gps);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mGeoDataClient = Places.getGeoDataClient(this, null);
-        mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+       // mGeoDataClient = Places.getGeoDataClient(this, null);
+       // mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -72,10 +75,10 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
     }
     private void checkMyPermissionLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED||ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED)
+                != PackageManager.PERMISSION_GRANTED/*||ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED*/)
         {
-            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+            /*if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED)
 
             PermissionUtils.requestPermission(this);
@@ -83,7 +86,8 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
             if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED){
                 PermissionUtils.requestPermission(this);
-            }
+            }*/
+            PermissionUtils.requestPermission(this);
         }
         else {
             init();
@@ -102,10 +106,11 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         if (PermissionUtils.isPermissionGranted(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION}, grantResults)) {
 
-            if (PermissionUtils.isPermissionGranted(new String[]{
+            /*if (PermissionUtils.isPermissionGranted(new String[]{
                     Manifest.permission.ACCESS_COARSE_LOCATION}, grantResults)) {
                 init();
-            }
+            }*/
+            init();
 
         } else {
             Toast.makeText(this, "Stop apps without permission to use location information", Toast.LENGTH_SHORT).show();
@@ -116,13 +121,14 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void init() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
         placeAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient,
                 BOUNDS_INDIA, null);
 
         autoCompleteTextView.setAdapter(placeAutocompleteAdapter);
+
 
         autoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -157,25 +163,29 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
            // Log.d(TAG, "geoLocate: found a location: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
 
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), 17,
                     address.getAddressLine(0));
         }
     }
     private void moveCamera(LatLng latLng, float zoom, String title){
       //  Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        if(!title.equals("My Location")){
+        //if(!title.equals("My Location")){
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
-                    .title(title);
+                    .title(title)
+                    ;
             googleMap.addMarker(options);
-        }
+       // }
 
         hideSoftKeyboard();
     }
     private void hideSoftKeyboard(){
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(autoCompleteTextView.getWindowToken(), 0);
+       // this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
 
@@ -205,7 +215,9 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //mGoogleApiClient.connect();
         this.googleMap = googleMap;
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
 
     }
 }

@@ -2,7 +2,7 @@ package com.example.krishna.bukie;
 
 public class ChatNotifs
 {
-    String message,receiver_uid,sender_fullname,proilepic,identity;
+    String message,receiver_uid,sender_fullname,profilepic,identity;
     MyChatsStatus myChatsStatus;
 
     public String getIdentity() {
@@ -20,7 +20,7 @@ public class ChatNotifs
     }*/
 
     public String getProilepic() {
-        return proilepic;
+        return profilepic;
     }
 
 
@@ -28,7 +28,7 @@ public class ChatNotifs
         this.message = message;
         this.receiver_uid = receiver_uid;
         this.sender_fullname = sender_fullname;
-        this.proilepic = proilepic;
+        this.profilepic = proilepic;
         this.identity=identity;
         this.myChatsStatus=myChatsStatus;
     }
