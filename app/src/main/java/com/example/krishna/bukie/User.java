@@ -6,6 +6,8 @@ public class User {
     private String profilepic;
     private String signinmethod;
 
+    public User() {}
+
     public User(String uid, String fullname, String profilepic, String signinmethod) {
         this.uid = uid;
         this.fullname = fullname;

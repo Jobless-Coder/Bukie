@@ -99,18 +99,31 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         String uid = firebaseUser.getUid();
         String fullname = firebaseUser.getDisplayName();
-        String profilepic;
+        mUser = new User(uid, fullname, "", signinmethod);
         if (firebaseUser.getPhotoUrl() != null) {
-            profilepic = firebaseUser.getPhotoUrl().toString();
+            Uri uri = firebaseUser.getPhotoUrl();
+            mUser.setProfilepic(uri.toString());
+            Glide.with(getApplicationContext()).load(uri).into(mProfilePicImg);
         } else {
-            profilepic = null;
+            String path = "profilepicuser/" + getString(R.string.profile_pic_default);
+            StorageReference imageRef = storageReference.child(path);
+            imageRef.getDownloadUrl()
+                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                Uri uri = task.getResult();
+                                mUser.setProfilepic(uri.toString());
+                                Glide.with(getApplicationContext()).load(uri).into(mProfilePicImg);
+                            } else {
+                                Log.d(TAG, "Failed to fetch default profile pic url: " + task.getException());
+                            }
+                        }
+                    });
         }
-        mUser = new User(uid, fullname, profilepic, signinmethod);
         Log.d(TAG, "Current user info: " + mUser);
 
         mFullNameEditText.setText(mUser.getFullname());
-        if (mUser.getProfilepic() != null)
-            Glide.with(getApplicationContext()).load(mUser.getProfilepic()).into(mProfilePicImg);
 
         DatabaseReference interestsRef = FirebaseDatabase.getInstance().getReference().child("interests");
         interestsRef.addListenerForSingleValueEvent(new ValueEventListener() {
