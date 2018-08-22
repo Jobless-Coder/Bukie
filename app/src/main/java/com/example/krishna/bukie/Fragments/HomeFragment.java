@@ -167,7 +167,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         progressDialog.setMessage("Searching...");
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context);
+        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!isSearch);
         recyclerView.setAdapter(homeBookAdsAdapter);
         floatingActionButton.setOnClickListener(this);
         back=getActivity().findViewById(R.id.back);
@@ -395,6 +395,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if(searchAdsList.size()>0) {
                 bookAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
+                homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!isSearch);//update isSearch
                 bookAdsList.addAll(searchAdsList);
                 searchAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
