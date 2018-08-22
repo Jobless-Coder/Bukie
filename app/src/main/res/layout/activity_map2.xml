@@ -16,7 +16,6 @@
 
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_marginTop="?android:attr/actionBarSize"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:elevation="10dp"
@@ -25,6 +24,8 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             app:cardElevation="8dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             app:cardBackgroundColor="@color/white"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
@@ -52,16 +53,26 @@
             android:id="@+id/input_search"
             android:hint="Search Location"
             android:imeOptions="actionSearch"/>
+                <android.support.v7.widget.CardView
+                    android:layout_width="30dp"
+                    android:layout_marginLeft="5dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="0dp"
+                    android:id="@+id/search"
+                    android:clickable="true"
+                    android:foreground="@drawable/ripplebg"
+                    android:layout_gravity="center"
+                    android:layout_height="30dp">
                 <ImageView
                     android:tint="@color/colorAccent"
                     android:layout_gravity="center"
                     android:src="@drawable/search2"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:id="@+id/ic_magnify"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
                     />
+                </android.support.v7.widget.CardView>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
@@ -71,6 +82,7 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="wrap_content">
         <android.support.v7.widget.Toolbar
             android:elevation="4dp"
@@ -91,6 +103,95 @@
                 android:layout_height="match_parent" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+    <LinearLayout
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:background="@null"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="80dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:clickable="true"
+
+            app:cardCornerRadius="25dp"
+            android:foreground="@drawable/ripplebg"
+            android:layout_width="50dp"
+            app:cardBackgroundColor="@color/white"
+            android:id="@+id/mylocation"
+            android:layout_marginBottom="10dp"
+            android:layout_height="50dp">
+            <ImageView
+                android:tint="@color/deep_grey"
+                android:layout_gravity="center"
+                android:src="@drawable/mylocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:clickable="true"
+            android:visibility="gone"
+            app:cardCornerRadius="25dp"
+            android:foreground="@drawable/ripplebg"
+            android:layout_width="50dp"
+            app:cardBackgroundColor="@color/white"
+            android:id="@+id/picklocation"
+            android:layout_height="50dp">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/picklocation"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+        </android.support.v7.widget.CardView>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <android.support.v7.widget.CardView
+        android:clickable="true"
+        app:cardCornerRadius="20dp"
+        android:foreground="@drawable/ripple_white"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="@color/colorAccent"
+        android:id="@+id/currentlocation"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="40dp">
+        <TextView
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:text="Share current location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:clickable="true"
+            app:cardCornerRadius="20dp"
+            android:layout_marginRight="10dp"
+            android:foreground="@drawable/ripple_white"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/colorAccent"
+            android:id="@+id/selectedlocation"
+            android:layout_marginBottom="10dp"
+            android:layout_height="40dp">
+            <TextView
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:text="Share selected location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 
 
 </RelativeLayout>

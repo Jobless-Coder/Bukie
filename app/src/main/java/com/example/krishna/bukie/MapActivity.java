@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -79,6 +80,7 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
     private GoogleMap mMap;
     private View currentlocation;
     private String latitude,longitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -260,6 +262,7 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         }
     }
+
 
     @Override
     public void onClick(View v) {

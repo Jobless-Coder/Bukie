@@ -521,7 +521,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void shareLocation() {
-        LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+       /* LocationManager mListener = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(mListener != null){
             isGPSLocation = mListener.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkLocation = mListener.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -532,30 +532,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if(isGPSLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.GPS_PROVIDER);
-                   // intent.putExtra("mychats", myChats);
-                   // intent.putExtra("identity", identity);
-                   // startActivity(intent);
+
                     startActivityForResult(intent,SHARE_LOCATION);
-                  // finish();
+
                 }else if(isNetworkLocation){
                     Intent intent = new Intent(ChatActivity.this, MapActivity.class);
                     intent.putExtra("provider", LocationManager.NETWORK_PROVIDER);
                     startActivityForResult(intent,SHARE_LOCATION);
-                   // intent.putExtra("mychats", myChats);
-                   // intent.putExtra("identity", identity);
-                   // startActivity(intent);
 
-                    //finish();
+
+
                 }else{
                     //Device location is not set
                     PermissionUtils.LocationSettingDialog.newInstance().show(getSupportFragmentManager(), "Setting");
                 }
             }
-        }, 1000);
-        /*if(isServicesOk()) {
+        }, 1000);*/
+        if(isServicesOk()) {
             Intent intent = new Intent(ChatActivity.this, MapActivity2.class);
             startActivityForResult(intent, SHARE_LOCATION);
-        }*/
+        }
     }
     public boolean isServicesOk(){
         int available= GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ChatActivity.this);
