@@ -7,9 +7,10 @@
     <string name="fb_login_protocol_scheme">fb999908260170527</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
-
+    <!--string name="API_KEY">AIzaSyBVLP5gY92V5siw_09TjUkNv3Nkf0rQvyo</string-->
+        <!--<string name="API_KEY">AIzaSyC4T-gin4PUUPX96oYHGXgFB4l7mhb0lXk</string>-->
     <string name="API_KEY">AIzaSyB1Xr6qLG49SSCRCPbr5L2uDyKRxnIlue0</string>
-    <!--string name="API_KEY">AIzaSyB5AsFxpnsbQW8EUxOL9wNkCz9_TDvuwh0</string-->
+
     <string name="title_activity_fullscreen_scanner">FullscreenScannerActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

@@ -47,9 +47,11 @@ import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.Query;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.RESTapiinterface;
+import com.example.krishna.bukie.helper.SearchData;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -66,6 +68,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -301,6 +304,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Server error!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //Added by Krishna Bose, 22nd August
+        //this code is used to log the search data in RTDb for further reading
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
+        SharedPreferences sharedPreferences= getContext().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
+        uid=sharedPreferences.getString("uid",null);
+        dref = dref.child("users/"+uid).child("my_searches").push();
+        SearchData data;
+        if(searchType!=null)
+            data = new SearchData(query, new Date().getTime(),!searchType.equals("isbn"));
+        else
+            data = new SearchData(query, new Date().getTime(),true);
+        dref.setValue(data);
 
     }
 

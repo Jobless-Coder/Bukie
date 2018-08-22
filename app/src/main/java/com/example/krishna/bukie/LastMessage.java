@@ -1,7 +1,7 @@
 package com.example.krishna.bukie;
 
 public class LastMessage {
-    private String message_body,type,sender,status;
+        private String message_body,type,sender,status;
     private Long time;
 
     /*protected LastMessage(Parcel in) {

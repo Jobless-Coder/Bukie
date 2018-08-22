@@ -44,6 +44,7 @@ import com.rd.draw.controller.DrawController;
 import com.victor.loading.book.BookLoading;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -283,6 +284,29 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     private void increaseViewCounter() {
 
+        //added by Krishna Bose, 22nd August, 2018
+        //I know, what you are going to say, this method is for increasing the view counter
+        //But This method is called when anyone except ad owner opens the app
+        //so this suits my purpose for logging the "ad opened by.." record here as well
+
+        //this code uploads a beacon that user has opened this ad at a particular time
+        DatabaseReference dref = firebaseDatabase.getReference().child("collectibles").push();
+        // I'm pushing into RTDb
+        // root-> collectibles-> {{AutoID}}
+        //                                  --user_id
+        //                                  --timestamp
+        //                                  --adid
+        //                                  --from: (can be one of [homepage,ref_link])
+        dref.child("user_id").setValue(uid);
+        dref.child("timestamp").setValue(new Date().getTime()+"");
+        dref.child("adid").setValue(bookAds.getAdid());
+        if(wasReferredBylink)
+            dref.child("from").setValue("ref_link");
+        else
+            dref.child("from").setValue("homepage");
+
+
+        //this code increases the counter value by 1
         firebaseFirestore.collection("bookads").document(bookAds.getAdid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
