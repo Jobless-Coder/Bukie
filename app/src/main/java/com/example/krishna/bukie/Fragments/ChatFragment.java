@@ -145,7 +145,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                         .build();
         firebaseRecyclerAdapter=new FirebaseRecyclerAdapter<MyChatsStatus,MyChatHolder>(options) {
             @Override
-            public void onBindViewHolder(final MyChatHolder holder, int position, MyChatsStatus model) {
+            public void onBindViewHolder(final MyChatHolder holder, int position, final MyChatsStatus model) {
                 final MyChatsStatus myChats = model;
                 //if (myChats.isActive()) {
                     Date d = new Date(myChats.getLast_message().getTime());
@@ -306,7 +306,16 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                           //  intent.putExtra("isMap", "0");
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
-                            refresh();
+                            //for temporary fixing highlighted chats and converting them to normal
+
+                            TextView username,time,message;
+                            username=v.findViewById(R.id.username);
+                            time=v.findViewById(R.id.time);
+                            message=v.findViewById(R.id.message);
+                            username.setTypeface(Typeface.DEFAULT);
+                            time.setTypeface(Typeface.DEFAULT);
+                            message.setTypeface(Typeface.DEFAULT);
+                            //refresh();
 
                         }
 
