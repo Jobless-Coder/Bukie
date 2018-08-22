@@ -301,9 +301,21 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         dref.child("timestamp").setValue(new Date().getTime()+"");
         dref.child("adid").setValue(bookAds.getAdid());
         if(wasReferredBylink)
-            dref.child("from").setValue("ref_link");
+            dref.child("from").setValue("ref");
         else
-            dref.child("from").setValue("homepage");
+        {
+            try
+            {
+                String coming_from = getIntent().getExtras().getString("from","home");
+                dref.child("from").setValue(coming_from);
+            }
+            catch (Exception e)
+            {
+                dref.child("from").setValue("home");
+            }
+
+
+        }
 
 
         //this code increases the counter value by 1
