@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.profile.settings;
+package com.example.krishna.bukie.home.profile.settings;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

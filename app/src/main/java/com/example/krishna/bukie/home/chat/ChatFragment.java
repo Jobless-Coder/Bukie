@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.chat;
+package com.example.krishna.bukie.home.chat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +12,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -57,8 +61,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private MyChatItemClickListener myChatItemClickListener;
     private String chatid,identity,uid;
     private boolean buyfrag=true;
-    private ViewGroup toolbargroup;
-    private View toolbarview,buy,sell,tabsview;
+    private View buy,sell,tabsview;
     private MyChatsAdapter myChatsAdapter;
     private List<MyChats> myChatsList=new ArrayList<>();
     private List<MyChats> removeMyChatsList=new ArrayList<>();
@@ -75,7 +78,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         firebaseFirestore=FirebaseFirestore.getInstance();
         context=getContext();
         settings = new FirebaseFirestoreSettings.Builder()
@@ -89,15 +91,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v=inflater.inflate(R.layout.fragment_chat, container,false);
-        toolbargroup=getActivity().findViewById(R.id.toolbar_layout);
-        toolbargroup.removeAllViews();
-        toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_mychats,toolbargroup,false);
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle("My Chats");
+
         tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.VISIBLE);
-        toolbargroup.addView(toolbarview);
         getActivity().findViewById(R.id.header2).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.header3).setVisibility(View.GONE);
-        //toolbargroup.findViewById(R.id.header).setVisibility(View.VISIBLE);
       /*  FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
                 .build();
@@ -116,8 +116,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         uid=sharedPreferences.getString("uid",null);
 
         getMyChats("buyerid");
-        setHasOptionsMenu(true);
-
 
         return v;
     }

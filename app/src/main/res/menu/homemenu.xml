@@ -2,15 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/search"
+        android:id="@+id/item_search"
         android:icon="@drawable/search2"
         android:title="Search"
-        app:showAsAction="collapseActionView|ifRoom"
-        android:orderInCategory="1"
-        ></item>
-    <!--      app:actionViewClass="android.widget.SearchView" /-->
+        app:showAsAction="ifRoom" />
 
     <!--item
+    app:actionLayout="@layout/action_view_search"
         android:id="@+id/Filter"
         android:icon="@drawable/Filter"
 

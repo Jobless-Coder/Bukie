@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,8 +27,8 @@ import com.example.krishna.bukie.LastMessage;
 import com.example.krishna.bukie.MyChatsStatus;
 import com.example.krishna.bukie.MyFirebaseInstanceIDService;
 import com.example.krishna.bukie.R;
-import com.example.krishna.bukie.chat.ChatFragment;
-import com.example.krishna.bukie.profile.ProfileFragment;
+import com.example.krishna.bukie.home.chat.ChatFragment;
+import com.example.krishna.bukie.home.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -58,7 +57,6 @@ public class HomePageActivity extends AppCompatActivity {
     View toolbar;
     ViewGroup toolbargroup;
     private DrawerLayout mDrawerLayout;
-    ActionBar actionbar;
     private int mposition;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private String uid;
@@ -77,11 +75,15 @@ public class HomePageActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        Toolbar toolbar = findViewById(R.id.home_toolbar);
+        setSupportActionBar(toolbar);
+
+
         tabsview=findViewById(R.id.header);
 
 
         frameLayout =findViewById(R.id.frame);
-        toolbar=findViewById(R.id.toolbar);
 
         toolbargroup=findViewById(R.id.toolbar_layout);
 
@@ -215,10 +217,6 @@ public class HomePageActivity extends AppCompatActivity {
                         break;
                     case 2:
                         if(mposition!=2) {
-
-                            toolbargroup.removeAllViews();
-                            toolbarview = getLayoutInflater().inflate(R.layout.toolbar_myprofile, toolbargroup, false);
-                            toolbargroup.addView(toolbarview);
                             fragment = new ProfileFragment();
                             mposition = 2;
                         }

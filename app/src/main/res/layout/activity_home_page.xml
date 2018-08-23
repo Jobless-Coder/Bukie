@@ -1,57 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/coordinator"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:transitionName="search"
         android:id="@+id/transitiontoolbar"
         android:layout_width="match_parent"
         android:orientation="vertical"
+        android:background="@color/light_grey"
         android:layout_height="wrap_content">
-        <!--android.support.v7.widget.Toolbar
-            android:background="@color/light_grey"
-            android:id="@+id/toolbar"
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:theme="@style/BaseTheme"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            -->
-            <!--/android.support.v7.widget.Toolbar-->
-        <LinearLayout
-            android:background="@color/light_grey"
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RelativeLayout
+            android:layout_height="wrap_content" >
+
+            <android.support.v7.widget.Toolbar
+                style="@style/ToolbarStyle"
+                android:id="@+id/home_toolbar"
+                android:layout_margin="5dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="?android:attr/actionBarSize" />
+
             <LinearLayout
-                android:id="@+id/toolbar_layout"
+                android:visibility="gone"
+                android:id="@+id/search_bar_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:clickable="true" >
 
-            <include
-                 layout="@layout/toolbar_homepage"/>
+                <include layout="@layout/toolbar_search" />
+
             </LinearLayout>
-                <LinearLayout
 
-                    android:background="@color/white"
-                    android:visibility="gone"
-                    android:id="@+id/header3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <include layout="@layout/toolbar_search"/>
-                </LinearLayout>
-
-            </RelativeLayout>
-        </LinearLayout>
-
+        </RelativeLayout>
 
         <android.support.v7.widget.CardView
             app:cardElevation="0dp"

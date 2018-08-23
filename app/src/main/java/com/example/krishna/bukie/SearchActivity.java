@@ -64,13 +64,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         Toolbar toolbar=findViewById(R.id.toolbar_chats);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        search=toolbar.findViewById(R.id.searchbtn);
+        //search=toolbar.findViewById(R.id.searchbtn);
         back=toolbar.findViewById(R.id.back);
-        search.setOnClickListener(this);
+        //search.setOnClickListener(this);
         back.setOnClickListener(this);
-        searchbox=toolbar.findViewById(R.id.searchbox);
+        /*searchbox=toolbar.findViewById(R.id.searchbox);
         search_icon=toolbar.findViewById(R.id.searchicon);
-        clear_icon=toolbar.findViewById(R.id.clearicon);
+        clear_icon=toolbar.findViewById(R.id.clearicon);*/
         progressDialog=new ProgressDialog(this);
         progressDialog.setMessage("Searching wait ..");
 
@@ -87,7 +87,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         recyclerView.setHasFixedSize(true);
         bookAdsList=new ArrayList<>();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,this);
+        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,this, false);
         recyclerView.setAdapter(homeBookAdsAdapter);
         searchbox.addTextChangedListener(new TextWatcher() {
             @Override
@@ -164,6 +164,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
+        /*
         switch (v.getId()){
             case R.id.searchscanicon:
                 scanCode();
@@ -183,7 +184,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 onBackPressed();
                 break;
         }
-
+        */
     }
 
     private boolean getCameraPermissions()

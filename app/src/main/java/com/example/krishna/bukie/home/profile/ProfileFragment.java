@@ -1,15 +1,16 @@
-package com.example.krishna.bukie.profile;
+package com.example.krishna.bukie.home.profile;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -45,13 +46,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "ProfileFragment";
 
@@ -93,8 +92,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         else {
             Toast.makeText(getContext(), "No user found", Toast.LENGTH_SHORT).show();
         }
-
-        setHasOptionsMenu(true);
     }
     /*private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
@@ -107,12 +104,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         View v=inflater.inflate(R.layout.fragment_profile, container,false);
+
+        setHasOptionsMenu(true);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle("My Profile");
+
         View tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.GONE);
         getActivity().findViewById(R.id.header2).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.header3).setVisibility(View.GONE);
         myads=v.findViewById(R.id.myads);
         mywishlist=v.findViewById(R.id.mywishlist);
         myads.setOnClickListener(this);
@@ -120,8 +120,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
         editprofilebtn=v.findViewById(R.id.editprofilebutton);
         editprofilebtn.setOnClickListener(this);
-        menu=getActivity().findViewById(R.id.menu);
-        menu.setOnClickListener(this);
         firebaseFirestore=FirebaseFirestore.getInstance();
         setHasOptionsMenu(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -144,6 +142,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
         myadsfrag=true;
         setupRecyclerViewContent("myads");
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.myprofilemenu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
     }
 
     private void setupRecyclerViewContent(final String s) {
@@ -193,60 +197,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
 
 
     }
-    public void showMenu(View v) {
 
-        PopupMenu popup = new PopupMenu(getActivity(), v);
-        popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.myprofilemenu);
-        popup.show();
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.logout:
-                firebaseAuth.signOut();
-                SharedPreferences settings = getContext().getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-                settings.edit().clear().commit();
-                //Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                Toast.makeText(getActivity(), "Successfully logged out", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(), AuthActivity.class);
-                getContext().startActivity(intent);
-                getActivity().finish();
-
-
-
-
-                break;
-            case R.id.settings:
-                //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
-                //     .show();
-                break;
-            case R.id.feedback:
-                startActivity(new Intent(getContext(), FeedbackActivity.class));
-                break;
-            default:
-                return  false;
-        }
-       return false;
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu2, MenuInflater inflater2) {
-       // menu2.clear();
-        inflater2=getActivity().getMenuInflater();
-        super.onCreateOptionsMenu(menu2,inflater2);
-        inflater2.inflate(R.menu.myprofilemenu, menu2);
-
-        //Toast.makeText(getContext(), "here already", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.logout:
+            case R.id.item_logout:
                 disableFCM();
                 firebaseAuth.signOut();
 
@@ -263,32 +219,20 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
 
 
                 break;
-            case R.id.settings:
-                //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
-                   //     .show();
+            case R.id.item_settings:
+                Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.feedback:
+            case R.id.item_feedback:
                 startActivity(new Intent(getContext(), FeedbackActivity.class));
-                break;
-            default:
                 break;
         }
         return true;
     }
 
     @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
-
-
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.myads:
-
                 if(myadsfrag==false){
                     myadsfrag=true;
                     myads.setSelected(true);
@@ -298,7 +242,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
                     setupRecyclerViewContent("myads");
 
                 }
-
                 break;
             case R.id.mywishlist:
                 if(myadsfrag==true){
@@ -309,22 +252,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
                     adapter.notifyDataSetChanged();
                     setupRecyclerViewContent("mywishlist");
                 }
-
-
                 break;
             case R.id.editprofilebutton:
                 Intent intent=new Intent(getContext(),RegistrationActivity.class);
                 intent.putExtra("isProfile",true);
                 getContext().startActivity(intent);
                 break;
-            case R.id.menu:
-                showMenu(v);
-                break;
-                default:
-                    break;
         }
-
-
     }
 
     @Override

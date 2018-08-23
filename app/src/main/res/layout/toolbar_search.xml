@@ -1,90 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    android:layout_height="?android:actionBarSize"
-    android:layout_width="match_parent"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardElevation="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="?android:actionBarSize"
     android:layout_margin="5dp"
     app:cardBackgroundColor="@color/white"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    app:cardElevation="5dp">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="?android:actionBarSize"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <android.support.v7.widget.CardView
-        android:id="@+id/back"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize">
 
-        android:layout_marginLeft="5dp"
-        android:layout_gravity="center"
-        android:layout_width="30dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/white"
-        android:layout_marginRight="10dp"
-        android:clickable="true"
-        app:cardCornerRadius="15dp"
-        android:foreground="@drawable/ripplebg"
-        android:layout_height="30dp">
-    <ImageView
-
-        android:layout_gravity="center"
-        android:tint="@color/violet"
-        android:src="@drawable/back3"
-        android:layout_width="20dp"
-        android:layout_height="20dp" />
-    </android.support.v7.widget.CardView>
-    <EditText
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:id="@+id/searchbox"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"
-        android:textColorHint="@color/violet"
-        android:hint="Search.."
-        android:background="@android:color/transparent"
-        android:maxEms="1"
-        android:textSize="16dp"
-        android:maxLines="1"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent" />
-    <ImageView
-        android:src="@drawable/barcodeblack"
-        android:transitionName="searchicon"
-        android:id="@+id/searchscanicon"
-        android:layout_gravity="center"
-        android:tint="@color/violet"
-        android:layout_width="30dp"
-        android:layout_height="30dp"></ImageView>
-    <android.support.v7.widget.CardView
-        android:id="@+id/searchbtn"
-        android:layout_gravity="center"
-        android:layout_width="40dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/white"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="15dp"
-        android:clickable="true"
-        app:cardCornerRadius="20dp"
-        android:foreground="@drawable/ripplebg"
-        android:layout_height="40dp">
-        <ImageView
-            android:transitionName="searchicon"
-            android:id="@+id/searchicon"
-            android:layout_gravity="center"
-            android:tint="@color/violet"
-            android:src="@drawable/search2"
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_bar_back"
             android:layout_width="30dp"
-            android:layout_height="30dp"></ImageView>
-        <ImageView
-            android:id="@+id/clearicon"
-            android:visibility="gone"
+            android:layout_height="30dp"
             android:layout_gravity="center"
-            android:tint="@color/violet"
-            android:src="@drawable/clear"
-            android:layout_width="25dp"
-            android:layout_height="25dp"></ImageView>
-    </android.support.v7.widget.CardView>
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:clickable="true"
+            android:foreground="@drawable/ripplebg"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp">
 
-</LinearLayout>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/back3"
+                android:tint="@color/violet" />
+        </android.support.v7.widget.CardView>
+
+        <EditText
+            android:id="@+id/search_bar_edittext"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Search..."
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxEms="1"
+            android:maxLines="1"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColorHint="@color/violet"
+            android:textSize="16dp" />
+
+        <ImageView
+            android:id="@+id/search_bar_scan_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/barcodeblack"
+            android:tint="@color/violet"
+            android:transitionName="searchicon" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_bar_btn_card"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:clickable="true"
+            android:foreground="@drawable/ripplebg"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/search_bar_search_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/search2"
+                android:tint="@color/violet"
+                android:transitionName="searchicon" />
+
+            <ImageView
+                android:id="@+id/search_bar_clear_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:src="@drawable/clear"
+                android:tint="@color/violet"
+                android:visibility="gone" />
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
 </android.support.v7.widget.CardView>

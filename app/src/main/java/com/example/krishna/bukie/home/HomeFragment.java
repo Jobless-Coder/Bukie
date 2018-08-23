@@ -10,21 +10,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -32,6 +41,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -79,13 +90,20 @@ import static android.app.Activity.RESULT_OK;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
+
+    private static final String TAG = "HomeFragment";
+
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 212;
     private static final int SCAN = 122;
     private RecyclerView recyclerView;
     private List<BookAds> bookAdsList=new ArrayList<>();
     private Context context;
-    private View v,searchbtn,search_icon,clear_icon;
-    private EditText searchbox;
+    private View v,searchbtn;
+
+    private View mSearchBar, mSearchIcon, mClearIcon, mSearchBack, mScanIcon;
+    private int mSearchItemPosX = -1, mSearchItemPosY;
+    private EditText mSearchBox;
+
     public FloatingActionButton floatingActionButton;
     private FirebaseStorage storage;
     private StorageReference storageReference;
@@ -102,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private DiscreteSeekBar price,location;
     private TextView price1,location1;
     private List<String> searchPathList =new ArrayList<>();
-    private View sort,filter,search,back;
+    private View sort,filter;
     private boolean toggleSort,toggleFilter;
     private RadioButton option1,option2,option3,option4,option5;
     private RadioGroup radioGroup,radioGroup2;
@@ -110,7 +128,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<BookAds> tempBookadsList=new ArrayList<>();
     private ProgressDialog progressDialog;
     private BottomSheetDialog dialog;
-    private boolean isSearch=false,togglesearch=false;
+    private boolean isSearch=false;
    // private List<String> bookadslistPath=new ArrayList<>();
     private Map<String,Integer> adidMap=new HashMap<>();
     private String searchType,uid;
@@ -122,19 +140,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<BookAds> filterAdsList=new ArrayList<>();
     private List<BookAds> searchAdsList=new ArrayList<>();
     private int count=0;
-    private LinearLayout linearLayout;
+    private LinearLayout erroLinearLayout;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        setHasOptionsMenu(true);
         context=getContext();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater2, ViewGroup container,  Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         v=inflater2.inflate(R.layout.fragment_home, container,false);
+
+        setHasOptionsMenu(true);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle("BookMart");
+
         getActivity().findViewById(R.id.header).setVisibility(View.GONE);
         View tabsview=getActivity().findViewById(R.id.header2);
         tabsview.setVisibility(View.VISIBLE);
@@ -144,20 +167,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         filter.setOnClickListener(this);
         sort.setSelected(false);
         filter.setSelected(false);
-        linearLayout=v.findViewById(R.id.error);
-        searchbox=getActivity().findViewById(R.id.searchbox);
-        searchbtn=getActivity().findViewById(R.id.searchbtn);
-        searchbtn.setOnClickListener(this);
-        search_icon=getActivity().findViewById(R.id.searchicon);
-        clear_icon=getActivity().findViewById(R.id.clearicon);
+        erroLinearLayout =v.findViewById(R.id.error);
+
         firebaseFirestore=FirebaseFirestore.getInstance();
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.simpleSwipeRefreshLayout);
         floatingActionButton=v.findViewById(R.id.floatingActionButton);
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerview);
-        toolbargroup=getActivity().findViewById(R.id.toolbar_layout);
-        toolbargroup.removeAllViews();
-        toolbarview= getActivity().getLayoutInflater().inflate(R.layout.toolbar_homepage,toolbargroup,false);
-        toolbargroup.addView(toolbarview);
         progressDialog=new ProgressDialog(context);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Searching...");
@@ -166,11 +181,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!isSearch);
         recyclerView.setAdapter(homeBookAdsAdapter);
         floatingActionButton.setOnClickListener(this);
-        back=getActivity().findViewById(R.id.back);
-        back.setOnClickListener(this);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-        getActivity().findViewById(R.id.searchscanicon).setOnClickListener(this);
         bottomNavigation = (AHBottomNavigation) getActivity().findViewById(R.id.bottom_navigation);
 
         bottomNavigation.setNotificationBackgroundColor(Color.parseColor("#F63D2B"));
@@ -188,10 +200,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 getadvertisements();
             }
         });
-        search=getActivity().findViewById(R.id.search);
-        search.setOnClickListener(this);
-
-
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
@@ -202,69 +210,99 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     floatingActionButton.show();
             }
         });
-        searchbox.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+        initSearchBar();
+
+        return v;
+    }
+
+    private void initSearchBar() {
+        mSearchBar = getActivity().findViewById(R.id.search_bar_layout);
+        mSearchBack = getActivity().findViewById(R.id.search_bar_back);
+        mSearchIcon = getActivity().findViewById(R.id.search_bar_search_icon);
+        mClearIcon = getActivity().findViewById(R.id.search_bar_clear_icon);
+        mScanIcon = getActivity().findViewById(R.id.search_bar_scan_icon);
+        mSearchBox = getActivity().findViewById(R.id.search_bar_edittext);
+        mSearchBack.setOnClickListener(this);
+        mSearchIcon.setOnClickListener(this);
+        mClearIcon.setOnClickListener(this);
+        mScanIcon.setOnClickListener(this);
+
+        mSearchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if ( (s.length() <before||s.length()>before)&&togglesearch==false) {
-                    togglesearch=true;
-                    search_icon.setVisibility(View.VISIBLE);
-                    clear_icon.setVisibility(View.GONE);
-
+                if (s.length() == 0) {
+                    mSearchIcon.setVisibility(View.VISIBLE);
+                    mClearIcon.setVisibility(View.GONE);
+                } else {
+                    mSearchIcon.setVisibility(View.GONE);
+                    mClearIcon.setVisibility(View.VISIBLE);
                 }
-                if (before > 0 && s.length() == 0) {
-                    togglesearch=true;
-                    search_icon.setVisibility(View.VISIBLE);
-                    clear_icon.setVisibility(View.GONE);
-
-                }
-
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) { }
         });
-        searchbox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+        mSearchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     searchAds();
-
                     return true;
                 }
                 return false;
             }
         });
-
-        return v;
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.homemenu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_search:
+                if (mSearchItemPosX == -1) {
+                    View searchItem = getActivity().findViewById(R.id.item_search);
+                    int loc[] = new int[2];
+                    searchItem.getLocationOnScreen(loc);
+                    mSearchItemPosX = loc[0];
+                    mSearchItemPosY = loc[1];
+                    Log.d(TAG, "Search item location: (" + mSearchItemPosX + "," + mSearchItemPosY + ")");
+                }
+                showHideSearchBar();
+                break;
+        }
+        return true;
+    }
+
     public void searchAds(){
         InputMethodManager in = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(searchbox.getWindowToken(), 0);
+        in.hideSoftInputFromWindow(mSearchBox.getWindowToken(), 0);
         searchAdsList.clear();
         searchAdsList.addAll(bookAdsList);
         bookAdsList.clear();
         searchPathList.clear();
         homeBookAdsAdapter.notifyDataSetChanged();
 
-        String query=searchbox.getText().toString().trim();
+        String query= mSearchBox.getText().toString().trim();
         if(query.length()>0){
-            linearLayout.setVisibility(View.GONE);
+            erroLinearLayout.setVisibility(View.GONE);
             // Toast.makeText(context, ""+query, Toast.LENGTH_SHORT).show();
             progressDialog.show();
             getMyAdsPathsSearch(query,searchType);
-            togglesearch=false;
-            search_icon.setVisibility(View.GONE);
-            clear_icon.setVisibility(View.VISIBLE);
+            mSearchIcon.setVisibility(View.GONE);
+            mClearIcon.setVisibility(View.VISIBLE);
         }
         else {
-            searchbox.setText("");
+            mSearchBox.setText("");
         }
 
     }
@@ -287,7 +325,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         getMyAdsSearch(searchPathList);
                     }
                     else {
-                        linearLayout.setVisibility(View.VISIBLE);
+                        erroLinearLayout.setVisibility(View.VISIBLE);
                     }
                     progressDialog.dismiss();
                 }
@@ -359,7 +397,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         {
             if(resultCode == RESULT_OK)
             {
-                searchbox.setText(data.getExtras().getString("isbn"));
+                mSearchBox.setText(data.getExtras().getString("isbn"));
                 searchType="isbn";
                 searchAds();
             }
@@ -368,51 +406,48 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
-
-    private void showSearch() {
-        final View view = getActivity().findViewById(R.id.header3);
-        int w = view.getWidth();
-        int h = view.getHeight();
+    private void showHideSearchBar() {
+        int w = mSearchBar.getWidth();
+        int h = mSearchBar.getHeight();
         int endRadius = (int) Math.hypot(w, h);
-        int cx = (int) (search.getX() + (search.getWidth()/2));
-        int cy = (int) (search.getY())+ search.getHeight()/2;
-        if(!isSearch){
+
+        int cx = mSearchItemPosX;
+        int cy = mSearchItemPosY;
+        if (!isSearch) {
             swipeRefreshLayout.setEnabled(false);
-            Animator revealAnimator = ViewAnimationUtils.createCircularReveal(view, cx,cy, 0, endRadius);
-            view.setVisibility(View.VISIBLE);
+            Animator revealAnimator = ViewAnimationUtils.createCircularReveal(mSearchBar, cx,cy, 0, endRadius);
+            mSearchBar.setVisibility(View.VISIBLE);
             revealAnimator.setDuration(300);
             revealAnimator.start();
-            isSearch=true;
-
+            isSearch = true;
         } else {
             swipeRefreshLayout.setEnabled(true);
-            searchbox.setText("");
-            if(searchAdsList.size()>0) {
+            mSearchBox.setText("");
+            if (searchAdsList.size() > 0) {
                 bookAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
-                homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!isSearch);//update isSearch
+                homeBookAdsAdapter = new HomeBookAdsAdapter(bookAdsList,context,!isSearch);//update isSearch
                 bookAdsList.addAll(searchAdsList);
                 searchAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
             }
 
             Animator anim =
-                    ViewAnimationUtils.createCircularReveal(view, cx, cy, endRadius, 0);
-
+                    ViewAnimationUtils.createCircularReveal(mSearchBar, cx, cy, endRadius, 0);
             anim.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    view.setVisibility(View.GONE);
-                    isSearch=false;
+                    mSearchBar.setVisibility(View.GONE);
+                    isSearch = false;
                 }
             });
             anim.setDuration(300);
             anim.start();
-            searchbox.requestFocus();
+            mSearchBox.requestFocus();
         }
     }
+
     ///Initially written for filter/sort through cloud function/rest api
     /*public void filterorSortAds(Query query){
         progressDialog.setMessage("wait..");
@@ -712,18 +747,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.searchbtn:
-                if(togglesearch){
-                    searchType="text";
-                    searchAds();
-
-                }
-                else {
-                    searchbox.setText("");
-                    togglesearch=true;
-                    search_icon.setVisibility(View.VISIBLE);
-                    clear_icon.setVisibility(View.GONE);
-                }
+            case R.id.search_bar_search_icon:
+                searchType="text";
+                searchAds();
+                break;
+            case R.id.search_bar_clear_icon:
+                mSearchBox.setText("");
+                mSearchIcon.setVisibility(View.VISIBLE);
+                mClearIcon.setVisibility(View.GONE);
                 break;
             case R.id.floatingActionButton:
                 Intent intent = new Intent(getContext(), PostnewadActivity.class);
@@ -779,13 +810,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     toggleSort=false;
                 }
                 break;
-            case R.id.search:
-                showSearch();
+            case R.id.search_bar_back:
+                showHideSearchBar();
                 break;
-            case R.id.back:
-                showSearch();
-                break;
-            case R.id.searchscanicon:
+            case R.id.search_bar_scan_icon:
                 if(!getCameraPermissions())
                     return;
                 startActivityForResult(new Intent(getContext(), FullscreenScannerActivity.class),SCAN);

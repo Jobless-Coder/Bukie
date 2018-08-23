@@ -2,22 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/settings"
+        android:id="@+id/item_settings"
         android:title="Settings"
-        android:orderInCategory="1"
-        app:actionViewClass="true"
         app:showAsAction="withText" />
     <item
-        android:id="@+id/logout"
-
-        android:title="Logout"
-        android:orderInCategory="3"
-        app:showAsAction="withText" />
-    <item
-        android:id="@+id/feedback"
+        android:id="@+id/item_feedback"
         android:title="Feedback"
-        android:orderInCategory="2"
         app:showAsAction="withText" />
-
-
+    <item
+        android:id="@+id/item_logout"
+        android:title="Logout"
+        app:showAsAction="withText" />
 </menu>

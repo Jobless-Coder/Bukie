@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.chat;
+package com.example.krishna.bukie.home.chat;
 
 import android.view.View;
 
