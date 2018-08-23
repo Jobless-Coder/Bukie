@@ -101,6 +101,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
                 intent.putExtra("bookads", bookAds);
                 intent.putExtra("editad", true);
                 intent.putExtra("isHome", false);
+                intent.putExtra("from","wishlist");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
 

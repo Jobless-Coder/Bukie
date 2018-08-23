@@ -25,11 +25,14 @@ import java.util.List;
 public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.BookHolder>{
     private List<BookAds> bookAdsList;
     private Context context;
-    BookItemClickListener bookItemClickListener;
+    private  BookItemClickListener bookItemClickListener;
+    private boolean isHome;
 
-    public HomeBookAdsAdapter(List<BookAds> bookAdsList, Context context) {
+
+    public HomeBookAdsAdapter(List<BookAds> bookAdsList, Context context,boolean isHome) {
         this.bookAdsList =bookAdsList ;
         this.context = context;
+        this.isHome=isHome;
     }
 
     @Override
@@ -105,6 +108,10 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
 
                 Intent intent = new Intent(context, DisplayAdActivity.class);
                 intent.putExtra("bookads", bookAds);
+                if(isHome)
+                    intent.putExtra("from","home");
+                else
+                    intent.putExtra("from","search");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 //getActivity().finish();

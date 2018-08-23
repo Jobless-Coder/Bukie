@@ -158,7 +158,7 @@ private String identity;
                                 if(dataSnapshot.getValue()==null||dataSnapshot.getValue().toString().equals("false")){
                                     ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname,profilepic,myChatsStatus,identity);
                                     firebaseDatabase.getReference().child("notifications").push().setValue(chatNotifs);
-                                    firebaseDatabase.getReference().child("fake_notifications").push().setValue(chatNotifs);
+                                  //  firebaseDatabase.getReference().child("fake_notifications").push().setValue(chatNotifs);
                                 }
                             }
 

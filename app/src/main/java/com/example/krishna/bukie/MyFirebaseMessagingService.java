@@ -43,12 +43,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "Firebase";
     int notif=0;
+    MyChatsStatus myChatsStatus;
+    String identity;
 
 
 
@@ -133,7 +137,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void sendNotification(RemoteMessage messageBody) throws ExecutionException, InterruptedException {
       //  messageBody.
-        Intent intent = new Intent(this, HomePageActivity.class);
+        Map<String,String> hashMap=new HashMap<>();
+        hashMap=messageBody.getData();
+        Log.i("notifs",hashMap.toString());
+        myChatsStatus=new MyChatsStatus(hashMap.get("sellerid"),hashMap.get("buyerid"),hashMap.get("adid"),hashMap.get("coverpic"),hashMap.get("chatid"),hashMap.get("sellerpic"),hashMap.get("buyerpic"),hashMap.get("sellerfullname"),hashMap.get("buyerfullname"));
+        identity=hashMap.get("identity");
+        if(identity.equals("seller"))
+            identity="buyer";
+        else
+            identity="seller";
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("mychats",myChatsStatus);
+        intent.putExtra("identity",identity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -141,7 +156,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
        // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
-        Log.i("notifs",messageBody.getNotification().getIcon());//bal getIcon null asche
+        //Log.i("notifs",messageBody.getNotification().getIcon());
         //Toast.makeText(this, ""+messageBody.getNotification().getIcon(), Toast.LENGTH_SHORT).show();
         Bitmap bitmap;
         if(messageBody.getNotification().getIcon()!=null)
@@ -170,6 +185,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         .setContentIntent(pendingIntent);
       // notificationBuilder.setGroup("com.example.krishna.bukie");
+
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
