@@ -52,7 +52,7 @@ public class TagPickerAdapter extends ArrayAdapter<String> {
         TextView textView = (TextView) listItem.findViewById(R.id.textView);
         textView.setText(currentTag);
         CheckBox checkBox=listItem.findViewById(R.id.checkbox);
-        Log.i("ghk",isTagList.toString());
+        //Log.i("ghk",isTagList.toString());
         checkBox.setChecked(isTagList.get(position));
         /*TextView release = (TextView) listItem.findViewById(R.id.textView_release);
         release.setText(currentMovie.getmRelease());*/

@@ -10,6 +10,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,17 +19,21 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -36,6 +42,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.flags.IFlagProvider;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -58,9 +65,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonObject;
-
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +78,7 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
     private static final int SEARCH_LOCATION = 1;
     private  static final int TAPPED_LOCATION = 2;
     private  static final int CURRENT_LOCATION = 3;
-    //private static final int ERROR_DIALOG = 25;
+    private BottomSheetDialog bottomSheetDialog;
     private SupportMapFragment mapFragment;
     protected GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
@@ -82,6 +89,7 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
     private GoogleMap googleMap;
     private Geopoint selectedpoint;
     private Geopoint currentpoint;
+    private PlacePickerAdapter placePickerAdapter;
     private View view_curr_location, view_selected_location, searchbtn,clearbtn;
     private boolean isPermissiongranted = false;
     //private Location currentLocation = new Location();
@@ -93,10 +101,16 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
             new LatLng(6.4626999, 68.1097),
             new LatLng(35.513327, 97.39535869999999)
     );
+    private List<Geopoint> nearbyList=new ArrayList<>();
+    private List<Boolean> isNearbyList=new ArrayList<>();
+    private List<String> nearbyListName=new ArrayList<>();
+    private int previous_position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map2);
+        bottomSheetDialog=new BottomSheetDialog(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         int ZoomControl_id = 0x1;
         View zoomControls = mapFragment.getView().findViewById(ZoomControl_id);
@@ -160,7 +174,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
-        //If the request code does not match
         if (requestCode != PermissionUtils.REQUEST_CODE) {
             return;
         }
@@ -199,7 +212,11 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
 
-                    locatePlace(SEARCH_LOCATION);
+                    try {
+                        locatePlace(SEARCH_LOCATION);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 return false;
@@ -232,7 +249,7 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
 
 
 
-    private void locatePlace(int type) {
+    private void locatePlace(int type) throws JSONException {
         String searchString="";
         if(type==SEARCH_LOCATION) {
             searchString = autoCompleteTextView.getText().toString().trim();
@@ -265,7 +282,7 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
             LatLng latLng=new LatLng(address.getLatitude(),address.getLongitude());
 
                selectedpoint = new Geopoint(address.getLatitude() + "", address.getLongitude() + "", address.getAddressLine(0));
-               // getNearbyPlaces();
+               getNearbyPlaces();
 
 
 
@@ -275,15 +292,48 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
 
         }
     }
-    private void getNearbyPlaces(){
-        String url=""+"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+currentLocation.latitude+","+currentLocation.longitude+"+&radius=1500&"+/*type=restaurant&keyword=cruise&*/"key=+"+getString(R.string.API_KEY);
-        Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
+    private void getNearbyPlaces()throws JSONException{
+        String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+currentLocation.latitude+","+currentLocation.longitude+"&radius=1000&"+/*type=restaurant&keyword=cruise&*/"key="+getString(R.string.API_KEY);
+       Log.i("url",url);
+        //Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i("location nearby",response.toString());
+
+                        JSONArray ja = null;
+                        try {
+                            ja = response.getJSONArray("results");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        nearbyList.clear();
+                        isNearbyList.clear();
+                        if(placePickerAdapter!=null)
+                        placePickerAdapter.notifyDataSetChanged();
+                        if(bottomSheetDialog.isShowing())
+                        bottomSheetDialog.dismiss();
+
+                        for (int i = 0; i < ja.length(); i++) {
+                            JSONObject c = null;
+                            try {
+                                c = ja.getJSONObject(i);
+                                Geopoint geopoint=new Geopoint(c.getJSONObject("geometry").getJSONObject("location").getDouble("lat")+"",c.getJSONObject("geometry").getJSONObject("location").getDouble("lng")+"",c.getString("name")+"");
+                                nearbyList.add(geopoint);
+                                isNearbyList.add(false);
+                                nearbyListName.add(c.getString("name")+"");
+                                } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if(!bottomSheetDialog.isShowing())
+                        showBottomSheetDialog();
+                        else
+                            placePickerAdapter.notifyDataSetChanged();
+                        Log.i("jsonlist",nearbyListName.toString());
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -321,8 +371,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                 .position(latLng)
                 .title(title).icon(icon);
         this.googleMap.addMarker(options);
-
-
         hideSoftKeyboard();
 
     }
@@ -330,7 +378,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-
         this.googleMap = googleMap;
        this.googleMap.setLatLngBoundsForCameraTarget(BOUNDS_INDIA);
         this.googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -340,15 +387,13 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         this.googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-
                 currentLocation=latLng;
-                locatePlace(TAPPED_LOCATION);
-
-        }
-
-
-
-
+                try {
+                    locatePlace(TAPPED_LOCATION);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
     });
     }
 
@@ -383,7 +428,11 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                         Location templocation= (Location) task.getResult();
                         currentLocation= new LatLng(templocation.getLatitude(),templocation.getLongitude());
 
-                        locatePlace(CURRENT_LOCATION);
+                        try {
+                            locatePlace(CURRENT_LOCATION);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     }
                 }
@@ -396,6 +445,48 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         intent.putExtra("geopoint", geopoint1);
         setResult(Activity.RESULT_OK,intent);
         finish();
+    }
+    public void showBottomSheetDialog() {
+        View view = getLayoutInflater().inflate(R.layout.layout_bottomsheet_placepicker, null);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(view);
+       // bottomSheetDialog.
+        BottomSheetBehavior bottomSheetBehavior=BottomSheetBehavior.from((View) view.getParent());
+        bottomSheetBehavior.setPeekHeight(300);
+
+        ListView listView=view.findViewById(R.id.listview);
+        placePickerAdapter=new PlacePickerAdapter(this,nearbyList,isNearbyList);
+        listView.setAdapter(placePickerAdapter);
+        View share=view.findViewById(R.id.share);
+        share.setOnClickListener(this);
+        bottomSheetDialog.show();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MapActivity2.this, "kk", Toast.LENGTH_SHORT).show();
+
+                if(!isNearbyList.get(position)) {
+                    isNearbyList.set(position, true);
+                    Geopoint geopoint=nearbyList.get(position);
+                   currentLocation=new LatLng(Double.parseDouble(geopoint.getLatitude()),Double.parseDouble(geopoint.getLongitude())) ;
+                    if(previous_position>0&&previous_position!=position)
+                        isNearbyList.set(previous_position,false);
+                    previous_position=position;
+                    Log.i("kkk","kkk");
+                    placePickerAdapter.notifyDataSetChanged();
+                    try {
+                        locatePlace(TAPPED_LOCATION);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+
+
+
     }
     /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
@@ -432,6 +523,8 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                     e.printStackTrace();
                 }*/
                 break;
+            case R.id.share:
+                break;
             case R.id.mylocation:
                 getCurrentLocation();
                 break;
@@ -446,7 +539,11 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                 break;
             case R.id.search:
                 //if()
-                locatePlace(SEARCH_LOCATION);
+                try {
+                    locatePlace(SEARCH_LOCATION);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
 
         }

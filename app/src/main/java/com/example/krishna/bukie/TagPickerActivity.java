@@ -101,7 +101,7 @@ public class TagPickerActivity extends AppCompatActivity {
                     istagList.set(position,true);
                     chipList.add(new Tuple(tagList.get(position),position));
                     chipAdapter.notifyDataSetChanged();
-                    Toast.makeText(TagPickerActivity.this, ""+istagList, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(TagPickerActivity.this, ""+istagList, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     istagList.set(position,false);

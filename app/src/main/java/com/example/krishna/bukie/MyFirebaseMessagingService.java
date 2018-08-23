@@ -29,6 +29,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -161,7 +162,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
        // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
         //Log.i("notifs",messageBody.getNotification().getIcon());
         //Toast.makeText(this, ""+messageBody.getNotification().getIcon(), Toast.LENGTH_SHORT).show();
-        Log.i("notifs",messageBody.getNotification().getIcon()+"kk");
+        Log.i("notifs",messageBody.getNotification().getBody()+"kk");
         Bitmap bitmap;
         if(hashMap.get("icon")!=null)
          bitmap= Glide.with(getApplication()).load(hashMap.get("icon")).asBitmap().into(-1,-1).get();
@@ -186,6 +187,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentIntent(pendingIntent);
       // notificationBuilder.setGroup("com.example.krishna.bukie");
 
+        NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -198,7 +200,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(notif++ /* ID of notification */, notificationBuilder.build());
+        manager.notify(notif++ /* ID of notification */, notificationBuilder.build());
     }
     public Bitmap getBitmapFromURL(String strURL) {
         try {

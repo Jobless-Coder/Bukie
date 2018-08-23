@@ -306,7 +306,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPreferences= getContext().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-        dref = dref.child("users/"+uid).child("my_searches").push();
+        dref = dref.child("users/"+uid).child("mysearches").push();
         SearchData data;
         if(searchType!=null)
             data = new SearchData(query, new Date().getTime(),!searchType.equals("isbn"));
