@@ -10,11 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -25,7 +23,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -41,8 +38,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -128,7 +123,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<BookAds> tempBookadsList=new ArrayList<>();
     private ProgressDialog progressDialog;
     private BottomSheetDialog dialog;
-    private boolean isSearch=false;
+    private boolean mIsSearchBarOpen =false;
    // private List<String> bookadslistPath=new ArrayList<>();
     private Map<String,Integer> adidMap=new HashMap<>();
     private String searchType,uid;
@@ -178,7 +173,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         progressDialog.setMessage("Searching...");
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!isSearch);
+        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,context,!mIsSearchBarOpen);
         recyclerView.setAdapter(homeBookAdsAdapter);
         floatingActionButton.setOnClickListener(this);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
@@ -344,7 +339,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPreferences= getContext().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-        dref = dref.child("users/"+uid).child("my_searches").push();
+        dref = dref.child("users/"+uid).child("mysearches").push();
         SearchData data;
         if(searchType!=null)
             data = new SearchData(query, new Date().getTime(),!searchType.equals("isbn"));
@@ -413,20 +408,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         int cx = mSearchItemPosX;
         int cy = mSearchItemPosY;
-        if (!isSearch) {
+        if (!mIsSearchBarOpen) {
             swipeRefreshLayout.setEnabled(false);
             Animator revealAnimator = ViewAnimationUtils.createCircularReveal(mSearchBar, cx,cy, 0, endRadius);
             mSearchBar.setVisibility(View.VISIBLE);
+            revealAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mIsSearchBarOpen = true;
+                    mSearchBox.requestFocus();
+                }
+            });
             revealAnimator.setDuration(300);
             revealAnimator.start();
-            isSearch = true;
         } else {
             swipeRefreshLayout.setEnabled(true);
             mSearchBox.setText("");
             if (searchAdsList.size() > 0) {
                 bookAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
-                homeBookAdsAdapter = new HomeBookAdsAdapter(bookAdsList,context,!isSearch);//update isSearch
+                homeBookAdsAdapter = new HomeBookAdsAdapter(bookAdsList,context,!mIsSearchBarOpen);//update mIsSearchBarOpen
                 bookAdsList.addAll(searchAdsList);
                 searchAdsList.clear();
                 homeBookAdsAdapter.notifyDataSetChanged();
@@ -439,12 +441,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
                     mSearchBar.setVisibility(View.GONE);
-                    isSearch = false;
+                    mIsSearchBarOpen = false;
                 }
             });
             anim.setDuration(300);
             anim.start();
-            mSearchBox.requestFocus();
         }
     }
 
@@ -772,8 +773,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         }
                 else {
-                    if(!isSearch&&!toggleSort) {
-                      //  Toast.makeText(context, ""+toggleSort+""+isSearch, Toast.LENGTH_SHORT).show();
+                    if(!mIsSearchBarOpen &&!toggleSort) {
+                      //  Toast.makeText(context, ""+toggleSort+""+mIsSearchBarOpen, Toast.LENGTH_SHORT).show();
                         swipeRefreshLayout.setEnabled(true);
                     }
                     bookAdsList.clear();
@@ -795,7 +796,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 }
                 else {
-                    if(!isSearch&&!toggleFilter)
+                    if(!mIsSearchBarOpen &&!toggleFilter)
                     swipeRefreshLayout.setEnabled(true);
                     bookAdsList.clear();
                     homeBookAdsAdapter.notifyDataSetChanged();

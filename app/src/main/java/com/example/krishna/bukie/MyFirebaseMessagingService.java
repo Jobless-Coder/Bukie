@@ -22,20 +22,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.krishna.bukie.home.HomePageActivity;
+import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -151,20 +155,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("identity",identity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
        // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
         //Log.i("notifs",messageBody.getNotification().getIcon());
         //Toast.makeText(this, ""+messageBody.getNotification().getIcon(), Toast.LENGTH_SHORT).show();
+        Log.i("notifs",messageBody.getNotification().getBody()+"kk");
         Bitmap bitmap;
-        if(messageBody.getNotification().getIcon()!=null)
-         bitmap= Glide.with(getApplication()).load(messageBody.getNotification().getIcon()).asBitmap().into(-1,-1).get();
+        if(hashMap.get("icon")!=null)
+         bitmap= Glide.with(getApplication()).load(hashMap.get("icon")).asBitmap().into(-1,-1).get();
         else
              bitmap= Glide.with(getApplication()).load(R.drawable.bookpic).asBitmap().into(-1,-1).get();
 
-       // messageBody.getData().
+
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
@@ -173,19 +178,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setLargeIcon(bitmap)
                         .setColor(ContextCompat.getColor(this, R.color.colorAccent))
                        // .addAction(R.drawable.share,"Reply",)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody.getNotification().getBody()))
-                        .setContentTitle(messageBody.getNotification().getTitle())
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(hashMap.get("message")))
+                        .setContentTitle(hashMap.get("sender"))
                        .setGroupSummary(true)
-                        //.setTicker("You have unread messages")
-                        //.setContentText("kkk")
-                        .setGroup("Book")
+                        .setGroup("com.example.krishna.bukie")
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_SOUND|Notification.DEFAULT_LIGHTS|Notification.DEFAULT_VIBRATE)
-                        //.setSound(defaultSoundUri|Notification.DEFAULT_LIGHTS)
-
                         .setContentIntent(pendingIntent);
       // notificationBuilder.setGroup("com.example.krishna.bukie");
 
+        NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -198,7 +200,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(notif++ /* ID of notification */, notificationBuilder.build());
+        manager.notify(notif++ /* ID of notification */, notificationBuilder.build());
     }
     public Bitmap getBitmapFromURL(String strURL) {
         try {

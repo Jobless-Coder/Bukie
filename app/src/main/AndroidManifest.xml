@@ -18,6 +18,7 @@
 
 
     <application
+        android:name="com.example.krishna.bukie.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -33,6 +34,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/profile" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id"/>
         <!--meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/API_KEY" /-->
@@ -81,7 +91,7 @@
         <activity
             android:name=".FeedbackActivity"
             android:theme="@style/NoActionTheme" />
-        <!-- activity android:name=".LoginActivity" / -->
+
         <activity android:name=".ChatActivity" />
         <activity android:name=".registration.RegistrationActivity" />
         <activity

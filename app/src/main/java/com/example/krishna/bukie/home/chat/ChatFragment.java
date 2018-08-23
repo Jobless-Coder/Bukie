@@ -180,9 +180,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
                                             } else {
                                                 holder.status.setImageResource(R.drawable.ic_text_seen);
-                                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green), PorterDuff.Mode.SRC_IN);
+                                                holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
                                             }
-                                            if (myChats.getLast_message().getType().equals("message"))
+                                            holder.message.setText("You : " + myChats.getLast_message().getMessage_body());
+                                           /* if (myChats.getLast_message().getType().equals("message"))
                                                 holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
                                             else if (myChats.getLast_message().getType().equals("gallery"))
                                                 holder.message.setText("You : sent photos");
@@ -191,11 +192,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                             else if (myChats.getLast_message().getType().equals("contact"))
                                                 holder.message.setText("You : sent a contact");
                                             else
-                                                holder.message.setText("You : sent a photo");
+                                                holder.message.setText("You : sent a photo");*/
                                         } else {
 
                                             holder.status.setVisibility(View.GONE);
-                                            if (myChats.getLast_message().getType().equals("message"))
+                                            holder.message.setText(myChats.getLast_message().getMessage_body());
+                                            /*if (myChats.getLast_message().getType().equals("message"))
                                                 holder.message.setText(myChats.getLast_message().getMessage_body());
                                             else if (myChats.getLast_message().getType().equals("gallery"))
                                                 holder.message.setText("Sent photos");
@@ -204,7 +206,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                             else if (myChats.getLast_message().getType().equals("contact"))
                                                 holder.message.setText("Sent a contact");
                                             else
-                                                holder.message.setText("Sent a photo");
+                                                holder.message.setText("Sent a photo");*/
 
 
                                         }
@@ -236,7 +238,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                 holder.status.setImageResource(R.drawable.ic_text_seen);
                                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green), PorterDuff.Mode.SRC_IN);
                             }
-                            if (myChats.getLast_message().getType().equals("message"))
+                            holder.message.setText("You : "+myChats.getLast_message().getMessage_body());
+                            /*if (myChats.getLast_message().getType().equals("message"))
                                 holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
                             else if (myChats.getLast_message().getType().equals("gallery"))
                                 holder.message.setText("You : sent photos");
@@ -245,10 +248,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             else if (myChats.getLast_message().getType().equals("contact"))
                                 holder.message.setText("You : sent a contact");
                             else
-                                holder.message.setText("You : sent a photo");
+                                holder.message.setText("You : sent a photo");*/
                         } else {
                             holder.status.setVisibility(View.GONE);
-                            if (myChats.getLast_message().getType().equals("message"))
+                            holder.message.setText(myChats.getLast_message().getMessage_body());
+                           /* if (myChats.getLast_message().getType().equals("message"))
                                 holder.message.setText(myChats.getLast_message().getMessage_body());
                             else if (myChats.getLast_message().getType().equals("gallery"))
                                 holder.message.setText("Sent photos");
@@ -257,7 +261,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                             else if (myChats.getLast_message().getType().equals("contact"))
                                 holder.message.setText("Sent a contact");
                             else
-                                holder.message.setText("Sent a photo");
+                                holder.message.setText("Sent a photo");*/
                         }
 
                         Glide.with(context)
