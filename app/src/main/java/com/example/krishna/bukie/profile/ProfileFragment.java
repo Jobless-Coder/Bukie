@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.Fragments;
+package com.example.krishna.bukie.profile;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -52,6 +52,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+
+    private static final String TAG = "ProfileFragment";
+
     private FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
     private TabLayout tabLayout;
     private RecyclerView recyclerView;

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_application">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_key_show_notifications"
+            android:summary="@string/pref_summary_show_notifications"
+            android:title="@string/pref_title_show_notifications" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_key_show_last_seen"
+            android:summary="@string/pref_summary_show_last_seen"
+            android:title="@string/pref_title_show_last_seen" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_account">
+        <!-- TODO: Allow auth change -->
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_about">
+        <Preference android:title="@string/pref_privacy_policy">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http:/privacypolicy.com" />
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

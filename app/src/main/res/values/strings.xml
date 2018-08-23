@@ -8,12 +8,14 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
     <!--string name="API_KEY">AIzaSyBVLP5gY92V5siw_09TjUkNv3Nkf0rQvyo</string-->
-        <!--<string name="API_KEY">AIzaSyC4T-gin4PUUPX96oYHGXgFB4l7mhb0lXk</string>-->
+    <!--<string name="API_KEY">AIzaSyC4T-gin4PUUPX96oYHGXgFB4l7mhb0lXk</string>-->
     <string name="API_KEY">AIzaSyB1Xr6qLG49SSCRCPbr5L2uDyKRxnIlue0</string>
 
     <string name="title_activity_fullscreen_scanner">FullscreenScannerActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!-- AuthActivity -->
     <string name="signing_up">Signing up&#8230;</string>
     <string name="signing_in">Signing in&#8230;</string>
     <string name="please_wait">Please wait&#8230;</string>
@@ -34,6 +36,7 @@
         Your email must be verified before signing in. Please check your inbox.\n\nWould you like to resend the verification email?
     </string>
 
+    <!-- RegistrationActivity -->
     <string name="select_img">Select Image</string>
     <string name="temp_img_png">temp_img.png</string>
     <string name="no_img_selected">No image selected</string>
@@ -46,5 +49,18 @@
 
     <string name="profile_pic_default">profile_pic_default.png</string>
 
+    <!-- preferences.xml -->
+    <string name="pref_application">Application</string>
+    <string name="pref_title_show_notifications">Notifications</string>
+    <string name="pref_summary_show_notifications">Enable push notifications</string>
+    <string name="pref_title_show_last_seen">Last seen</string>
+    <string name="pref_summary_show_last_seen">Shows your last seen to other users in chats</string>
+
+    <string name="pref_account">Account</string>
+
+    <string name="pref_about">About</string>
+    <string name="pref_privacy_policy">Privacy Policy</string>
+
+    <!-- Miscellaneous -->
     <string name="yes">Yes</string>
 </resources>

@@ -76,7 +76,7 @@
         <activity android:name=".ChatActivity" />
         <activity android:name=".registration.RegistrationActivity" />
         <activity
-            android:name=".HomePageActivity"
+            android:name=".home.HomePageActivity"
             android:windowSoftInputMode="adjustPan"
             android:launchMode="singleTop">
         </activity>

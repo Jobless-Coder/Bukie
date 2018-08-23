@@ -1,4 +1,4 @@
-package com.example.krishna.bukie.Fragments;
+package com.example.krishna.bukie.home;
 
 
 import android.Manifest;
@@ -18,7 +18,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,18 +41,15 @@ import android.widget.Toast;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.example.krishna.bukie.BookAds;
 import com.example.krishna.bukie.FullscreenScannerActivity;
-import com.example.krishna.bukie.HomeBookAdsAdapter;
 import com.example.krishna.bukie.PostnewadActivity;
 import com.example.krishna.bukie.Query;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.RESTapiinterface;
 import com.example.krishna.bukie.helper.SearchData;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 

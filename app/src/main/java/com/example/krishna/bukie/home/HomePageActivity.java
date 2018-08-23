@@ -1,4 +1,4 @@
-package com.example.krishna.bukie;
+package com.example.krishna.bukie.home;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,11 +19,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
-import com.example.krishna.bukie.Fragments.ChatFragment;
-import com.example.krishna.bukie.Fragments.HomeFragment;
-import com.example.krishna.bukie.Fragments.ProfileFragment;
+import com.example.krishna.bukie.BookAds;
+import com.example.krishna.bukie.DisplayAdActivity;
+import com.example.krishna.bukie.LastMessage;
+import com.example.krishna.bukie.MyChatsStatus;
+import com.example.krishna.bukie.MyFirebaseInstanceIDService;
+import com.example.krishna.bukie.R;
+import com.example.krishna.bukie.chat.ChatFragment;
+import com.example.krishna.bukie.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +48,9 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class HomePageActivity extends AppCompatActivity {
+
+    private final String TAG = "HomePageActivity";
+
     AHBottomNavigation bottomNavigation;
     AHBottomNavigationItem item1,item2,item3;
     FrameLayout frameLayout;
@@ -89,8 +99,6 @@ public class HomePageActivity extends AppCompatActivity {
 
 
         initializeViews();
-
-
 
     }
 

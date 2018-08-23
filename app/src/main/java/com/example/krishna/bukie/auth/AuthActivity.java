@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.krishna.bukie.BuildConfig;
-import com.example.krishna.bukie.HomePageActivity;
+import com.example.krishna.bukie.home.HomePageActivity;
 import com.example.krishna.bukie.MyFirebaseInstanceIDService;
 import com.example.krishna.bukie.R;
 import com.example.krishna.bukie.User;
@@ -52,7 +52,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 
