@@ -87,7 +87,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         recyclerView.setHasFixedSize(true);
         bookAdsList=new ArrayList<>();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,this);
+        //homeBookAdsAdapter=new HomeBookAdsAdapter(bookAdsList,this);
         recyclerView.setAdapter(homeBookAdsAdapter);
         searchbox.addTextChangedListener(new TextWatcher() {
             @Override

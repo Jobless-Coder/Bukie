@@ -220,6 +220,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, P
 
                 break;
             case R.id.settings:
+                
                 //Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT)
                 //     .show();
                 break;
