@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -104,11 +103,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v=inflater.inflate(R.layout.fragment_profile, container,false);
-
         setHasOptionsMenu(true);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle("My Profile");
+
+        // Restore bottom nav if it is removed in settings screen.
+        View bottomNav = getActivity().findViewById(R.id.bottom_navigation);
+        bottomNav.setVisibility(View.VISIBLE);
+
+        View v=inflater.inflate(R.layout.fragment_profile, container,false);
 
         View tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.GONE);
@@ -220,7 +223,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.item_settings:
-                Toast.makeText(getContext(), "settings selected", Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, new SettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
                 break;
             case R.id.item_feedback:
                 startActivity(new Intent(getContext(), FeedbackActivity.class));

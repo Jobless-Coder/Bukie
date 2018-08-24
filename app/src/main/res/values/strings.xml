@@ -52,7 +52,7 @@
     <string name="pref_title_show_notifications">Notifications</string>
     <string name="pref_summary_show_notifications">Enable push notifications</string>
     <string name="pref_title_show_last_seen">Last seen</string>
-    <string name="pref_summary_show_last_seen">Shows your last seen to other users in chats</string>
+    <string name="pref_summary_show_last_seen">Display your last seen in chat</string>
 
     <string name="pref_account">Account</string>
 

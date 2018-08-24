@@ -21,7 +21,7 @@
         <Preference android:title="@string/pref_privacy_policy">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http:/privacypolicy.com" />
+                android:data="https://youtu.be/dQw4w9WgXcQ" />
         </Preference>
     </PreferenceCategory>
 

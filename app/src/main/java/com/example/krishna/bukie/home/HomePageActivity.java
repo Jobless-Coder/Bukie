@@ -239,12 +239,13 @@ public class HomePageActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        if (mposition>0) {
+        Log.d(TAG, "Current back stack count: " + getSupportFragmentManager().getBackStackEntryCount());
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            super.onBackPressed();
+        } else if (mposition > 0) {
             Fragment fragment = new HomeFragment();
             bottomNavigation.setCurrentItem(0);
             loadFragment(fragment);
-
-
         } else {
             super.onBackPressed();
         }
