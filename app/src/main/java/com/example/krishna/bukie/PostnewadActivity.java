@@ -676,7 +676,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.tagpicker:
                 Intent intent=new Intent(this,TagPickerActivity.class);
-                //startActivity(intent);
                 startActivityForResult(intent,PICKTAGS);
                 break;
 
@@ -686,8 +685,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void uploadImage(Uri r, final boolean b) {
-
-
 
             if (r != null) {
                 path = "adimages/" + madid+"/"+UUID.randomUUID() + ".png";
@@ -700,7 +697,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                         if (!task.isSuccessful()) {
                             throw task.getException();
                         }
-
 
                         return riversRef.getDownloadUrl();
                     }
@@ -716,9 +712,6 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                        {
                            if(isHome==1)
                             postAd();
-
-
-
 
                         }
 
@@ -740,9 +733,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         category.setText("");
 
 
-        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl, isbn,tagList);
-       // BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,muid,madid,mprofilepic,mfullname,downloadurl);
-        // firebaseFirestore.collection("bookads").document(madid).set(bookAds).addOnSuccessListener(onSu)
+        BookAds bookAds=new BookAds(mdate,mtitle,mprice,mcategory,coverurl,mpublisher,mauthor,mdesc, muid,madid,mprofilepic,mfullname,downloadurl, isbn,tagList,true,false);
+
         firebaseFirestore.collection("bookads").document(madid).set(bookAds)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -70,13 +70,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private int height, width;
     TextView hello, bye;
     boolean helloInMiddle;
-    int big, small, hsm, hl, bsm, bl, loginsize, GREY;
+    int big, small, hsm, hl, bsm, bl, loginsize, GREY,VIOLET,LIGHT_VIOLET;
     LinearLayout loginflow, signflow;
     EditText forgotemail;
     private ProgressDialog mProgressDialog;
     private FirebaseAuth firebaseAuth;
     private CallbackManager mCallbackManager;
     private FirebaseFirestore mFirebaseFirestore;
+    private boolean toggleforgotpass=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +172,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         big = 30;
         small = 15;
         GREY = 0xffeaeaea;
+        VIOLET=Color.parseColor("#673ab7");
+        LIGHT_VIOLET=Color.parseColor("#B39DDB");
 
         hello = findViewById(R.id.hello);
         bye = findViewById(R.id.bye);
@@ -210,8 +213,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "X", (width - loginflow.getWidth()) / 2);
             ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "translationX", width * 2);
 
-            ObjectAnimator anim7 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
-            ObjectAnimator anim8 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);
+            ObjectAnimator anim7 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), VIOLET, LIGHT_VIOLET);
+            ObjectAnimator anim8 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), LIGHT_VIOLET, VIOLET);
 
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
             anim2.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -239,8 +242,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
             ObjectAnimator anim5 = ObjectAnimator.ofFloat(loginflow, "translationX", -loginflow.getWidth() * 2);
             ObjectAnimator anim6 = ObjectAnimator.ofFloat(signflow, "X", width / 2 - signflow.getWidth() / 2);
 
-            ObjectAnimator anim7 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), Color.WHITE, GREY);
-            ObjectAnimator anim8 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), GREY, Color.WHITE);
+            ObjectAnimator anim7 = ObjectAnimator.ofObject(hello, "textColor", new ArgbEvaluator(), VIOLET, LIGHT_VIOLET);
+            ObjectAnimator anim8 = ObjectAnimator.ofObject(bye, "textColor", new ArgbEvaluator(), LIGHT_VIOLET, VIOLET);
             loginsize = loginflow.getWidth();
 
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -273,6 +276,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 initFacebookSignIn();
                 break;
             case R.id.forgotpass:
+                toggleforgotpass=true;
                 forgotPassword();
                 break;
             case R.id.sendemail:
@@ -704,5 +708,20 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         // loginManager.logOut();
 
         // Google sign out
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(toggleforgotpass==true){
+            toggleforgotpass=false;
+
+            this.findViewById(R.id.forgotpasslayout).setVisibility(View.GONE);
+            this.findViewById(R.id.loginscreen).setVisibility(View.VISIBLE);
+
+        }
+        else {
+
+            super.onBackPressed();
+        }
     }
 }

@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,56 +53,33 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 public class ChatFragment extends Fragment implements View.OnClickListener {
-    private FirestoreRecyclerAdapter firestoreRecyclerAdapter;
-    private FirebaseFirestore firebaseFirestore;
     private Context context;
     private RecyclerView recyclerView;
-    private List<BookAds> bookAdsList;
     private View v;
     private MyChatItemClickListener myChatItemClickListener;
     private String chatid,identity,uid;
     private boolean buyfrag=true;
     private View buy,sell,tabsview;
     private MyChatsAdapter myChatsAdapter;
-    private List<MyChats> myChatsList=new ArrayList<>();
-    private List<MyChats> removeMyChatsList=new ArrayList<>();
-    private ListenerRegistration listenerRegistration;
-    FirebaseFirestoreSettings settings;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-    @Override
-    public void onDestroyView() {
-//        listenerRegistration.remove();
-        super.onDestroyView();
+    private long oneday=86400000l, onemonth=2592000000l,oneyear=31536000000l;
 
-    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        firebaseFirestore=FirebaseFirestore.getInstance();
         context=getContext();
-        settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-       // db.setFirestoreSettings(settings);
-
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v=inflater.inflate(R.layout.fragment_chat, container,false);
-
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle("My Chats");
-
         tabsview=getActivity().findViewById(R.id.header);
         tabsview.setVisibility(View.VISIBLE);
         getActivity().findViewById(R.id.header2).setVisibility(View.GONE);
-      /*  FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        firebaseFirestore.setFirestoreSettings(settings);*/
         buy=tabsview.findViewById(R.id.buy);
         sell=tabsview.findViewById(R.id.sell);
         buy.setOnClickListener(this);
@@ -132,28 +110,54 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onBindViewHolder(final MyChatHolder holder, int position, final MyChatsStatus model) {
                 final MyChatsStatus myChats = model;
-                //if (myChats.isActive()) {
+                final String timecast;
+                Date currentDate=new Date();
                     Date d = new Date(myChats.getLast_message().getTime());
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
-                    final String timecast = simpleDateFormat.format(d);
+                    long timeinms=currentDate.getTime()-d.getTime();
+                    if(timeinms/oneyear>0) {
+                        if(timeinms/oneyear>1)
+                            timecast = timeinms / oneyear + " years";
+                        else
+                        timecast = timeinms / oneyear + " year";
 
-                    //added by Krishna : 21st August, 2018
-                    //the following code makes sure unread texts are highlighted
-                    if(!myChats.last_message.getStatus().equalsIgnoreCase("seen"))
-                    {
-                        SharedPreferences sharedPreferences=getContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
-                        uid=sharedPreferences.getString("uid",null);
-                        if(!myChats.last_message.getSender().equals(uid))
-                        {
-                            holder.message.setTypeface(null, Typeface.BOLD);
-                            holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
-                            holder.username.setTypeface(null, Typeface.BOLD);
-                            holder.time.setTypeface(null, Typeface.BOLD);
-                            holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
-
-                        }
                     }
-                    //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
+                    else if(timeinms/onemonth>0) {
+                        if(timeinms/onemonth>1)
+                            timecast = timeinms / onemonth + " months";
+                        else
+                            timecast = timeinms / onemonth + " month";
+                    }
+                    else if(timeinms/oneday>0) {
+                        if(timeinms/oneday>1)
+                            timecast = timeinms / oneday + " days";
+                        else
+                        timecast = timeinms / oneday + " day";
+                    }
+
+                    else
+                    timecast = simpleDateFormat.format(d);
+
+                //added by Krishna : 21st August, 2018
+                //the following code makes sure unread texts are highlighted
+                //fixed by Indraanil :26th August, 2018
+                //deleted onClick and setTypeface to default on seen
+                if(!myChats.getLast_message().getSender().equals(uid)&&!myChats.getLast_message().getStatus().equals("seen")){
+                    holder.message.setTypeface(null, Typeface.BOLD);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                    holder.username.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                }
+                else {
+                    holder.message.setTypeface(Typeface.DEFAULT);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                    holder.username.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                }
+
+
                     if (holder.username.getBackground() != null) {
                         holder.shimmerFrameLayout.startShimmerAnimation();
                         Glide.with(context)
@@ -183,30 +187,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
                                             }
                                             holder.message.setText("You : " + myChats.getLast_message().getMessage_body());
-                                           /* if (myChats.getLast_message().getType().equals("message"))
-                                                holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
-                                            else if (myChats.getLast_message().getType().equals("gallery"))
-                                                holder.message.setText("You : sent photos");
-                                            else if (myChats.getLast_message().getType().equals("location"))
-                                                holder.message.setText("You : sent a location");
-                                            else if (myChats.getLast_message().getType().equals("contact"))
-                                                holder.message.setText("You : sent a contact");
-                                            else
-                                                holder.message.setText("You : sent a photo");*/
+
                                         } else {
 
                                             holder.status.setVisibility(View.GONE);
                                             holder.message.setText(myChats.getLast_message().getMessage_body());
-                                            /*if (myChats.getLast_message().getType().equals("message"))
-                                                holder.message.setText(myChats.getLast_message().getMessage_body());
-                                            else if (myChats.getLast_message().getType().equals("gallery"))
-                                                holder.message.setText("Sent photos");
-                                            else if (myChats.getLast_message().getType().equals("location"))
-                                                holder.message.setText("Sent a location");
-                                            else if (myChats.getLast_message().getType().equals("contact"))
-                                                holder.message.setText("Sent a contact");
-                                            else
-                                                holder.message.setText("Sent a photo");*/
+
 
 
                                         }
@@ -239,29 +225,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                 holder.status.setColorFilter(ContextCompat.getColor(context, R.color.green), PorterDuff.Mode.SRC_IN);
                             }
                             holder.message.setText("You : "+myChats.getLast_message().getMessage_body());
-                            /*if (myChats.getLast_message().getType().equals("message"))
-                                holder.message.setText("You :" + myChats.getLast_message().getMessage_body());
-                            else if (myChats.getLast_message().getType().equals("gallery"))
-                                holder.message.setText("You : sent photos");
-                            else if (myChats.getLast_message().getType().equals("location"))
-                                holder.message.setText("You : sent a location");
-                            else if (myChats.getLast_message().getType().equals("contact"))
-                                holder.message.setText("You : sent a contact");
-                            else
-                                holder.message.setText("You : sent a photo");*/
+
                         } else {
                             holder.status.setVisibility(View.GONE);
                             holder.message.setText(myChats.getLast_message().getMessage_body());
-                           /* if (myChats.getLast_message().getType().equals("message"))
-                                holder.message.setText(myChats.getLast_message().getMessage_body());
-                            else if (myChats.getLast_message().getType().equals("gallery"))
-                                holder.message.setText("Sent photos");
-                            else if (myChats.getLast_message().getType().equals("location"))
-                                holder.message.setText("Sent a location");
-                            else if (myChats.getLast_message().getType().equals("contact"))
-                                holder.message.setText("Sent a contact");
-                            else
-                                holder.message.setText("Sent a photo");*/
+
                         }
 
                         Glide.with(context)
@@ -288,23 +256,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                                 identity = "buyer";
                             } else
                                 identity = "seller";
-                            //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(context, ChatActivity.class);
                             intent.putExtra("mychats", myChats);
                             intent.putExtra("identity", identity);
-                          //  intent.putExtra("isMap", "0");
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
-                            //for temporary fixing highlighted chats and converting them to normal
 
-                            TextView username,time,message;
-                            username=v.findViewById(R.id.username);
-                            time=v.findViewById(R.id.time);
-                            message=v.findViewById(R.id.message);
-                            username.setTypeface(Typeface.DEFAULT);
-                            time.setTypeface(Typeface.DEFAULT);
-                            message.setTypeface(Typeface.DEFAULT);
-                            //refresh();
 
                         }
 
@@ -334,9 +291,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
 
     }
-    public void refresh(){
-        firebaseRecyclerAdapter.notifyDataSetChanged();
-    }
+
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ppic,adpic,status;
         public TextView username,time,message;
@@ -345,7 +300,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
         public MyChatHolder(View itemView) {
             super(itemView);
-            //Toast.makeText(context, "new chat", Toast.LENGTH_SHORT).show();
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             chatlayout=itemView.findViewById(R.id.chatlayout);
             ppic=itemView.findViewById(R.id.profilepic);
@@ -393,7 +347,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buyfrag=true;
                     buy.setSelected(true);
                     sell.setSelected(false);
-                  // listenerRegistration.remove();
                     firebaseRecyclerAdapter.stopListening();
 
                    getMyChats("buyerid");
@@ -406,7 +359,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buy.setSelected(false);
                     sell.setSelected(true);
                     buyfrag=false;
-                  // listenerRegistration.remove();
                     firebaseRecyclerAdapter.stopListening();
                    getMyChats("sellerid");
                 }

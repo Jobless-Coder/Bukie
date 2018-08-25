@@ -77,9 +77,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setContentView(R.layout.activity_display_ad_two);
         bookloader = findViewById(R.id.bookloader);
         bookloader.start();
-
-
-
         if(!checkForDynamicLinks())
         {
             Bundle bundle = getIntent().getExtras();
@@ -97,7 +94,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         viewcounter=findViewById(R.id.viewcounter);
-        //viewcounter.setText(bookAds.getViewcounter()+"");
         price= findViewById(R.id.price);
         price.setText(bookAds.getPrice());
         title=findViewById(R.id.title);
@@ -119,12 +115,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         back=findViewById(R.id.back);
         back.setOnClickListener(this);
 
-        //floatingActionButton.setOnClickListener(this);
-
-        //if(getActionBar()!=null)
-            //getActionBar().setDisplayHomeAsUpEnabled(true);
-        //if(getActionBar()!=null)
-       // getActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager=findViewById(R.id.viewPager);
         gotoleft=findViewById(R.id.gotoleft);
         gotoright=findViewById(R.id.gotoright);
@@ -132,7 +122,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setTitle("");
-        //actionBar.setDisplayHomeAsUpEnabled(true);
         gotoright.setOnClickListener(this);
         gotoleft.setOnClickListener(this);
         likeButton=findViewById(R.id.favourites);
@@ -229,8 +218,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                         bookAds = b;
                         wasReferredBylink = true;
                         initEverything();
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //DisplayAdActivity.this.startActivity(intent);
+
                     }
                 });
                 return true;
@@ -315,7 +303,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
         }
 
-
         //this code increases the counter value by 1
         firebaseFirestore.collection("bookads").document(bookAds.getAdid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -330,8 +317,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     }
 
-
-
     @Override
     public void onBackPressed()
     {
@@ -340,7 +325,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         finish();
     }
     private void setFavouriteButton() {
-       // Log.e("Favourite", "inside fab setting function");
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference().child("users/"+uid+"/mywishlist").child(bookAds.getAdid());
 
         dref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -354,7 +338,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                         public void run() {
                             progressBar.setVisibility(View.GONE);
                             likeButton.setVisibility(View.VISIBLE);
-
                             likeButton.setLiked(true);
 
                         }
@@ -366,7 +349,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                           // progressBar.setIndeterminate(false);
+
                             progressBar.setVisibility(View.GONE);
                             likeButton.setVisibility(View.VISIBLE);
                         }
@@ -428,51 +411,18 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             case R.id.gotoleft:
                 if(pos!=0)
                 {
-                  //  viewPager.setCurrentItem(booksUrl.size()-1,true);
-
-                //}
-
-                //else{
                     viewPager.setCurrentItem(pos-1,true);
-
-                }
-               /* if(pos==1)
-                {
-                    gotoleft.setVisibility(View.GONE);
-                    viewPager.setCurrentItem(pos-1,true);
-                    //viewPager.setCurrentItem(ImageUrl.size()-1,true);
-
                 }
 
-                else{
-                    if(pos==booksUrl.size()-1)
-                        gotoright.setVisibility(View.VISIBLE);
-                    viewPager.setCurrentItem(pos-1,true);
-
-                }*/
 
                 break;
             case  R.id.gotoright:
                 if(pos!=booksUrl.size()-1)
                 {
-                    //  viewPager.setCurrentItem(booksUrl.size()-1,true);
-
-                    //}
-
-                    //else{
                     viewPager.setCurrentItem(pos+1,true);
-
                 }
 
-                /*if(pos==booksUrl.size()-2){
-                    gotoright.setVisibility(View.GONE);
-                    viewPager.setCurrentItem(pos + 1, true);
-                }
-                else {
-                    if(pos==0)
-                        gotoleft.setVisibility(View.VISIBLE);
-                    viewPager.setCurrentItem(pos + 1, true);
-                }*/
+
                 break;
             case R.id.back:
                 onBackPressed();
@@ -509,13 +459,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 onBackPressed();
 
                 break;
-            /*case android.R.id.home:
-                onBackPressed();
-                break;*/
-
-
-
-
 
             default:
                 break;
@@ -582,7 +525,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        //progressDialog.dismiss();
+
 
                     }
                 })
@@ -601,7 +544,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                         intent.putExtra("mychats", myChatsStatus);
                         intent.putExtra("identity", "buyer");
-                        //intent.putExtra("isMap","0");
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         getApplicationContext().startActivity(intent);
 

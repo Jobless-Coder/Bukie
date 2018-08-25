@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "Firebase";
+    private static final String TAG = "hellonoob";
     int notif=0;
     MyChatsStatus myChatsStatus;
     String identity;
@@ -68,6 +68,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        Log.d("hello",remoteMessage.getData().toString()+"kkk");
+        Log.d("hello",remoteMessage.getNotification().toString()+"555");
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
         // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -140,16 +142,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param messageBody FCM message body received.
      */
     private void sendNotification(RemoteMessage messageBody) throws ExecutionException, InterruptedException {
-      //  messageBody.
+
         Map<String,String> hashMap=new HashMap<>();
         hashMap=messageBody.getData();
+        String icon;
         Log.i("notifs",hashMap.toString());
         myChatsStatus=new MyChatsStatus(hashMap.get("sellerid"),hashMap.get("buyerid"),hashMap.get("adid"),hashMap.get("coverpic"),hashMap.get("chatid"),hashMap.get("sellerpic"),hashMap.get("buyerpic"),hashMap.get("sellerfullname"),hashMap.get("buyerfullname"));
         identity=hashMap.get("identity");
-        if(identity.equals("seller"))
-            identity="buyer";
-        else
-            identity="seller";
+        if(identity.equals("seller")) {
+            icon=hashMap.get("sellerpic");
+            identity = "buyer";
+        }
+        else {
+            icon=hashMap.get("buyerpic");
+            identity = "seller";
+        }
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("mychats",myChatsStatus);
         intent.putExtra("identity",identity);
@@ -159,13 +166,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-       // Bitmap bitmap = getBitmapFromURL(messageBody.getIcon());
-        //Log.i("notifs",messageBody.getNotification().getIcon());
-        //Toast.makeText(this, ""+messageBody.getNotification().getIcon(), Toast.LENGTH_SHORT).show();
-        Log.i("notifs",messageBody.getNotification().getBody()+"kk");
+
         Bitmap bitmap;
-        if(hashMap.get("icon")!=null)
-         bitmap= Glide.with(getApplication()).load(hashMap.get("icon")).asBitmap().into(-1,-1).get();
+        if(icon!=null)
+         bitmap= Glide.with(getApplication()).load(icon).asBitmap().into(-1,-1).get();
         else
              bitmap= Glide.with(getApplication()).load(R.drawable.bookpic).asBitmap().into(-1,-1).get();
 
@@ -178,14 +182,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setLargeIcon(bitmap)
                         .setColor(ContextCompat.getColor(this, R.color.colorAccent))
                        // .addAction(R.drawable.share,"Reply",)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(hashMap.get("message")))
-                        .setContentTitle(hashMap.get("sender"))
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody.getNotification().getBody()))
+                        .setContentTitle(messageBody.getNotification().getTitle())
                        .setGroupSummary(true)
                         .setGroup("com.example.krishna.bukie")
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_SOUND|Notification.DEFAULT_LIGHTS|Notification.DEFAULT_VIBRATE)
                         .setContentIntent(pendingIntent);
-      // notificationBuilder.setGroup("com.example.krishna.bukie");
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
 
@@ -202,7 +205,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         manager.notify(notif++ /* ID of notification */, notificationBuilder.build());
     }
-    public Bitmap getBitmapFromURL(String strURL) {
+   /* public Bitmap getBitmapFromURL(String strURL) {
         try {
             URL url = new URL(strURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -215,7 +218,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 
     @Override
     public void onNewToken(String token) {

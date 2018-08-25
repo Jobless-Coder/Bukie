@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -50,24 +51,26 @@ public class HomePageActivity extends AppCompatActivity {
 
     private final String TAG = "HomePageActivity";
 
-    AHBottomNavigation bottomNavigation;
-    AHBottomNavigationItem item1,item2,item3;
-    FrameLayout frameLayout;
-    View toolbarview,tabsview;
-    View toolbar;
-    ViewGroup toolbargroup;
+    private AHBottomNavigation bottomNavigation;
+    private AHBottomNavigationItem item1,item2,item3;
+    private FrameLayout frameLayout;
+    private View buynoti,sellnoti,tabsview;
+    private TextView buynotitxt,sellnotitxt;
+    private ViewGroup toolbargroup;
     private DrawerLayout mDrawerLayout;
     private int mposition;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private String uid;
-    DatabaseReference connectedRef;
-    ValueEventListener listener;
+    private DatabaseReference connectedRef;
+    private ValueEventListener listener;
+    private int buychat=0,sellchat=0;
     //for handling dynamic link book ads requests
     private String domain="https://bm.in";
     private com.google.firebase.database.Query buyerQuery,sellerQuery;
     private int count=0;
     private ValueEventListener sellerListener,buyerListener;
     private HashSet<String> unseenChatList=new HashSet<>();
+    private String temp;
 
 
     @Override
@@ -75,89 +78,28 @@ public class HomePageActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-
+        buynoti=findViewById(R.id.buynoti);
+        sellnoti=findViewById(R.id.sellnoti);
+        buynotitxt=findViewById(R.id.buynotitxt);
+        sellnotitxt=findViewById(R.id.sellnotitxt);
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
-
-
         tabsview=findViewById(R.id.header);
-
-
         frameLayout =findViewById(R.id.frame);
-
         toolbargroup=findViewById(R.id.toolbar_layout);
-
-        //checkForDynamicLinks();
         bottomNavigation=findViewById(R.id.bottom_navigation);
         firebaseDatabase=FirebaseDatabase.getInstance();
         SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-       DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
+        DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
 
         MyFirebaseInstanceIDService myFirebaseInstanceIDService=new MyFirebaseInstanceIDService(uid);
-       myFirebaseInstanceIDService.onTokenRefresh();
+          myFirebaseInstanceIDService.onTokenRefresh();
         mposition=0;
         loadFragment(new HomeFragment());
 
-
         initializeViews();
 
-    }
-
-    private void checkForDynamicLinks() {
-
-        Intent intent = getIntent();
-        if(intent!=null && intent.getData()!=null)
-        {
-
-            String link = intent.getData().toString();
-            if(link.contains("ads"))
-            {
-                link = link.substring(link.indexOf("ads/")+4);
-                FirebaseFirestore.getInstance().
-                        collection("bookads").
-                        document(link).
-                        get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        BookAds b = documentSnapshot.toObject(BookAds.class);
-                        Intent intent = new Intent(HomePageActivity.this, DisplayAdActivity.class);
-                        intent.putExtra("bookads", b);
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        HomePageActivity.this.startActivity(intent);
-                    }
-                })
-                ;
-            }
-        }
-
-
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                        }
-
-
-                        if (deepLink != null) {
-                            Toast.makeText(HomePageActivity.this, "Deep link found!"+deepLink.toString(), Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Log.d("Dynamic links", "getDynamicLink: no link found");
-                        }
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("Dynamic links", "getDynamicLink:onFailure", e);
-                    }
-                });
     }
 
     private boolean loadFragment(Fragment fragment) {
@@ -172,13 +114,10 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
 
-
-
-
     private void initializeViews() {
-        item1 = new AHBottomNavigationItem("Home", R.drawable.home, R.color.colorAccent);
-        item2 = new AHBottomNavigationItem("Chats", R.drawable.chat, R.color.violet);
-        item3 = new AHBottomNavigationItem("Profile", R.drawable.profile, R.color.colorAccent);
+        item1 = new AHBottomNavigationItem("Home", R.drawable.home);
+        item2 = new AHBottomNavigationItem("Chats", R.drawable.chat);
+        item3 = new AHBottomNavigationItem("Profile", R.drawable.profile);
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
@@ -201,10 +140,8 @@ public class HomePageActivity extends AppCompatActivity {
                             mposition = 0;
                         }
 
-
-
-
                         break;
+
                     case 1:
                         if(mposition!=1) {
 
@@ -212,18 +149,18 @@ public class HomePageActivity extends AppCompatActivity {
                             mposition = 1;
                         }
 
-
-
                         break;
+
                     case 2:
                         if(mposition!=2) {
                             fragment = new ProfileFragment();
                             mposition = 2;
                         }
 
-
                         break;
+
                         default:
+
                             break;
 
                 }
@@ -231,24 +168,6 @@ public class HomePageActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-
-    private int fetchColor(@ColorRes int color) {
-        return ContextCompat.getColor(this, color);
-    }
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG, "Current back stack count: " + getSupportFragmentManager().getBackStackEntryCount());
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            super.onBackPressed();
-        } else if (mposition > 0) {
-            Fragment fragment = new HomeFragment();
-            bottomNavigation.setCurrentItem(0);
-            loadFragment(fragment);
-        } else {
-            super.onBackPressed();
-        }
     }
 
 
@@ -266,8 +185,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
         DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
-        final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
-        //onDisconnectRef.cancel();
+        //final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
         presenceRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
 
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
@@ -293,6 +211,9 @@ public class HomePageActivity extends AppCompatActivity {
         super.onStart();
     }
 
+
+
+
     @Override
     protected void onResume() {
         buyerQuery=firebaseDatabase.getReference().child("chat_status").orderByChild("buyerid_isactive").equalTo(uid+"_true");
@@ -306,11 +227,45 @@ public class HomePageActivity extends AppCompatActivity {
                     if (last_message != null) {
                         if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")&&!unseenChatList.contains(myChatsStatus.getChatid()) ){
                             count += 1;
+                            buychat++;
+                            if(buychat>99)
+                                temp=buychat+"+";
+                            else
+                                temp=""+buychat;
+                           // if(isChatFrag)
+                            {
+                                if(buynoti.getVisibility()==View.VISIBLE){
+                                    buynotitxt.setText(temp);
+                                }
+                                else {
+                                    buynoti.setVisibility(View.VISIBLE);
+                                    buynotitxt.setText(temp);
+                                }
+                            }
                             unseenChatList.add(myChatsStatus.getChatid());
                             bottomNavigation.setNotification(count + "", 1);
 
-                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())) {
+                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())&&buychat>0) {
                             count--;
+                            buychat--;
+                            if(buychat>99)
+                                temp=buychat+"+";
+                            else
+                                temp=""+buychat;
+                            //if(isChatFrag)
+                            {
+                                if(buychat>0&&buynoti.getVisibility()==View.VISIBLE){
+                                    buynotitxt.setText(temp);
+                                }
+                                else if(buychat==0&&buynoti.getVisibility()==View.VISIBLE){
+                                    buynoti.setVisibility(View.GONE);
+
+                                }
+                                else {
+                                    buynoti.setVisibility(View.VISIBLE);
+                                    buynotitxt.setText(temp);
+                                }
+                            }
                             unseenChatList.remove(myChatsStatus.getChatid());
                             if (count == 0)
                                 bottomNavigation.setNotification("", 1);
@@ -318,12 +273,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                                 bottomNavigation.setNotification("" + count, 1);
                         }
-                    } /*else if (last_message.getSender() .equals( uid) &&count>0&&unseenChatList.contains(myChatsStatus.getChatid())) {
-
-                    count--;
-                    //unseenChatList.remove(myChatsStatus.getChatid());
-                    bottomNavigation.setNotification("1", count);
-                }*/
+                    }
                 }
 
             }
@@ -337,35 +287,56 @@ public class HomePageActivity extends AppCompatActivity {
         sellerListener=new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //  String k=dataSnapshot.child("adid").getValue().toString();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
 
                     MyChatsStatus myChatsStatus = postSnapshot.getValue(MyChatsStatus.class);
                     LastMessage last_message = myChatsStatus.getLast_message();
-                  //  Log.i("klli", "ffff");
                     if (last_message != null) {
 
 
-                       /* if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")) {
-                            count += 1;
-                            bottomNavigation.setNotification(""+count, 1);
-                            //  bottomNavigation.setNotification("1", 5);
-
-                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0) {
-                            count--;
-                            if(count==0)
-                                bottomNavigation.setNotification("",1);
-                            else
-                                // Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
-                                bottomNavigation.setNotification(""+count, 1);
-                        }*/
                         if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("sent")&&!unseenChatList.contains(myChatsStatus.getChatid()) ){
                             count += 1;
+                            sellchat++;
+                            if(sellchat>99)
+                                temp=sellchat+"+";
+                            else
+                                temp=""+sellchat;
+                           // if(isChatFrag)
+                            {
+                                if(sellnoti.getVisibility()==View.VISIBLE){
+                                    sellnotitxt.setText(temp);
+                                }
+                                else {
+                                    sellnoti.setVisibility(View.VISIBLE);
+                                    sellnotitxt.setText(temp);
+                                }
+                            }
                             unseenChatList.add(myChatsStatus.getChatid());
                             bottomNavigation.setNotification(count + "", 1);
 
                         } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())) {
                             count--;
+                            if(sellchat>0)
+                                sellchat--;
+                            if(sellchat>99)
+                                temp=sellchat+"+";
+                            else
+                                temp=""+sellchat;
+                            //if(isChatFrag)
+                            {
+                                if(sellchat>0&&sellnoti.getVisibility()==View.VISIBLE){
+                                    sellnotitxt.setText(temp);
+                                }
+                                else if(sellchat==0&&sellnoti.getVisibility()==View.VISIBLE){
+                                    sellnoti.setVisibility(View.GONE);
+
+                                }
+                                else {
+                                    sellnoti.setVisibility(View.VISIBLE);
+                                    sellnotitxt.setText(temp);
+                                }
+                            }
+
                             unseenChatList.remove(myChatsStatus.getChatid());
                             if (count == 0)
                                 bottomNavigation.setNotification("", 1);
@@ -386,8 +357,6 @@ public class HomePageActivity extends AppCompatActivity {
 
         sellerQuery.addValueEventListener(sellerListener);
         buyerQuery.addValueEventListener(buyerListener);
-
-
         super.onResume();
     }
 

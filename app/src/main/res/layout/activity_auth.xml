@@ -7,15 +7,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/violet"
+    android:background="@color/light_grey"
     tools:context=".auth.AuthActivity">
-    <!--TextView
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:text="Continue with email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" /-->
+
     <LinearLayout
         android:visibility="visible"
         android:id="@+id/loginscreen"
@@ -34,14 +28,14 @@
             android:padding="10dp"
             android:onClick="translate"
             android:id="@+id/hello"
-            android:textColor="@color/white"
+            android:textColor="@color/violet"
             android:layout_gravity="bottom"
             android:text="Sign in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:padding="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/violet"
             android:onClick="translate"
             android:id="@+id/bye"
             android:layout_gravity="bottom"
@@ -70,47 +64,39 @@
                 android:layout_height="wrap_content">
                 <android.support.design.widget.TextInputLayout
 
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/violet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:textColor="@color/violet"
                     >
 
                     <EditText
                         android:id="@+id/loginemail"
-                        android:textColorHint="@color/white"
-                        android:textColor="@color/white"
-                        android:backgroundTint="@color/white"
+                        android:textColorHint="@color/violet"
+                        android:textColor="@color/violet"
+                        android:backgroundTint="@color/violet"
                         android:ems="10"
                         android:hint="Enter email"
                         android:inputType="textWebEmailAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </android.support.design.widget.TextInputLayout>
-                <!--EditText
-                    android:textColorHint="@color/white"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/white"
-                    android:ems="10"
-                    android:hint="Enter password"
-                    android:inputType="textPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" /-->
+
                 <android.support.design.widget.TextInputLayout
 
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    app:passwordToggleTint="@color/white"
+                    android:textColor="@color/violet"
+                    app:passwordToggleTint="@color/violet"
 
                     app:passwordToggleEnabled="true"
                     >
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/loginpass"
-                        android:textColor="@color/white"
-                        android:backgroundTint="@color/white"
+                        android:textColor="@color/violet"
+                        android:backgroundTint="@color/violet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Enter password"
@@ -124,15 +110,19 @@
                     android:textStyle="bold"
                     android:layout_marginTop="5dp"
                     android:layout_gravity="right"
-                    android:textColor="@color/grey"
+                    android:textColor="@color/light_violet"
                     android:text="Forgot password?"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <android.support.v7.widget.CardView
                     app:cardCornerRadius="20dp"
                     android:id="@+id/signinbtn"
+                    app:cardElevation="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginTop="30dp"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="40dp">
                     <TextView
@@ -140,7 +130,7 @@
                         android:textStyle="bold"
                         android:layout_margin="5dp"
                         android:layout_gravity="center"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/white"
                         android:text="Sign in"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -166,16 +156,16 @@
                 android:layout_height="wrap_content">
                 <android.support.design.widget.TextInputLayout
                     android:backgroundTint="@color/black"
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:textColor="@color/violet"
                     >
 
                 <EditText
-                    android:textColorHint="@color/white"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/white"
+                    android:textColorHint="@color/violet"
+                    android:textColor="@color/violet"
+                    android:backgroundTint="@color/violet"
                     android:ems="10"
                     android:id="@+id/regemail"
                     android:hint="Enter email"
@@ -183,39 +173,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 </android.support.design.widget.TextInputLayout>
-                <!--EditText
-                    android:textColorHint="@color/white"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/white"
-                    android:ems="10"
-                    android:hint="Enter password"
-                    android:inputType="textPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <EditText
-                    android:textColorHint="@color/white"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/white"
-                    android:ems="10"
-                    android:hint="Repeat password"
-                    android:inputType="textPassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" /-->
+
                 <android.support.design.widget.TextInputLayout
 
-                    android:textColorHint="@color/white"
+                    android:textColorHint="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    app:passwordToggleTint="@color/white"
+                    android:textColor="@color/violet"
+                    app:passwordToggleTint="@color/violet"
 
                     app:passwordToggleEnabled="true"
                     >
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/regpass"
-                        android:textColor="@color/white"
-                        android:backgroundTint="@color/white"
+                        android:textColor="@color/violet"
+                        android:backgroundTint="@color/violet"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Enter password"
@@ -223,19 +196,19 @@
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
 
-                android:textColorHint="@color/white"
+                android:textColorHint="@color/violet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                app:passwordToggleTint="@color/white"
+                android:textColor="@color/violet"
+                app:passwordToggleTint="@color/violet"
 
                 app:passwordToggleEnabled="true"
                 >
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/repregpass"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/white"
+                    android:textColor="@color/violet"
+                    android:backgroundTint="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Repeat password"
@@ -244,8 +217,12 @@
                 <android.support.v7.widget.CardView
                     app:cardCornerRadius="20dp"
                     android:id="@+id/signupbtn"
+                    app:cardElevation="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_marginTop="30dp"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/violet"
                     android:layout_width="match_parent"
                     android:layout_height="40dp">
 
@@ -254,7 +231,7 @@
                         android:textStyle="bold"
                         android:layout_margin="5dp"
                         android:layout_gravity="center"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/white"
                         android:text="Sign Up"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -282,14 +259,14 @@
                 <View
                     android:layout_gravity="center"
                     android:layout_weight="3"
-                    android:background="@color/white"
+                    android:background="@color/violet"
                     android:layout_width="0dp"
                     android:layout_height="2dp"/>
                 <TextView
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/violet"
                     android:text="Or continue with"
                     android:textSize="18sp"
                     android:layout_width="wrap_content"
@@ -298,13 +275,14 @@
                 <View
                     android:layout_gravity="center"
                     android:layout_weight="3"
-                    android:background="@color/white"
+                    android:background="@color/violet"
                     android:layout_width="0dp"
                     android:layout_height="2dp"/>
             </LinearLayout>
             <android.support.v7.widget.CardView
                 android:layout_gravity="center"
                 android:id="@+id/facebookbtn"
+                app:cardElevation="5dp"
                 app:cardCornerRadius="20dp"
                 android:layout_width="200dp"
                 android:layout_height="40dp">
@@ -317,8 +295,10 @@
 
 
             <android.support.v7.widget.CardView
+                android:layout_marginBottom="10dp"
                 android:layout_gravity="center"
                 android:id="@+id/googlebtn"
+                app:cardElevation="5dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="20dp"
                 android:layout_width="200dp"

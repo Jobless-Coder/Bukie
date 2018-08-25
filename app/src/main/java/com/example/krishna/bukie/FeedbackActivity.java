@@ -1,6 +1,7 @@
 package com.example.krishna.bukie;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -29,12 +30,17 @@ public class FeedbackActivity extends AppCompatActivity {
     boolean imageAdded = false;
 String review;
 String imgurl = "";
+String uid;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+        SharedPreferences sharedPreferences=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        uid=sharedPreferences.getString("uid",null);
+
+
 
     }
 
@@ -77,7 +83,7 @@ String imgurl = "";
         //pick up current user from sharedPreferences
         //return null;
         //TODO: get original user id in upcoming iterations
-        return "admin";
+        return uid;
     }
 
     private void uploadImage() {
