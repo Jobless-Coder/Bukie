@@ -320,26 +320,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
                     final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child("last_message");
-                    databaseReference.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        time[0] =dataSnapshot.getValue().toString();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                    databaseReference.child("sender").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            sender[0] =dataSnapshot.getValue().toString();
+                            LastMessage lastMessage= dataSnapshot.getValue(LastMessage.class);
+                            time[0]=lastMessage.getTime().toString();
+                            sender[0]=lastMessage.getSender();
                             if(sender[0].equals(ch.getUid())&&time[0].equals(ch.getTimestamp())){
                                 databaseReference.child("status").setValue("seen");
                             }
+
                         }
 
                         @Override
@@ -347,6 +338,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                         }
                     });
+
 
 
                 }
@@ -380,11 +372,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });*/
         //TODO:
-       /* if (isMap.compareTo("1") == 0) {
-            geopoint = bundle.getParcelable("geopoint");
 
-            sendMessage("location");
-        }*/
         chatbox.addTextChangedListener(new TextWatcher() {
 
             @Override
