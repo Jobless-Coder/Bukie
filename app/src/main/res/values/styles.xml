@@ -11,10 +11,14 @@
     </style>
 
     <style name="AppTheme.NoActionBar">
+
         <item name="android:windowContentTransitions">true</item>
         <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppTheme.Splash" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_drawable</item>
     </style>
 
     <style name="BaseTheme">

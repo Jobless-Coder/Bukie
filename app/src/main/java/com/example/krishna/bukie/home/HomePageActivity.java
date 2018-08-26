@@ -75,7 +75,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         buynoti=findViewById(R.id.buynoti);
@@ -245,7 +245,7 @@ public class HomePageActivity extends AppCompatActivity {
                             unseenChatList.add(myChatsStatus.getChatid());
                             bottomNavigation.setNotification(count + "", 1);
 
-                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())&&buychat>0) {
+                        } else if ((!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())&&buychat>0)||(last_message.getSender().equals(uid)&&unseenChatList.contains(myChatsStatus.getChatid()))) {
                             count--;
                             buychat--;
                             if(buychat>99)
@@ -314,7 +314,7 @@ public class HomePageActivity extends AppCompatActivity {
                             unseenChatList.add(myChatsStatus.getChatid());
                             bottomNavigation.setNotification(count + "", 1);
 
-                        } else if (!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())) {
+                        } else if ((!last_message.getSender().equals(uid) && last_message.getStatus().equals("seen") && count > 0&&unseenChatList.contains(myChatsStatus.getChatid())||(last_message.getSender().equals(uid)&&unseenChatList.contains(myChatsStatus.getChatid())))) {
                             count--;
                             if(sellchat>0)
                                 sellchat--;
@@ -344,6 +344,7 @@ public class HomePageActivity extends AppCompatActivity {
 
                                 bottomNavigation.setNotification("" + count, 1);
                         }
+
                     }
                 }
 

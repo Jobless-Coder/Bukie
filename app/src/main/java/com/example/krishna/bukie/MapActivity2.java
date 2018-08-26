@@ -282,7 +282,7 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
             LatLng latLng=new LatLng(address.getLatitude(),address.getLongitude());
 
                selectedpoint = new Geopoint(address.getLatitude() + "", address.getLongitude() + "", address.getAddressLine(0));
-               getNearbyPlaces();
+               //getNearbyPlaces();
 
 
 

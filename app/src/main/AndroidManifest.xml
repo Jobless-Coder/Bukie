@@ -26,7 +26,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.Splash">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -46,11 +46,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-        <!--
-            meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/API_KEY" /
-        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -66,6 +61,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/API_KEY" />
 
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -82,13 +84,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".auth.AuthActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -97,14 +92,18 @@
             android:name=".FeedbackActivity"
             android:theme="@style/NoActionTheme" />
         <activity android:name=".ChatActivity"
-            />
-        <activity android:name=".registration.RegistrationActivity" />
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".registration.RegistrationActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".home.HomePageActivity"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name=".PostnewadActivity" />
-        <activity android:name=".DisplayAdActivity">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".PostnewadActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".DisplayAdActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -116,8 +115,10 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapActivity" />
-        <activity android:name=".ImageViewActivity" />
+        <activity android:name=".MapActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ImageViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service android:name=".MyFirebaseMessagingService">
             <intent-filter>
@@ -130,16 +131,18 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ImageCompressorTestActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".TagPickerActivity" />
+        <activity android:name=".ImageCompressorTestActivity"  android:theme="@style/AppTheme.NoActionBar"
+            />
+        <activity android:name=".SearchActivity"  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".TagPickerActivity"  android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".FullscreenScannerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_scanner"
             android:theme="@style/FullscreenTheme" />
-        <activity android:name=".MapActivity2" />
-        <activity android:name=".ReportActivity"></activity>
+        <activity android:name=".MapActivity2"  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ReportActivity"  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".auth.AuthActivity" android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

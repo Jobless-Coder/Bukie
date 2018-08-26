@@ -81,15 +81,17 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
         String userId = sharedPreferences.getString("uid", null);
 
-        if (userId != null) {
+        /*if (userId != null) {
             Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
+
 
         setContentView(R.layout.activity_auth);
 

@@ -35,10 +35,7 @@ private String username,receiver,userfullname,profilepic;
 private String refID;//this id is the node key for this entire chat section
 private IncomingMessageListener listener;
 private boolean isListening;
-private DatabaseReference ddref;
-private ChildEventListener childEventListener;
 private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
-private CollectionReference collectionReference;
 private ListenerRegistration listenerRegistration;
 private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 private MyChatsStatus myChatsStatus;
@@ -75,9 +72,9 @@ private String identity;
 
 
 
-    public void sendMessage(final MessageItem message)//add to recyclerview then send
+    public void sendMessage(final MessageItem message)
     {
-        //final LastMessage[] last_message = new LastMessage[1];
+
 
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)

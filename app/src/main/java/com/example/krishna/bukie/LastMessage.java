@@ -43,19 +43,4 @@ public class LastMessage {
         return sender;
     }
 
-
-
-   /* @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(message_body);
-        dest.writeString(time);
-        dest.writeString(type);
-        dest.writeString(sender);
-        dest.writeString(status);
-    }*/
 }

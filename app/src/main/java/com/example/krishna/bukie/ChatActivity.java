@@ -6,9 +6,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -65,6 +67,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -75,6 +78,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -332,7 +336,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 messageItemList.add(ch);
                 adapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(messageItemList.size() - 1);
+                //recyclerView.scrollToPosition(messageItemList.size() - 1);
             }
 
             public void updateMessageStatus(MessageItem ch)
@@ -423,6 +427,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chatactivitymenu, menu);
+        MenuItem item = menu.findItem(R.id.mark_as_sold);
+        if(identity.equals("buyer"))
+        item.setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -435,6 +442,58 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.block_user:
                 break;
             case R.id.mark_as_sold:
+                if(identity.equals("seller")) {//check whether it is already marked as sold
+                    final android.support.v7.app.AlertDialog.Builder alert=new android.support.v7.app.AlertDialog.Builder(this);
+                    alert.setMessage("Are you sure you want to mark this ad as sold? You're action cannot be undone.");
+                    alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int which) {
+
+                            dialog.dismiss();
+                        }
+                    });
+                    alert.setPositiveButton("CONFIRM", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int which) {
+                            FirebaseFirestore.getInstance().collection("bookads").document(myChats.getAdid()).update("issold",true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+
+                                        Toast.makeText(context, "Your book was mrked as sold.", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    }
+                                    else {
+
+                                        dialog.dismiss();
+                                    }
+                                }
+
+
+                            });
+                        }
+                    });
+                    android.support.v7.app.AlertDialog alert11 = alert.create();
+                    alert11.show();
+
+                }
+
+                break;
+            case R.id.gotoad:
+                FirebaseFirestore.getInstance().collection("bookads").document(myChats.getAdid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()) {
+                            BookAds bookAds =task.getResult().toObject(BookAds.class);
+                                    Intent intent = new Intent(context, DisplayAdActivity.class);
+                            intent.putExtra("bookads", bookAds);
+                            intent.putExtra("from", "chat");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                });
+
                 break;
 
             default:
@@ -998,12 +1057,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
         connectedRef.removeEventListener(listener);
 
         fh.stopListening();
-        super.onDestroy();
+        super.onPause();
     }
 
 

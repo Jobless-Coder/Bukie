@@ -126,7 +126,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         firebaseFirestore=FirebaseFirestore.getInstance();
         setHasOptionsMenu(true);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        recyclerView.setNestedScrollingEnabled(false);
 
         myads.setSelected(true);
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo",Context.MODE_PRIVATE);

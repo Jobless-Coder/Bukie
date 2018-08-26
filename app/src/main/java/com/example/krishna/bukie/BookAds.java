@@ -74,23 +74,7 @@ private boolean issold;
         this.issold=issold;
     }
 
-   /* public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, Integer viewcounter, List<String> bookpicslist,List<String>tagList) {
-        this.date = date;
-        this.booktitle = booktitle;
-        this.price = price;
-        this.bookcategory = bookcategory;
-        this.bookcoverpic = bookcoverpic;
-        this.bookpublisher = bookpublisher;
-        this.bookauthor = bookauthor;
-        this.bookdesc = bookdesc;
-        this.sellerid = sellerid;
-        this.adid = adid;
-        this.sellerpic = sellerpic;
-        this.sellerfullname = sellerfullname;
-        this.viewcounter = viewcounter;
-        this.bookpicslist = bookpicslist;
-        this.tagList=tagList;
-    }*/
+
 
 
     public List<String> getTagList() {
@@ -101,17 +85,7 @@ private boolean issold;
         return sellerfullname;
     }
 
-    /*public BookAds(String date, String booktitle, String price, String bookcategory, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist) {
-        this.date = date;
-        this.booktitle = booktitle;
-        this.price = price;
-        this.bookcategory = bookcategory;
-        this.sellerid = sellerid;
-        this.adid = adid;
-        this.sellerpic = sellerpic;
-        this.sellerfullname = sellerfullname;
-        this.bookpicslist = bookpicslist;
-    }*/
+
 
 
     public String getSellerpic() {
@@ -225,8 +199,7 @@ private boolean issold;
         dest.writeString(this.bookpublisher);
         dest.writeString(this.bookdesc);
         dest.writeString(this.isbn);
-        //dest.writeValue(this.isactive);
-       // dest.writeValue(this.issold);
+
 
 
 

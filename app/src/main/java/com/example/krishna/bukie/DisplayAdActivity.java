@@ -88,7 +88,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void initEverything() {
-        NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
 
         progressBar=findViewById(R.id.progress_bar);
         firebaseFirestore=FirebaseFirestore.getInstance();
@@ -213,8 +212,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         BookAds b = documentSnapshot.toObject(BookAds.class);
-                        //Intent intent = new Intent(DisplayAdActivity.this, DisplayAdActivity.class);
-                        //intent.putExtra("bookads", b);
                         bookAds = b;
                         wasReferredBylink = true;
                         initEverything();
