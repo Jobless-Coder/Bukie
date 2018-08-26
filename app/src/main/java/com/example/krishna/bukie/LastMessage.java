@@ -4,25 +4,7 @@ public class LastMessage {
         private String message_body,type,sender,status;
     private Long time;
 
-    /*protected LastMessage(Parcel in) {
-        message_body = in.readString();
-        time = in.readString();
-        type = in.readString();
-        sender = in.readString();
-        status = in.readString();
-    }
 
-    public final Creator<LastMessage> CREATOR = new Creator<LastMessage>() {
-        @Override
-        public LastMessage createFromParcel(Parcel in) {
-            return new LastMessage(in);
-        }
-
-        @Override
-        public LastMessage[] newArray(int size) {
-            return new LastMessage[size];
-        }
-    };*/
 
     public String getStatus() {
         return status;

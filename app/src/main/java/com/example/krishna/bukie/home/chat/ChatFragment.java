@@ -65,8 +65,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private long oneday=86400000l, onemonth=2592000000l,oneyear=31536000000l;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         context=getContext();
     }
@@ -75,6 +77,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v=inflater.inflate(R.layout.fragment_chat, container,false);
+
+
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle("My Chats");
         tabsview=getActivity().findViewById(R.id.header);
@@ -329,8 +333,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     }
    @Override
     public void onStart() {
-        super.onStart();
+
+
         firebaseRecyclerAdapter.startListening();
+       super.onStart();
     }
 
     @Override

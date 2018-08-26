@@ -405,7 +405,6 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     @Override
     public void onClick(View v) {
-        //Toast.makeText(this, "jk", Toast.LENGTH_SHORT).show();
         int pos=viewPager.getCurrentItem();;
         switch (v.getId()){
             case R.id.gotoleft:
@@ -439,6 +438,10 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             inflater.inflate(R.menu.menu_editad, menu);
 
         }
+        else {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.displayad_menu2, menu);
+        }
         return true;
     }
 
@@ -458,6 +461,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
                 firebaseFirestore.collection("bookads").document(bookAds.getAdid()).update("isactive",false);
                 onBackPressed();
 
+                break;
+            case R.id.report:
+                startActivity(new Intent(DisplayAdActivity.this,ReportActivity.class));
                 break;
 
             default:
@@ -491,11 +497,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                             if (snapshot.exists()) {
 
-                                //Toast.makeText(DisplayAdActivity.this, "Chat already exists", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                 intent.putExtra("mychats", myChatsStatus);
                                 intent.putExtra("identity", "buyer");
-                                //intent.putExtra("isMap","0");
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getApplicationContext().startActivity(intent);
 

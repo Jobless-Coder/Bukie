@@ -239,18 +239,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onLocation(View view, int position) {
                 Geopoint geoPoint = messageItemList.get(position).getGeopoint();
-                //TODO:Dont fuckin delete this
-                    /* String url="geo:"+geoPoint.getLatitude()+","+geoPoint.getLongitude();
-                      //Log.e("geopoint",url);
-                      Uri gmmIntentUri = Uri.parse(url);
-                      // Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
-                      Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                      mapIntent.setPackage("com.google.android.apps.maps");
-                      mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                      getApplicationContext().startActivity(mapIntent);
-                      /*String urlAddress = "http://maps.google.com/maps?q="+ geoPoint.getLatitude()  +"," + geoPoint.getLongitude() +"("+ geoPoint.getLocality() + ")&iwloc=A&hl=es";
-                      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
-                      startActivity(intent);*/
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">?q=<" + geoPoint.getLatitude() + ">,<" + geoPoint.getLongitude() + ">(" + geoPoint.getLocality() + ")"));
                 startActivity(intent);
 
@@ -755,15 +743,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             contactnumber = cursor.getString(phoneIndex);
             contactname = cursor.getString(nameIndex);
             contactpic =cursor.getString(photouti);
-           /////
-           // Toast.makeText(context, ""+photouri, Toast.LENGTH_SHORT).show();
+
+           Toast.makeText(context, ""+contactpic, Toast.LENGTH_SHORT).show();
             if(contactpic!=null)
             uploadImage(contactpic,"contact");
             else
                 sendMessage("contact");
 
 
-            // Set the value to the textviews
+
 
 
         } catch (Exception e) {
@@ -914,12 +902,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         int[] location = new int[2];
         View attach = (View) findViewById(R.id.attach);
-
-        // Get the x, y location and store it in the location[] array
-        // location[0] = x, location[1] = y.
         attach.getLocationOnScreen(location);
-
-        //Initialize the Point with x, and y positions
         point = new Point();
         point.x = location[0];
         point.y = location[1];

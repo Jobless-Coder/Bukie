@@ -74,31 +74,10 @@ private String identity;
     }
 
 
-    public ArrayList<MessageItem> getPreviousTexts()
-    {
-        final ArrayList<MessageItem> chats = new ArrayList<>();
-
-        firebaseFirestore.collection("allchats").document("chats").collection(refID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                MessageItem item= document.toObject(MessageItem.class);
-                                chats.add(item);
-
-                            }
-                        }
-                    }
-                });
-
-        return chats;
-    }
 
     public void sendMessage(final MessageItem message)//add to recyclerview then send
     {
-        final LastMessage[] last_message = new LastMessage[1];
+        //final LastMessage[] last_message = new LastMessage[1];
 
         firebaseFirestore.collection("allchats").document("chats").collection(refID)
                 .add(message)
@@ -106,8 +85,8 @@ private String identity;
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
 
-                       // Date d=new Date();
-                        Long d=Long.parseLong(message.getTimestamp());
+
+                        final Long d=Long.parseLong(message.getTimestamp());
                         final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(refID);
                         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -131,6 +110,10 @@ private String identity;
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.getValue()!=null) {
                                     time[0] =Long.parseLong(dataSnapshot.getValue().toString());
+                                    if(time[0]==null||time[0]!=null&&d> time[0]){
+                                        LastMessage lastMessage=new LastMessage(message.getMessage_body(),Long.parseLong(message.getTimestamp()),message.getType(),message.getUid(),message.getStatus());
+                                        databaseReference.child("last_message").setValue(lastMessage);
+                                    }
                                 }
                             }
 
@@ -140,25 +123,16 @@ private String identity;
                             }
                         });
 
-                        if(time[0]==null||time[0]!=null&&d> time[0]){
 
-                            databaseReference.child("last_message").child("time").setValue(d);
-                            databaseReference.child("last_message").child("sender").setValue(message.getUid());
-                            databaseReference.child("last_message").child("type").setValue(message.getType());
-                            databaseReference.child("last_message").child("status").setValue(message.getStatus());
-                            databaseReference.child("last_message").child("message_body").setValue(message.getMessage_body());
-
-
-                        }
 
                         databaseReference.child(receiver).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                 if(dataSnapshot.getValue()==null||dataSnapshot.getValue().toString().equals("false")){
-                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,userfullname,profilepic,myChatsStatus,identity);
+                                    ChatNotifs chatNotifs=new ChatNotifs(message.getMessage_body(),receiver,myChatsStatus,identity);
                                     firebaseDatabase.getReference().child("notifications").push().setValue(chatNotifs);
-                                  //  firebaseDatabase.getReference().child("fake_notifications").push().setValue(chatNotifs);
+
                                 }
                             }
 

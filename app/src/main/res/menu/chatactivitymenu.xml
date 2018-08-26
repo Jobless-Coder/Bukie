@@ -1,31 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android" >
-    <!-- Search / will display always -->
-    <!--item
-        android:id="@+id/share_location"
-        android:title="Share location"
-        android:orderInCategory="1"
-        app:actionViewClass="true"
-        app:showAsAction="withText" />
     <item
-        android:id="@+id/contact"
-
-        android:title="Contact"
+        android:id="@+id/gotoad"
+        android:title="Goto ad"
         android:orderInCategory="0"
-        app:actionViewClass="true"
         app:showAsAction="withText" />
-    <item
-        android:id="@+id/picture"
 
-        android:title="Picture"
-        app:actionViewClass="true"
-        app:showAsAction="withText" /-->
+
     <item
         android:id="@+id/block_user"
 
         android:title="Block user"
-        android:orderInCategory="4"
+        android:orderInCategory="1"
         app:showAsAction="withText" />
     <item
         android:id="@+id/delete_chat"
@@ -39,27 +26,5 @@
         android:orderInCategory="3"
         app:showAsAction="withText" />
 
-    <!-- Location Found -->
-    <!--item android:id="@+id/action_location_found"
-        android:icon="@drawable/ic_action_location_found"
-        android:title="Hello"
-        app:showAsAction="ifRoom" /-->
 
-    <!-- Refresh -->
-    <!--item android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_action_refresh"
-        android:title="@string/action_refresh"
-        app:showAsAction="ifRoom" />
-
-
-    <item android:id="@+id/action_help"
-        android:icon="@drawable/ic_action_help"
-        android:title="@string/action_help"
-        app:showAsAction="never" />
-
-
-    <item android:id="@+id/action_check_updates"
-        android:icon="@drawable/ic_action_refresh"
-        android:title="@string/action_check_updates"
-        app:showAsAction="never"-->
 </menu>

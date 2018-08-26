@@ -7,13 +7,6 @@
         android:title="Search"
         app:showAsAction="ifRoom" />
 
-    <!--item
-    app:actionLayout="@layout/action_view_search"
-        android:id="@+id/Filter"
-        android:icon="@drawable/Filter"
-
-        android:title="Filter"
-        android:orderInCategory="2"
-        app:showAsAction="always" /-->
+    
 
 </menu>
