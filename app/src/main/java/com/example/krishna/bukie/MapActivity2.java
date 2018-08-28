@@ -131,13 +131,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         mylocation.setOnClickListener(this);
         picklocation.setOnClickListener(this);
         autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.input_search);
-        //final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_chats);
-        //toolbar.setTitle("");
-       // setSupportActionBar(toolbar);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // mGeoDataClient = Places.getGeoDataClient(this, null);
-        // mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -345,8 +338,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                 });
         AppController.getInstance().addToRequestQueue(jsonObjectRequest);
 
-// Access the RequestQueue through your singleton class.
-       // MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
     }
 
@@ -361,7 +352,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
                 .build();
         CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
         googleMap.animateCamera(cameraUpdate);
-        //this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         BitmapDescriptor icon = null;
         if(type==CURRENT_LOCATION)
             icon=BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN);
@@ -463,7 +453,6 @@ public class MapActivity2 extends AppCompatActivity implements GoogleApiClient.O
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MapActivity2.this, "kk", Toast.LENGTH_SHORT).show();
 
                 if(!isNearbyList.get(position)) {
                     isNearbyList.set(position, true);

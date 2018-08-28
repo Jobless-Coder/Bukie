@@ -1,12 +1,6 @@
 package com.example.krishna.bukie;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
@@ -26,14 +20,9 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.transition.Fade;
-import android.support.transition.TransitionManager;
-import android.support.transition.TransitionSet;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -54,8 +43,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -113,7 +100,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private static final int SHARE_LOCATION = 199;
     private static final int ERROR_DIALOG = 97 ;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private MessageAdapter adapter;
     private List<MessageItem> messageItemList;
     private  FirebaseHelper fh;
     private Context context;
@@ -261,7 +248,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
-
+        Toast.makeText(context, ""+adapter.getLastMessagePosition(), Toast.LENGTH_SHORT).show();
+        if(adapter.getLastMessagePosition()!=-1)
+        recyclerView.scrollToPosition(adapter.getLastMessagePosition());
         sendbtn = (View) findViewById(R.id.sendbtn);
         camera = findViewById(R.id.camera);
         attach = findViewById(R.id.attach);
@@ -310,7 +299,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     final String[] time = new String[1];
                     final String[] sender = new String[1];
 
-                    Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
+                   // Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
                     final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child("last_message");
 
                     databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -680,7 +669,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         imagepaths=new ArrayList<>();
         for(Uri photo:photoPaths) {
             String path = "chatimages/" + myChats.getChatid() + "/" + UUID.randomUUID() + ".png";
-            //Log.e("nigga",path);
             final StorageReference riversRef = storageReference.child(path);
 
             photo = ImageCompressor.compressFromUri(this, photo);
@@ -698,15 +686,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }).addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    // mImageBitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), Uri.parse(mCurrentPhotoPath));
                     imagepaths.add(uri + "");
-                    //mImageView.setImageBitmap(mImageBitmap);
                     if(photoPaths.size()==imagepaths.size()&&photoPaths.size()!=1&&type.equals("gallery"))
                     sendMessage("gallery");
                     if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1&&type.equals("camera"))
                         sendMessage("camera");
-                   /* if(photoPaths.size()==imagepaths.size()&&photoPaths.size()==1&&type.equals("contact"))
-                        sendMessage("contact");*/
+
 
                 }
             });
@@ -1026,7 +1011,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
+        fh.startListening();
 
         firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
         DatabaseReference presenceRef = firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username);
@@ -1053,16 +1039,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         connectedRef.addValueEventListener(listener);
 
-        super.onStart();
+        super.onResume();
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
         connectedRef.removeEventListener(listener);
 
         fh.stopListening();
-        super.onPause();
+        super.onStop();
     }
 
 

@@ -435,7 +435,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
             inflater.inflate(R.menu.menu_editad, menu);
 
         }
-        else {
+        else if(!editad&&!bookAds.getSellerid().equals(uid)) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.displayad_menu2, menu);
         }
@@ -460,7 +460,9 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                 break;
             case R.id.report:
-                startActivity(new Intent(DisplayAdActivity.this,ReportActivity.class));
+                Intent intent=new Intent(DisplayAdActivity.this,ReportActivity.class);
+                intent.putExtra("adid",bookAds.getAdid());
+                startActivity(intent);
                 break;
 
             default:

@@ -60,10 +60,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private String chatid,identity,uid;
     private boolean buyfrag=true;
     private View buy,sell,tabsview;
-    private MyChatsAdapter myChatsAdapter;
+   // private MyChatsAdapter myChatsAdapter;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
     private long oneday=86400000l, onemonth=2592000000l,oneyear=31536000000l;
+    private FirebaseRecyclerAdapter buyAdapter,sellAdapter;
 
 
     @Override
@@ -96,14 +97,397 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
         SharedPreferences sharedPreferences=getActivity().getSharedPreferences("UserInfo", MODE_PRIVATE);
         uid=sharedPreferences.getString("uid",null);
-
-        getMyChats("buyerid");
+        initBuy();
+        initSell();
+        //if(buyfrag){
+            buyAdapter.startListening();
+           //  buyAdapter.notifyDataSetChanged();
+            recyclerView.setAdapter(buyAdapter);
+        //}
+        //getMyChats("buyerid");
 
         return v;
     }
 
+    private void initSell() {
+        com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild("sellerid"+"_isactive").equalTo(uid+"_true");
+        FirebaseRecyclerOptions<MyChatsStatus> options =
+                new FirebaseRecyclerOptions.Builder<MyChatsStatus>()
+                        .setQuery(query, MyChatsStatus.class)
+                        .build();
+        sellAdapter=new FirebaseRecyclerAdapter<MyChatsStatus,MyChatHolder>(options) {
+            @Override
+            public void onBindViewHolder(final MyChatHolder holder, int position, final MyChatsStatus model) {
+                final MyChatsStatus myChats = model;
+                final String timecast;
+                Date currentDate=new Date();
+                Date d = new Date(myChats.getLast_message().getTime());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+                long timeinms=currentDate.getTime()-d.getTime();
+                if(timeinms/oneyear>0) {
+                    if(timeinms/oneyear>1)
+                        timecast = timeinms / oneyear + " years";
+                    else
+                        timecast = timeinms / oneyear + " year";
 
-       private void getMyChats(final String identityuser) {
+                }
+                else if(timeinms/onemonth>0) {
+                    if(timeinms/onemonth>1)
+                        timecast = timeinms / onemonth + " months";
+                    else
+                        timecast = timeinms / onemonth + " month";
+                }
+                else if(timeinms/oneday>0) {
+                    if(timeinms/oneday>1)
+                        timecast = timeinms / oneday + " days";
+                    else
+                        timecast = timeinms / oneday + " day";
+                }
+
+                else
+                    timecast = simpleDateFormat.format(d);
+
+                //added by Krishna : 21st August, 2018
+                //the following code makes sure unread texts are highlighted
+                //fixed by Indraanil :26th August, 2018
+                //deleted onClick and setTypeface to default on seen
+                if(!myChats.getLast_message().getSender().equals(uid)&&!myChats.getLast_message().getStatus().equals("seen")){
+                    holder.message.setTypeface(null, Typeface.BOLD);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                    holder.username.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                }
+                else {
+                    holder.message.setTypeface(Typeface.DEFAULT);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                    holder.username.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                }
+
+
+                if (holder.username.getBackground() != null) {
+                    holder.shimmerFrameLayout.startShimmerAnimation();
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                                    holder.ppcard2.setCardBackgroundColor(Color.WHITE);
+                                    holder.username.setBackground(null);
+                                    holder.status.setBackground(null);
+                                    holder.time.setBackground(null);
+                                    holder.message.setBackground(null);
+                                    holder.time.setText(timecast);
+                                    if (myChats.getLast_message().getSender().equals(uid)) {
+                                        holder.status.setVisibility(View.VISIBLE);
+                                        if (myChats.getLast_message().getStatus().equals("sent")) {
+                                            holder.status.setImageResource(R.drawable.ic_text_sent);
+                                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                                        } else {
+                                            holder.status.setImageResource(R.drawable.ic_text_seen);
+                                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
+                                        }
+                                        holder.message.setText("You : " + myChats.getLast_message().getMessage_body());
+
+                                    } else {
+
+                                        holder.status.setVisibility(View.GONE);
+                                        holder.message.setText(myChats.getLast_message().getMessage_body());
+
+
+
+                                    }
+
+                                    if (myChats.getBuyerid().compareTo(uid) == 0) {
+                                        identity = "buyer";
+                                        holder.username.setText(myChats.getSellerfullname());
+                                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                                    } else {
+                                        identity = "seller";
+                                        holder.username.setText(myChats.getBuyerfullname());
+                                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+                                    }
+
+                                    return false;
+                                }
+                            })
+                            .into(holder.adpic);
+
+
+                } else {
+                    holder.time.setText(timecast);
+                    if (myChats.getLast_message().getSender().equals(uid)) {
+                        holder.status.setVisibility(View.VISIBLE);
+                        if (myChats.getLast_message().getStatus().equals("sent")) {
+                            holder.status.setImageResource(R.drawable.ic_text_sent);
+                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                        } else {
+                            holder.status.setImageResource(R.drawable.ic_text_seen);
+                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
+                        }
+                        holder.message.setText("You : "+myChats.getLast_message().getMessage_body());
+
+                    } else {
+                        holder.status.setVisibility(View.GONE);
+                        holder.message.setText(myChats.getLast_message().getMessage_body());
+
+                    }
+
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .into(holder.adpic);
+                    if (myChats.getBuyerid().compareTo(uid) == 0) {
+                        identity = "buyer";
+                        holder.username.setText(myChats.getSellerfullname());
+                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+
+                    } else {
+                        identity = "seller";
+                        holder.username.setText(myChats.getBuyerfullname());
+                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
+                    }
+
+                }
+
+                holder.chatlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (myChats.getBuyerid().compareTo(uid) == 0) {
+                            identity = "buyer";
+                        } else
+                            identity = "seller";
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("mychats", myChats);
+                        intent.putExtra("identity", identity);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+
+
+                    }
+
+                });
+
+
+            }
+            @Override
+            public int getItemViewType ( int position){
+                return position;
+            }
+
+            @Override
+            public MyChatHolder onCreateViewHolder (@NonNull ViewGroup parent,int viewType){
+
+                View v = LayoutInflater.from(getContext())
+                        .inflate(R.layout.mychatview, parent, false);
+                final MyChatHolder myChatHolder = new MyChatHolder(v);
+
+                return myChatHolder;
+            }
+
+        };
+        //sellAdapter.startListening();
+       // sellAdapter.notifyDataSetChanged();
+        //recyclerView.setAdapter(firebaseRecyclerAdapter);
+
+    }
+    private void initBuy() {
+        com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild("buyerid"+"_isactive").equalTo(uid+"_true");
+        FirebaseRecyclerOptions<MyChatsStatus> options =
+                new FirebaseRecyclerOptions.Builder<MyChatsStatus>()
+                        .setQuery(query, MyChatsStatus.class)
+                        .build();
+        buyAdapter=new FirebaseRecyclerAdapter<MyChatsStatus,MyChatHolder>(options) {
+            @Override
+            public void onBindViewHolder(final MyChatHolder holder, int position, final MyChatsStatus model) {
+                final MyChatsStatus myChats = model;
+                final String timecast;
+                Date currentDate=new Date();
+                Date d = new Date(myChats.getLast_message().getTime());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+                long timeinms=currentDate.getTime()-d.getTime();
+                if(timeinms/oneyear>0) {
+                    if(timeinms/oneyear>1)
+                        timecast = timeinms / oneyear + " years";
+                    else
+                        timecast = timeinms / oneyear + " year";
+
+                }
+                else if(timeinms/onemonth>0) {
+                    if(timeinms/onemonth>1)
+                        timecast = timeinms / onemonth + " months";
+                    else
+                        timecast = timeinms / onemonth + " month";
+                }
+                else if(timeinms/oneday>0) {
+                    if(timeinms/oneday>1)
+                        timecast = timeinms / oneday + " days";
+                    else
+                        timecast = timeinms / oneday + " day";
+                }
+
+                else
+                    timecast = simpleDateFormat.format(d);
+
+                //added by Krishna : 21st August, 2018
+                //the following code makes sure unread texts are highlighted
+                //fixed by Indraanil :26th August, 2018
+                //deleted onClick and setTypeface to default on seen
+                if(!myChats.getLast_message().getSender().equals(uid)&&!myChats.getLast_message().getStatus().equals("seen")){
+                    holder.message.setTypeface(null, Typeface.BOLD);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                    holder.username.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTypeface(null, Typeface.BOLD);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                }
+                else {
+                    holder.message.setTypeface(Typeface.DEFAULT);
+                    holder.message.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                    holder.username.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTypeface( Typeface.DEFAULT);
+                    holder.time.setTextColor(ResourcesCompat.getColor(getResources(), R.color.deep_grey, null));
+                }
+
+
+                if (holder.username.getBackground() != null) {
+                    holder.shimmerFrameLayout.startShimmerAnimation();
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    holder.shimmerFrameLayout.stopShimmerAnimation();
+                                    holder.ppcard2.setCardBackgroundColor(Color.WHITE);
+                                    holder.username.setBackground(null);
+                                    holder.status.setBackground(null);
+                                    holder.time.setBackground(null);
+                                    holder.message.setBackground(null);
+                                    holder.time.setText(timecast);
+                                    if (myChats.getLast_message().getSender().equals(uid)) {
+                                        holder.status.setVisibility(View.VISIBLE);
+                                        if (myChats.getLast_message().getStatus().equals("sent")) {
+                                            holder.status.setImageResource(R.drawable.ic_text_sent);
+                                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                                        } else {
+                                            holder.status.setImageResource(R.drawable.ic_text_seen);
+                                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
+                                        }
+                                        holder.message.setText("You : " + myChats.getLast_message().getMessage_body());
+
+                                    } else {
+
+                                        holder.status.setVisibility(View.GONE);
+                                        holder.message.setText(myChats.getLast_message().getMessage_body());
+
+
+
+                                    }
+
+                                    if (myChats.getBuyerid().compareTo(uid) == 0) {
+                                        identity = "buyer";
+                                        holder.username.setText(myChats.getSellerfullname());
+                                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+                                    } else {
+                                        identity = "seller";
+                                        holder.username.setText(myChats.getBuyerfullname());
+                                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+                                    }
+
+                                    return false;
+                                }
+                            })
+                            .into(holder.adpic);
+
+
+                } else {
+                    holder.time.setText(timecast);
+                    if (myChats.getLast_message().getSender().equals(uid)) {
+                        holder.status.setVisibility(View.VISIBLE);
+                        if (myChats.getLast_message().getStatus().equals("sent")) {
+                            holder.status.setImageResource(R.drawable.ic_text_sent);
+                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_grey), PorterDuff.Mode.SRC_IN);
+                        } else {
+                            holder.status.setImageResource(R.drawable.ic_text_seen);
+                            holder.status.setColorFilter(ContextCompat.getColor(context, R.color.deep_blue), PorterDuff.Mode.SRC_IN);
+                        }
+                        holder.message.setText("You : "+myChats.getLast_message().getMessage_body());
+
+                    } else {
+                        holder.status.setVisibility(View.GONE);
+                        holder.message.setText(myChats.getLast_message().getMessage_body());
+
+                    }
+
+                    Glide.with(context)
+                            .load(myChats.getCoverpic())
+                            .into(holder.adpic);
+                    if (myChats.getBuyerid().compareTo(uid) == 0) {
+                        identity = "buyer";
+                        holder.username.setText(myChats.getSellerfullname());
+                        Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
+
+                    } else {
+                        identity = "seller";
+                        holder.username.setText(myChats.getBuyerfullname());
+                        Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
+
+                    }
+
+                }
+
+                holder.chatlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (myChats.getBuyerid().compareTo(uid) == 0) {
+                            identity = "buyer";
+                        } else
+                            identity = "seller";
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        intent.putExtra("mychats", myChats);
+                        intent.putExtra("identity", identity);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+
+
+                    }
+
+                });
+
+
+            }
+            @Override
+            public int getItemViewType ( int position){
+                return position;
+            }
+
+            @Override
+            public MyChatHolder onCreateViewHolder (@NonNull ViewGroup parent,int viewType){
+
+                View v = LayoutInflater.from(getContext())
+                        .inflate(R.layout.mychatview, parent, false);
+                final MyChatHolder myChatHolder = new MyChatHolder(v);
+
+                return myChatHolder;
+            }
+
+        };
+    }
+
+
+    /*private void getMyChats(final String identityuser) {
 
         com.google.firebase.database.Query query = firebaseDatabase.getReference().child("chat_status").orderByChild(identityuser+"_isactive").equalTo(uid+"_true");
         FirebaseRecyclerOptions<MyChatsStatus> options =
@@ -294,7 +678,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(firebaseRecyclerAdapter);
 
 
-    }
+    }*/
 
     public class MyChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ppic,adpic,status;
@@ -333,16 +717,23 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     }
    @Override
     public void onStart() {
+        if(buyfrag)
+            buyAdapter.startListening();
+        else
+            sellAdapter.startListening();
 
 
-        firebaseRecyclerAdapter.startListening();
+        //buyAdapter.startListening();
        super.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebaseRecyclerAdapter.stopListening();
+        if(buyfrag)
+        buyAdapter.stopListening();
+        else
+        sellAdapter.stopListening();
     }
     @Override
     public void onClick(View v) {
@@ -353,9 +744,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buyfrag=true;
                     buy.setSelected(true);
                     sell.setSelected(false);
-                    firebaseRecyclerAdapter.stopListening();
+                    sellAdapter.stopListening();
+                    buyAdapter.startListening();
+                  //  buyAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(buyAdapter);
 
-                   getMyChats("buyerid");
+
+                   //getMyChats("buyerid");
 
                 }
 
@@ -365,8 +760,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     buy.setSelected(false);
                     sell.setSelected(true);
                     buyfrag=false;
-                    firebaseRecyclerAdapter.stopListening();
-                   getMyChats("sellerid");
+                    buyAdapter.stopListening();
+                   sellAdapter.startListening();
+                    //sellAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(sellAdapter);
+                    //firebaseRecyclerAdapter.stopListening();
+                  // getMyChats("sellerid");
                 }
 
 
