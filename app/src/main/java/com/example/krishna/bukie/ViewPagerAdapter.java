@@ -22,7 +22,7 @@ import java.util.List;
 
 public class ViewPagerAdapter extends PagerAdapter  {
     private Context context;
-    LayoutInflater layoutInflater;
+    private LayoutInflater layoutInflater;
     //private ImageView imageView;
     private  List<String> booksUrl=new ArrayList<>();
     private Activity activity;

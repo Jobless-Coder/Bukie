@@ -20,6 +20,8 @@ import com.example.krishna.bukie.DisplayAdActivity;
 import com.example.krishna.bukie.R;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.BookHolder>{
@@ -27,6 +29,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
     private Context context;
     private  BookItemClickListener bookItemClickListener;
     private boolean isHome;
+    private String date,price;
 
 
     public HomeBookAdsAdapter(List<BookAds> bookAdsList, Context context,boolean isHome) {
@@ -54,13 +57,17 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
     @Override
     public void onBindViewHolder(@NonNull final BookHolder holder, final int position) {
         final BookAds bookAds=bookAdsList.get(position);
+        Date date2=new Date(bookAds.getDate());
+        SimpleDateFormat timeformat=new SimpleDateFormat("dd MMMM yyyy");
+        price="₹ " + bookAds.getPrice();
+        date=timeformat.format(date2);
 
         if(holder.bookprice.getBackground()!=null) {
 
             holder.shimmerFrameLayout.startShimmerAnimation();
 
             Glide.with(context)
-                    .load(bookAds.getBookcoverpic())
+                    .load(bookAds.getCoverpic())
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -75,9 +82,9 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
                             holder.bookdate.setBackground(null);
                             holder.booktitle.setBackground(null);
                             holder.bookprice.setBackground(null);
-                            holder.booktitle.setText(bookAds.getBooktitle());
-                            holder.bookprice.setText(bookAds.getPrice());
-                            holder.bookdate.setText(bookAds.getDate());
+                            holder.booktitle.setText(bookAds.getTitle());
+                            holder.bookprice.setText(price);
+                            holder.bookdate.setText(date);
                             holder.bookauthor.setText(getSecondaryTextAvailable(bookAds));
                             return false;
                         }
@@ -88,11 +95,11 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
         else{
 
             Glide.with(context)
-                    .load(bookAds.getBookcoverpic())
+                    .load(bookAds.getCoverpic())
                     .into(holder.bookpic);
-            holder.booktitle.setText(bookAds.getBooktitle());
-            holder.bookprice.setText(bookAds.getPrice());
-            holder.bookdate.setText(bookAds.getDate());
+            holder.booktitle.setText(bookAds.getTitle());
+            holder.bookprice.setText(price);
+            holder.bookdate.setText(date);
             holder.bookauthor.setText(getSecondaryTextAvailable(bookAds));
 
         }
@@ -121,15 +128,15 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
     }
 
     private String getSecondaryTextAvailable(BookAds bookAds) {
-        if(bookAds.getBookauthor() != null)
+        if(bookAds.getAuthor() != null)
         {
-            return bookAds.getBookauthor();
+            return bookAds.getAuthor();
         }
-        else if(bookAds.getBookpublisher() != null)
+        else if(bookAds.getPublisher() != null)
         {
-            return bookAds.getBookpublisher();
+            return bookAds.getPublisher();
         }
-        return bookAds.getBookcategory();
+        return bookAds.getCategory();
     }
 
 
@@ -150,10 +157,10 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
             super(itemView);
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             bookpic=(ImageView)itemView.findViewById(R.id.bookpic);
-            bookauthor=itemView.findViewById(R.id.bookauthor);
+            bookauthor=itemView.findViewById(R.id.author);
             bookdate=itemView.findViewById(R.id.bookdate);
             bookprice=itemView.findViewById(R.id.bookprice);
-            booktitle=itemView.findViewById(R.id.booktitle);
+            booktitle=itemView.findViewById(R.id.title);
             selectad=itemView.findViewById(R.id.selectad);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

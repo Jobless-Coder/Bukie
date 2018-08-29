@@ -222,7 +222,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             public void onSuccess(String code) {
                 searchbox.setText("isbn:"+code);
                 searchAds();
-                //((TextView)findViewById(R.id.barcodetext)).setText("ISBN:"+isbn);
             }
         });
 
@@ -243,8 +242,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     bookadslistpath=response.body();
                     getMyAds(bookadslistpath);
                     progressDialog.dismiss();
-                   // Log.i("bookads",bookadslistpath.get(0)+""+response.body().toString());
-                    //Toast.makeText(SearchActivity.this, bookadslistpath.get(0)+""+response.body().toString(), Toast.LENGTH_SHORT).show();
+
                }
 
             }
@@ -267,15 +265,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     if (task.isSuccessful()) {
                         if(progressDialog.isShowing())
                             progressDialog.dismiss();
-                        // Document found in the offline cache
                         DocumentSnapshot document = task.getResult();
                         BookAds bookAds=document.toObject(BookAds.class);
                         bookAdsList.add(bookAds);
                         homeBookAdsAdapter.notifyDataSetChanged();
 
-                       /// Log.d(TAG, "Cached document data: " + document.getData());
-                    } else {
-                       // Log.d(TAG, "Cached get failed: ", task.getException());
+
                     }
                 }
             });
@@ -291,20 +286,5 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-   /* @Override
-    protected void onNewIntent(Intent intent) {
-
-        handleIntent(intent);
-    }
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //use the query to search your data somehow'
-            Log.i("hellonibbas","ffg");
-            Log.i("hellonibbas",query);
-            Toast.makeText(this, ""+query, Toast.LENGTH_SHORT).show();
-        }
-    }*/
 
 }

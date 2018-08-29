@@ -2,8 +2,8 @@ package com.example.krishna.bukie;
 
 public class ChatNotifs
 {
-    String message,receiver_uid,identity;
-    MyChatsStatus myChatsStatus;
+    private String message,receiver_uid,identity;
+    private MyChatsStatus myChatsStatus;
 
     public String getIdentity() {
         return identity;

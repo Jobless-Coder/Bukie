@@ -23,6 +23,7 @@ import java.util.List;
 public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.ViewHolder>{
     private List<BookAds> myadslist;
     private Context context;
+    private String price;
     private BookItemClickListener bookItemClickListener;
 
     public Myadswishadapter(List<BookAds> myadslist, Context context) {
@@ -42,7 +43,6 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
     public Myadswishadapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v= LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.bookadviewvertical,parent,false);
-        //Toast.makeText(context, "nibbas", Toast.LENGTH_SHORT).show();
         return  new ViewHolder(v);
 
     }
@@ -50,13 +50,13 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final BookAds bookAds=myadslist.get(position);
-
+        price="₹ " + bookAds.getPrice();
         if(holder.bookprice.getBackground()!=null) {
 
             //TODO: bookAds.getBookpicslist().size() can be zero when its empty, you forgot to handle that case
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
-                    .load(bookAds.getBookcoverpic())
+                    .load(bookAds.getCoverpic())
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -66,15 +66,13 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             holder.shimmerFrameLayout.stopShimmerAnimation();
-                            //holder.bookcategory.setBackground(null);
                             holder.bookpic.setBackground(null);
-                           // holder.bookdate.setBackground(null);
+
                             holder.booktitle.setBackground(null);
                             holder.bookprice.setBackground(null);
-                            holder.booktitle.setText(bookAds.getBooktitle());
-                            holder.bookprice.setText(bookAds.getPrice());
-                           // holder.bookdate.setText(bookAds.getDate());
-                           // holder.bookcategory.setText(bookAds.getBookcategory());
+                            holder.booktitle.setText(bookAds.getTitle());
+                            holder.bookprice.setText(price);
+
                             return false;
                         }
                     })
@@ -84,12 +82,11 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
         else{
 
             Glide.with(context)
-                    .load(bookAds.getBookcoverpic())
+                    .load(bookAds.getCoverpic())
                     .into(holder.bookpic);
-            holder.booktitle.setText(bookAds.getBooktitle());
-            holder.bookprice.setText(bookAds.getPrice());
-           // holder.bookdate.setText(bookAds.getDate());
-            //holder.bookcategory.setText(bookAds.getBookcategory());
+            holder.booktitle.setText(bookAds.getTitle());
+            holder.bookprice.setText(price);
+
 
         }
         holder.selectad.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +132,7 @@ public class Myadswishadapter extends RecyclerView.Adapter<Myadswishadapter.View
             shimmerFrameLayout=itemView.findViewById(R.id.shimmerlayout);
             bookpic=(ImageView)itemView.findViewById(R.id.bookpic);
             bookprice=itemView.findViewById(R.id.bookprice);
-            booktitle=itemView.findViewById(R.id.booktitle);
+            booktitle=itemView.findViewById(R.id.title);
             selectad=itemView.findViewById(R.id.selectad);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

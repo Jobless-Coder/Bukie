@@ -32,7 +32,7 @@ import java.io.Console;
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
-    String uid;
+    private String uid;
 
     public MyFirebaseInstanceIDService() {
     }

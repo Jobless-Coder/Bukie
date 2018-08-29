@@ -18,10 +18,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class SquareImageView extends LinearLayout {
-Uri imageLink;
-ImageUpdateListener listener;
-DisplayMetrics metrics;
-Context context;
+private Uri imageLink;
+private ImageUpdateListener listener;
+private DisplayMetrics metrics;
+private Context context;
 
     public Uri getImageLink() {
         return imageLink;

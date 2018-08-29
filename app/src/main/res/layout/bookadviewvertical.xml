@@ -26,7 +26,7 @@
     <TextView
         android:maxLines="1"
         android:textAlignment="center"
-        android:id="@+id/booktitle"
+        android:id="@+id/title"
         android:background="@color/grey"
         android:textSize="14sp"
         android:minWidth="100dp"

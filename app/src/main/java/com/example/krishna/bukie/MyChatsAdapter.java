@@ -29,13 +29,13 @@ import java.util.List;
 
 
 public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHolder> {
-    List<MyChats> myChatsList;
-    Context context;
-    String identity, uid;
-    MyChatItemClickListener myChatItemClickListener;
-    FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference1,databaseReference2,databaseReference=firebaseDatabase.getReference();
-    ValueEventListener valueEventListener;
+    private List<MyChats> myChatsList;
+    private Context context;
+   private String identity, uid;
+    private MyChatItemClickListener myChatItemClickListener;
+   private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+   private DatabaseReference databaseReference1,databaseReference2,databaseReference=firebaseDatabase.getReference();
+    private ValueEventListener valueEventListener;
 
     public MyChatsAdapter(List<MyChats> myChatsList, Context context,String uid) {
         this.myChatsList =myChatsList ;
@@ -64,7 +64,6 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
         holder.status.setVisibility(View.GONE);
         final String[] hello = new String[1];
 
-        //Toast.makeText(context, "hello"+myChats.getBuyerid()+identityuser, Toast.LENGTH_SHORT).show();
         if(holder.username.getBackground()!=null) {
             holder.shimmerFrameLayout.startShimmerAnimation();
             Glide.with(context)
@@ -86,9 +85,6 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                                 identity = "buyer";
                                 holder.username.setText(myChats.getSellerfullname());
                                 hello[0] =myChats.getSellerid();
-                              /*  if(databaseReference1.child(myChats.getSellerid()).child("last_seen").equals("online")){
-                                    holder.status.setVisibility(View.VISIBLE);
-                                }*/
 
                                 Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
 
@@ -98,9 +94,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                                 identity = "seller";
                                 hello[0] =myChats.getBuyerid();
                                 holder.username.setText(myChats.getBuyerfullname());
-                               /* if(databaseReference1.child(myChats.getBuyerid()).child("last_seen").equals("online")){
-                                    holder.status.setVisibility(View.VISIBLE);
-                                }*/
+
                                 Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
                             }
                             return false;
@@ -120,24 +114,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                 identity = "buyer";
                 holder.username.setText(myChats.getSellerfullname());
                 hello[0] =myChats.getSellerid();
-                /*ValueEventListener valueEventListener=
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.toString().equals("online")){
-                            holder.status.setVisibility(View.VISIBLE);
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
-               /* if(){
-
-                }*/
-              // databaseReference1.removeEventListener();
                 Glide.with(context).load(myChats.getSellerpic()).into(holder.ppic);
 
             }
@@ -146,25 +123,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                 identity = "seller";
                 holder.username.setText(myChats.getBuyerfullname());
                 hello[0] =myChats.getBuyerid();
-                /*DatabaseReference databaseReference=databaseReference1.child(myChats.getSellerid()).child("last_seen");
-                ValueEventListener valueEventListener=new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        if (dataSnapshot.toString().equals("online")){
-                            holder.status.setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-                databaseReference.addListenerForSingleValueEvent(valueEventListener);*/
-                /*if(databaseReference1.child(myChats.getBuyerid()).child("last_seen").equals("online")){
-                    holder.status.setVisibility(View.VISIBLE);
-                }*/
                 Glide.with(context).load(myChats.getBuyerpic()).into(holder.ppic);
 
             }
@@ -179,7 +138,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                 }
                 else
                     identity="seller";
-                //Toast.makeText(context, "hello"+identity+myChats.getBuyerfullname(), Toast.LENGTH_SHORT).show();
+
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("mychats", myChats);
                 intent.putExtra("identity", identity);
@@ -189,7 +148,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
 
             }
         });
-        //String k=hello[0];
+
         if(hello[0]!=null) {
 
             databaseReference = databaseReference1.child(hello[0]).child("last_seen");
@@ -198,8 +157,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.getValue().toString().equals("online")) {
-                        //myChatsList.get(position).setSellerfullname("hello");
-                       // myChatsList.get(position).setBuyerfullname("hellonoob");
+
                         Log.i("status","online");
 
                         holder.status.setVisibility(View.VISIBLE);
@@ -220,11 +178,7 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
 
     }
 
-    @Override
-    public void onViewDetachedFromWindow(@NonNull MyChatHolder holder) {
-        //databaseReference.removeEventListener(valueEventListener);
-        super.onViewDetachedFromWindow(holder);
-    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -274,11 +228,5 @@ public class MyChatsAdapter extends RecyclerView.Adapter<MyChatsAdapter.MyChatHo
         }
     }
 
-    @Override
-    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
-        //databaseReference = databaseReference1.child(hello[0]).child("last_seen");
-       // databaseReference.removeEventListener(valueEventListener);
 
-        super.onDetachedFromRecyclerView(recyclerView);
-    }
 }

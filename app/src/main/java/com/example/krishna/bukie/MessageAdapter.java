@@ -33,12 +33,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private static final int TYPE_GALLERY = 4;
     private List<MessageItem> messageItemList;
    private Context context;
-   private View itemView2;
-   String previous_user="-1",previous_user2;
-   String current_user="";
-   private String type,daydetails;
+   private String previous_user="-1";
+   private String current_user="";
+   private String daydetails,time;
    private MessageItemClickListener onClickListener;
-   private SimpleDateFormat formatter;
+   private SimpleDateFormat dateFormat,timeformat;
 
     private MessageItem messageItem;
     private Date current_date,previous_date=null;
@@ -127,7 +126,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         Timestamp timestamp;
     messageItem=messageItemList.get(position);
     current_user=messageItem.getUid();
-    timestamp=new Timestamp(Long.parseLong(messageItem.getTimestamp()));
+    timestamp=new Timestamp((messageItem.getTimestamp()));
     current_date=new Date(timestamp.getTime());
     MessageViewHolder messageViewHolder=null;
     CameraViewHolder cameraViewHolder=null;
@@ -152,7 +151,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     if(position>0) {
         previous_user=messageItemList.get(position - 1).getUid();
-         timestamp=new Timestamp(Long.parseLong(messageItemList.get(position-1).getTimestamp()));
+         timestamp=new Timestamp((messageItemList.get(position-1).getTimestamp()));
         previous_date=new Date(timestamp.getTime());
     }
     else {
@@ -161,9 +160,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     }
     String daydetails2;
-        formatter = new SimpleDateFormat("dd MMMM -yy");
-        daydetails = formatter.format(current_date);
-        daydetails2=formatter.format(previous_date);
+        timeformat=new SimpleDateFormat("hh:mm a");
+        dateFormat = new SimpleDateFormat("dd MMMM -yy");
+        time=timeformat.format(previous_date);
+        daydetails = dateFormat.format(current_date);
+        daydetails2=dateFormat.format(previous_date);
     if(daydetails2.compareTo(daydetails)!=0){
 
         daydetails=daydetails.replace("-","'");
@@ -228,7 +229,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
-            messageViewHolder.time1.setText(messageItem.getTime());
+            messageViewHolder.time1.setText(time);
             if(messageItem.getStatus().equals("seen"))
                 messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
@@ -242,7 +243,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson2.setVisibility(View.GONE);
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
             contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-            contactViewHolder.time1.setText(messageItem.getTime());
+            contactViewHolder.time1.setText(time);
             if(messageItem.getContact().getPicture()!=null)
                 Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto1);
 
@@ -259,7 +260,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson2.setVisibility(View.GONE);
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-            cameraViewHolder.time1.setText(messageItem.getTime());
+            cameraViewHolder.time1.setText(time);
             if(messageItem.getStatus().equals("seen"))
                 cameraViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
@@ -271,7 +272,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson2.setVisibility(View.GONE);
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-            locationViewHolder.time1.setText(messageItem.getTime());
+            locationViewHolder.time1.setText(time);
             locationViewHolder.locationdesc1.setText(messageItem.getGeopoint().getLocality());
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location1);
@@ -289,7 +290,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson2.setVisibility(View.GONE);
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles2);
-            galleryVieHolder.time1.setText(messageItem.getTime());
+            galleryVieHolder.time1.setText(time);
 
             if(messageItem.getStatus().equals("seen"))
                 galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
@@ -321,7 +322,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson2.setVisibility(View.GONE);
             messageViewHolder.rlson1.setVisibility(View.VISIBLE);
             messageViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-            messageViewHolder.time1.setText(messageItem.getTime());
+            messageViewHolder.time1.setText(time);
             messageViewHolder.messagebody1.setText(messageItem.getMessage_body());
             if(messageItem.getStatus().equals("seen"))
                 messageViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
@@ -334,7 +335,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson2.setVisibility(View.GONE);
             contactViewHolder.rlson1.setVisibility(View.VISIBLE);
             contactViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-            contactViewHolder.time1.setText(messageItem.getTime());
+            contactViewHolder.time1.setText(time);
             contactViewHolder.contactname1.setText(messageItem.getContact().getName());
             if(messageItem.getContact().getPicture()!=null)
                 Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto1);
@@ -351,7 +352,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson2.setVisibility(View.GONE);
             cameraViewHolder.rlson1.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-            cameraViewHolder.time1.setText(messageItem.getTime());
+            cameraViewHolder.time1.setText(time);
             if(messageItem.getStatus().equals("seen"))
                 cameraViewHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
             else
@@ -364,7 +365,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson2.setVisibility(View.GONE);
             locationViewHolder.rlson1.setVisibility(View.VISIBLE);
             locationViewHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-            locationViewHolder.time1.setText(messageItem.getTime());
+            locationViewHolder.time1.setText(time);
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location1);
             Glide.with(context).load(mapurl).into(locationViewHolder.location1);
@@ -379,7 +380,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson2.setVisibility(View.GONE);
             galleryVieHolder.rlson1.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson1.setBackgroundResource(R.drawable.chat_bubbles1);
-            galleryVieHolder.time1.setText(messageItem.getTime());
+            galleryVieHolder.time1.setText(time);
 
             if(messageItem.getStatus().equals("seen"))
                 galleryVieHolder.seenicon.setImageResource(R.drawable.ic_text_seen);
@@ -416,7 +417,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson1.setVisibility(View.GONE);
             messageViewHolder.rlson2.setVisibility(View.VISIBLE);
             messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
-            messageViewHolder.time2.setText(messageItem.getTime());
+            messageViewHolder.time2.setText(time);
             messageViewHolder.messagebody2.setText(messageItem.getMessage_body());
 
         }
@@ -425,7 +426,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson2.setVisibility(View.VISIBLE);
             contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
 
-            contactViewHolder.time2.setText(messageItem.getTime());
+            contactViewHolder.time2.setText(time);
             if(messageItem.getContact().getPicture()!=null)
                 Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto2);
             contactViewHolder.contactname2.setText(messageItem.getContact().getName());
@@ -437,7 +438,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson1.setVisibility(View.GONE);
             cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
-            cameraViewHolder.time2.setText(messageItem.getTime());
+            cameraViewHolder.time2.setText(time);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic2);
 
 
@@ -447,7 +448,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson1.setVisibility(View.GONE);
             locationViewHolder.rlson2.setVisibility(View.VISIBLE);
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
-            locationViewHolder.time2.setText(messageItem.getTime());
+            locationViewHolder.time2.setText(time);
 
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location2);
@@ -458,7 +459,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson1.setVisibility(View.GONE);
             galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles3);
-            galleryVieHolder.time2.setText(messageItem.getTime());
+            galleryVieHolder.time2.setText(time);
             if(messageItem.getImageurl().size()==2) {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105*messageItem.getImageurl().size(), r.getDisplayMetrics());
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -484,7 +485,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             messageViewHolder.rlson1.setVisibility(View.GONE);
             messageViewHolder.rlson2.setVisibility(View.VISIBLE);
             messageViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-            messageViewHolder.time2.setText(messageItem.getTime());
+            messageViewHolder.time2.setText(time);
             //messageViewHolder.messagebody2.setVisibility(View.VISIBLE);
             messageViewHolder.messagebody2.setText(messageItem.getMessage_body());
         }
@@ -492,7 +493,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             contactViewHolder.rlson1.setVisibility(View.GONE);
             contactViewHolder.rlson2.setVisibility(View.VISIBLE);
             contactViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-            contactViewHolder.time2.setText(messageItem.getTime());
+            contactViewHolder.time2.setText(time);
             contactViewHolder.contactname2.setText(messageItem.getContact().getName());
             if(messageItem.getContact().getPicture()!=null)
                 Glide.with(context).load(messageItem.getContact().getPicture()).into(contactViewHolder.contactphoto2);
@@ -505,7 +506,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             cameraViewHolder.rlson1.setVisibility(View.GONE);
             cameraViewHolder.rlson2.setVisibility(View.VISIBLE);
             cameraViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-            cameraViewHolder.time2.setText(messageItem.getTime());
+            cameraViewHolder.time2.setText(time);
             Glide.with(context).load(messageItem.getImageurl().get(0)).into(cameraViewHolder.camerapic2);
 
 
@@ -514,7 +515,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             locationViewHolder.rlson1.setVisibility(View.GONE);
             locationViewHolder.rlson2.setVisibility(View.VISIBLE);
             locationViewHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-            locationViewHolder.time2.setText(messageItem.getTime());
+            locationViewHolder.time2.setText(time);
             String mapurl=locationViewHolder.getMapUrl(messageItem.getGeopoint().getLatitude(),messageItem.getGeopoint().getLongitude());
             Glide.clear(locationViewHolder.location2);
             Glide.with(context).load(mapurl).into(locationViewHolder.location2);
@@ -525,7 +526,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             galleryVieHolder.rlson1.setVisibility(View.GONE);
             galleryVieHolder.rlson2.setVisibility(View.VISIBLE);
             galleryVieHolder.rlson2.setBackgroundResource(R.drawable.chat_bubbles4);
-            galleryVieHolder.time2.setText(messageItem.getTime());
+            galleryVieHolder.time2.setText(time);
             if(messageItem.getImageurl().size()==2) {
                 float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110*2, r.getDisplayMetrics());
                 galleryVieHolder.ll21.setLayoutParams(new RelativeLayout.LayoutParams((int) width, RelativeLayout.LayoutParams.WRAP_CONTENT));

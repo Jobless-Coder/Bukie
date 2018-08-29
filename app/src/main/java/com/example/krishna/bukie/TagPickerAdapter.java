@@ -32,7 +32,6 @@ public class TagPickerAdapter extends ArrayAdapter<String> {
     public TagPickerAdapter(@NonNull Context context,  List<String> tagList,List<Boolean>isTaglist) {
         super(context, 0 , tagList);
         mContext = context;
-        //tagList = tagList;
         this.tagList=tagList;
         this.isTagList=isTaglist;
     }
@@ -45,17 +44,10 @@ public class TagPickerAdapter extends ArrayAdapter<String> {
             listItem = LayoutInflater.from(mContext).inflate(R.layout.view_tags_pick,parent,false);
 
         String currentTag = tagList.get(position);
-
-        /*ImageView image = (ImageView)listItem.findViewById(R.id.imageView_poster);
-        image.setImageResource(currentMovie.getmImageDrawable());*/
-
         TextView textView = (TextView) listItem.findViewById(R.id.textView);
         textView.setText(currentTag);
         CheckBox checkBox=listItem.findViewById(R.id.checkbox);
-        //Log.i("ghk",isTagList.toString());
         checkBox.setChecked(isTagList.get(position));
-        /*TextView release = (TextView) listItem.findViewById(R.id.textView_release);
-        release.setText(currentMovie.getmRelease());*/
 
         return listItem;
     }

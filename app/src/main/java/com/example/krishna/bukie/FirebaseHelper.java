@@ -1,20 +1,15 @@
 package com.example.krishna.bukie;
 
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -22,17 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-
 public class FirebaseHelper {
-private String adID;
-private String seller;
-private String buyer;
-private String username,receiver,userfullname,profilepic;
-private String refID;//this id is the node key for this entire chat section
+private String chatid,sellerid,buyerid;
+private String receiver,profilepic,uid,fullname;
 private IncomingMessageListener listener;
 private boolean isListening;
 private FirebaseFirestore firebaseFirestore=FirebaseFirestore.getInstance();
@@ -42,33 +31,30 @@ private MyChatsStatus myChatsStatus;
 private String identity;
 
 
-    public FirebaseHelper(String ad, String sel, String buy, String usernameofuser, String userfullname,IncomingMessageListener listener,String profilepic,String identity,MyChatsStatus myChatsStatus)
+    public FirebaseHelper(IncomingMessageListener listener,String profilepic,String identity,MyChatsStatus myChatsStatus)
     {
 
-        adID = ad;
-        seller = sel;
-        buyer = buy;
-        username = usernameofuser;
+        chatid = myChatsStatus.getChatid();
+        sellerid=myChatsStatus.getSellerid();
+        buyerid=myChatsStatus.getBuyerid();
+        if(identity.equals("buyer")) {
+            uid = myChatsStatus.getBuyerid();
+            fullname=myChatsStatus.getBuyerfullname();
+            receiver=buyerid;
+        }
+        else {
+            uid = myChatsStatus.getSellerid();
+            fullname=myChatsStatus.getSellerfullname();
+            receiver=sellerid;
+        }
         this.listener = listener;
         isListening = false;
-        this.userfullname=userfullname;
-        createRefID();
         this.profilepic=profilepic;
         this.myChatsStatus=myChatsStatus;
         this.identity=identity;
 
     }
 
-    private void createRefID() {
-        refID=adID;
-        if(seller.equals(username))
-            receiver=buyer;
-            else
-                receiver=seller;
-
-
-
-    }
 
 
 
@@ -76,15 +62,15 @@ private String identity;
     {
 
 
-        firebaseFirestore.collection("allchats").document("chats").collection(refID)
+        firebaseFirestore.collection("allchats").document("chats").collection(chatid)
                 .add(message)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
 
 
-                        final Long d=Long.parseLong(message.getTimestamp());
-                        final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(refID);
+                        final Long d=(message.getTimestamp());
+                        final DatabaseReference databaseReference=firebaseDatabase.getReference().child("chat_status").child(chatid);
                         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -108,7 +94,7 @@ private String identity;
                                 if(dataSnapshot.getValue()!=null) {
                                     time[0] =Long.parseLong(dataSnapshot.getValue().toString());
                                     if(time[0]==null||time[0]!=null&&d> time[0]){
-                                        LastMessage lastMessage=new LastMessage(message.getMessage_body(),Long.parseLong(message.getTimestamp()),message.getType(),message.getUid(),message.getStatus());
+                                        LastMessage lastMessage=new LastMessage(message.getMessage_body(),(message.getTimestamp()),message.getType(),message.getUid(),message.getStatus());
                                         databaseReference.child("last_message").setValue(lastMessage);
                                     }
                                 }
@@ -151,7 +137,7 @@ private String identity;
 
     public void startListening() {
         if (isListening) return;
-      Query query=firebaseFirestore.collection("allchats").document("chats").collection(refID).orderBy("timestamp");
+      Query query=firebaseFirestore.collection("allchats").document("chats").collection(chatid).orderBy("timestamp");
       listenerRegistration=query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {

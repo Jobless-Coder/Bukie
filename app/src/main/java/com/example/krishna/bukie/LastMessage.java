@@ -2,7 +2,7 @@ package com.example.krishna.bukie;
 
 public class LastMessage {
         private String message_body,type,sender,status;
-    private Long time;
+    private long time;
 
 
 
@@ -19,7 +19,7 @@ public class LastMessage {
         return message_body;
     }
 
-    public Long getTime() {
+    public long getTime() {
         return time;
     }
     public LastMessage(){
@@ -27,7 +27,7 @@ public class LastMessage {
     }
 
 
-    public LastMessage(String message_body, Long time, String type, String sender, String status) {
+    public LastMessage(String message_body, long time, String type, String sender, String status) {
         this.message_body = message_body;
         this.time = time;
         this.type = type;

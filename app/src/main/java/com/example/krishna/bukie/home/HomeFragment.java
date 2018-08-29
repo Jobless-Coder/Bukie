@@ -449,78 +449,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    ///Initially written for filter/sort through cloud function/rest api
-    /*public void filterorSortAds(Query query){
-        progressDialog.setMessage("wait..");
-        progressDialog.show();
-        tempBookadsList.addAll(bookAdsList);
-
-        bookAdsList.clear();
-       // Toast.makeText(context, bookAdsList.size()+"ddddd"+tempBookadsList.size(), Toast.LENGTH_SHORT).show();
-        homeBookAdsAdapter.notifyDataSetChanged();
-
-       // Query query=new Query();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(RESTapiinterface.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RESTapiinterface resTapiinterface=retrofit.create(RESTapiinterface.class);
-        Call<List<String>> call = resTapiinterface.filterSortBook(query);
-        call.enqueue(new Callback<List<String>>() {
-            @Override
-            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
-                if(response.code()==200&&response.body()!=null) {
-                    filterSortBookadsListPath.clear();
-                    filterSortBookadsListPath=response.body();
-                   // Log.i("adspath", (filterSortBookadsListPath).toString());
-                    //getFilterOrSortAdsList(filterSortBookadsListPath);
-
-                }
-                else {
-                    progressDialog.dismiss();
-                }
-
-
-
-            }
-
-            @Override
-            public void onFailure(Call<List<String>> call, Throwable t) {
-                //progressDialog.dismiss();
-            }
-        });
-    }*/
-
-    /*private void getFilterOrSortAdsList(List<String> filterSortBookadsListPath) {
-
-        Log.i("newads",filterSortBookadsListPath.toString());
-        for(final String bookadspath:filterSortBookadsListPath){
-            DocumentReference docRef = firebaseFirestore.collection("bookads").document(bookadspath);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        if(progressDialog.isShowing())
-                            progressDialog.dismiss();
-                        // Document found in the offline cache
-                        DocumentSnapshot document = task.getResult();
-                        BookAds bookAds=document.toObject(BookAds.class);
-                        bookAdsList.add(bookAds);
-                       // k[0]=k[0]+" "+bookAds.getAdid();
-                        Log.i("newads",bookAds.getAdid()+" "+bookadspath);
-                        homeBookAdsAdapter.notifyDataSetChanged();
-
-                        /// Log.d(TAG, "Cached document data: " + document.getData());
-                    } else {
-                        // Log.d(TAG, "Cached get failed: ", task.getException());
-                    }
-                }
-            });
-        }
-       // Log.i("newads",k[0]);
-
-    }*/
 
     public void showFilterBottomSheetDialog() {
         View view = getLayoutInflater().inflate(R.layout.layout_bottomsheet_filter, null);
@@ -611,7 +539,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         else {
 
             for (BookAds bookAds : filterAdsList) {
-                int k = Integer.parseInt(bookAds.getPrice().replace(" ", "").replace("₹", ""));
+                long k = bookAds.getPrice();
 
             if (k <= price) {
                 bookAdsList.add(bookAds);
@@ -727,9 +655,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public int compare(BookAds o1, BookAds o2) {
                     if (orderbyLocation == -2 && orderbyPrice != -2) {
-                        if (o1.getPrice().replace(" ", "").replace("₹", "").equals("") || o2.getPrice().replace(" ", "").replace("₹", "").equals(""))
+                        if (o1.getPrice()==0 || o2.getPrice()==0)
                             return 0;
-                        return orderbyPrice * (Integer.parseInt(o1.getPrice().replace(" ", "").replace("₹", "")) - Integer.parseInt(o2.getPrice().replace(" ", "").replace("₹", "")));
+                        return (int) (orderbyPrice * (o1.getPrice() - o2.getPrice()));
                     }
 
 

@@ -4,9 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Geopoint implements Parcelable{
-    String latitude;
-    String longitude;
-    String locality;
+    private String latitude,  longitude, locality;
+
 
     public Geopoint(String latitude, String longitude, String locality) {
         this.latitude = latitude;

@@ -72,6 +72,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private static final int PICKTAGS = 216;
     private int PICK_IMAGE_MULTIPLE = 1;
     private EditText title,category,price,author,publisher,desc;
+    private long mprice;
     private TextView toolbar_title;
     private FirebaseStorage firebaseStorage;
     private String path, coverurl;
@@ -79,7 +80,8 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     private List<String> downloadurl;
     private Uri photoURI;
     private FirebaseFirestore firebaseFirestore;
-    private String mtitle,mcategory,mprice,mdate,madid, muid,mprofilepic,mfullname,mpublisher,mauthor,mdesc;
+    private String mtitle,mcategory,madid, muid,mprofilepic,mfullname,mpublisher,mauthor,mdesc;
+    private long mdate;
     private FloatingActionButton floatingActionButton;
     private ProgressDialog progressDialog;
     private DisplayMetrics metrics;
@@ -148,12 +150,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             bookAds = bundle.getParcelable("bookads");
             editMyAds(bookAds);
         }
-        /*if(isHome==2){
 
-
-        }*/
-
-        //chooseimg.setOnClickListener(this);
         floatingActionButton.setOnClickListener(this);
         NestedScrollView nsv = (NestedScrollView) findViewById(R.id.nsv);
         nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -174,10 +171,9 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
                     floatingActionButton.hide();
-                   // Toast.makeText(getApplicationContext(), "Got the focus", Toast.LENGTH_LONG).show();
+
                 } else {
                     floatingActionButton.show();
-                    //Toast.makeText(getApplicationContext(), "Lost the focus", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -205,21 +201,18 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
     public void editMyAds(BookAds bookAds) {
 
         toolbar_title.setText("Edit ad");
-        Glide.with(getApplicationContext()).load(bookAds.getBookcoverpic()).into((ImageView)findViewById(R.id.coverimage));
+        Glide.with(getApplicationContext()).load(bookAds.getCoverpic()).into((ImageView)findViewById(R.id.coverimage));
 
-        title.setText(bookAds.getBooktitle());
-        category.setText(bookAds.getBookcategory());
-        author.setText(bookAds.getBookauthor());
-        publisher.setText(bookAds.getBookpublisher());
-        price.setText(bookAds.getPrice().replace("₹",""));
-        desc.setText(bookAds.getBookdesc());
-       // imageUri = ImageCompressor.compressFromUri(this,imageUri);
+        title.setText(bookAds.getTitle());
+        category.setText(bookAds.getCategory());
+        author.setText(bookAds.getAuthor());
+        publisher.setText(bookAds.getPublisher());
+        price.setText(bookAds.getPrice()+"");
+        desc.setText(bookAds.getDesc());
         for(String path:bookAds.getBookpicslist()) {
             Toast.makeText(this, ""+metrics.toString(), Toast.LENGTH_SHORT).show();
             adapter.addImage(Uri.parse(path));
-            //SquareImageView sq = new SquareImageView(this, Uri.parse(path), metrics);
-            //extraImages.add(sq);
-            //flex.addView(sq, 0);
+
             refreshFlex();
         }
 
@@ -229,47 +222,45 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
         bookref = firebaseFirestore.collection("bookads").document(bookAds.getAdid());
         progressDialog.setMessage("Editing ad ...");
         progressDialog.show();
-// Set the "isCapital" field of the city 'DC'
         Map<String, Object> bookadsmap = new HashMap<>();
         downloadurl = new ArrayList<String>();
         coverurl = null;
         mtitle = title.getText().toString();
-        if(mtitle.equals(bookAds.getBooktitle())==false)
+        if(mtitle.equals(bookAds.getTitle())==false)
            bookadsmap.put("booktitle",mtitle);
         mcategory = category.getText().toString();
-        if(mcategory.equals(bookAds.getBookcategory())==false)
+        if(mcategory.equals(bookAds.getCategory())==false)
             bookadsmap.put("bookcategory",mcategory);
-        mprice = "₹ " + price.getText().toString();
-        if(mprice.equals(bookAds.getPrice())==false)
+        mprice =  Long.parseLong(price.getText().toString());
+        if(mprice==(bookAds.getPrice()))
             bookadsmap.put("price",mprice);
         mauthor = author.getText().toString();
-        if(mauthor.equals(bookAds.getBookauthor())==false)
+        if(mauthor.equals(bookAds.getAuthor())==false)
             bookadsmap.put("bookauthor",mauthor);
         mdesc = desc.getText().toString();
-        if(mdesc.equals(bookAds.getBookdesc())==false)
+        if(mdesc.equals(bookAds.getDesc())==false)
             bookadsmap.put("bookdesc",mdesc);
         mpublisher = publisher.getText().toString();
-        if(mpublisher.equals(bookAds.getBookpublisher())==false)
+        if(mpublisher.equals(bookAds.getPublisher())==false)
             bookadsmap.put("bookpublisher",mpublisher);
 
         Date d = new Date();
 
-        SimpleDateFormat ft =
-                new SimpleDateFormat("dd MMMM yyyy");
-        mdate = ft.format(d);
-        if(mdate.equals(bookAds.getDate())==false)
+        //SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy");
+        mdate = d.getTime();
+        if(mdate!=(bookAds.getDate()))
             bookadsmap.put("date",mdate);
 
 
-        if (mprice.isEmpty() || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
+        if (mprice>0 || mtitle.isEmpty() || mcategory.isEmpty()/*||mArrayUri!=null*/)
             Toast.makeText(this, "Enter all fields to proceed", Toast.LENGTH_SHORT).show();
         else {
 
 
-            if(coverImageUri!=null&&coverImageUri.equals(bookAds.getBookcoverpic())==false)
+            if(coverImageUri!=null&&coverImageUri.equals(bookAds.getCoverpic())==false)
             uploadImage(coverImageUri, true);
             else
-                coverurl=bookAds.getBookcoverpic();
+                coverurl=bookAds.getCoverpic();
             for (int i = 0; i < flex.getChildCount() - 1; i++) {
                 SquareImageView squareImageView = (SquareImageView) flex.getChildAt(i);
                 if (squareImageView != null) {
@@ -348,18 +339,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                 refreshFlex();
             }
         });
-        //frame = findViewById(R.id.framepostnewad);
-        //scannerView = new ZXingScannerView(this);
-        //frame.addView(scannerView);
-        /*
-        scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
-            @Override
-            public void handleResult(Result result) {
-                frame.removeAllViews();
-                Toast.makeText(PostnewadActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
-                scannerView.stopCamera();
-            }
-        });*/
+
     }
 
 
@@ -619,21 +599,21 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
                     coverurl = null;
                     mtitle = title.getText().toString();
                     mcategory = category.getText().toString();
-                    mprice = "₹ " + price.getText().toString();
+                    if(!price.getText().toString().equals(""))
+                    mprice =  Long.parseLong(price.getText()+"");
                     mauthor = author.getText().toString();
                     mdesc = desc.getText().toString();
                     mpublisher = publisher.getText().toString();
 
                     Date d = new Date();
 
-                    SimpleDateFormat ft =
-                            new SimpleDateFormat("dd MMMM yyyy");
-                    mdate = ft.format(d);
+
+                    mdate = d.getTime();
 
 
                     if (coverImageUri==null)
                         Toast.makeText(this, "You should add a cover picture for your book", Toast.LENGTH_SHORT).show();
-                    else if (mprice.isEmpty())
+                    else if (mprice==0)
                         Toast.makeText(this, "Please add a required price for your book", Toast.LENGTH_SHORT).show();
 
                     else if (mtitle.isEmpty())

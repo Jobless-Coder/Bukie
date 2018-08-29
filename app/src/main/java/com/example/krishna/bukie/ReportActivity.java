@@ -27,7 +27,8 @@ public class ReportActivity extends AppCompatActivity {
     private EditText editText;
     private View reportbtn;
     private int checkedRadioButtonId;
-    private String reason,additionalinfo,timestamp,uid,fullname,adid;
+    private long timestamp;
+    private String reason,additionalinfo,uid,fullname,adid;
     private ProgressDialog progressDialog;
 
     @Override
@@ -69,7 +70,7 @@ public class ReportActivity extends AppCompatActivity {
                 reason=radioBtn.getText().toString();
                 additionalinfo=editText.getText().toString();
                 Date date=new Date();
-                timestamp=date.getTime()+"";
+                timestamp=date.getTime();
                 Report report=new Report(uid,fullname,reason,additionalinfo,timestamp);
                         progressDialog.setMessage("Reporting ad .....");
                         progressDialog.show();

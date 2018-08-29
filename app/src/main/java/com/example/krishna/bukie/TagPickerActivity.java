@@ -29,12 +29,11 @@ import java.util.List;
 public class TagPickerActivity extends AppCompatActivity {
     private ListView listView;
     private RecyclerView recyclerView;
-    private HashSet<String> tagSet=new HashSet<>();
     private List<String> tagList=new ArrayList<>();
     private List<Boolean> istagList=new ArrayList<>();
-   private TagPickerAdapter tagPickerAdapter;
-   private ChipAdapter chipAdapter;
-   private List<Tuple> chipList=new ArrayList<>();
+     private TagPickerAdapter tagPickerAdapter;
+     private ChipAdapter chipAdapter;
+      private List<Tuple> chipList=new ArrayList<>();
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
 
     @Override
@@ -101,7 +100,6 @@ public class TagPickerActivity extends AppCompatActivity {
                     istagList.set(position,true);
                     chipList.add(new Tuple(tagList.get(position),position));
                     chipAdapter.notifyDataSetChanged();
-                    //Toast.makeText(TagPickerActivity.this, ""+istagList, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     istagList.set(position,false);

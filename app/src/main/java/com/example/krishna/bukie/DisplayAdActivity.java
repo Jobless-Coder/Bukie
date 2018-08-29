@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,6 +41,7 @@ import com.rd.PageIndicatorView;
 import com.rd.draw.controller.DrawController;
 import com.victor.loading.book.BookLoading;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +68,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     private BookLoading bookloader;
     private boolean wasReferredBylink = false;
     private View back;
+    private String datedetails,pricedetail;
 
 
 
@@ -88,13 +89,16 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
     }
 
     private void initEverything() {
-
+        pricedetail="₹ " + bookAds.getPrice();
+        Date date2=new Date(bookAds.getDate());
+        SimpleDateFormat timeformat=new SimpleDateFormat("dd MMMM yyyy");
+        datedetails=timeformat.format(date2);
         progressBar=findViewById(R.id.progress_bar);
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         viewcounter=findViewById(R.id.viewcounter);
         price= findViewById(R.id.price);
-        price.setText(bookAds.getPrice());
+        price.setText(pricedetail);
         title=findViewById(R.id.title);
         desc=findViewById(R.id.desc);
         author=findViewById(R.id.author);
@@ -102,14 +106,14 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         category=findViewById(R.id.category);
         date=findViewById(R.id.date);
         fullname=findViewById(R.id.fullname);
-        if(bookAds.getBookauthor()!=null)
-            author.setText("written by "+bookAds.getBookauthor());
-        if(bookAds.getBookpublisher()!=null)
-            publisher.setText("published by "+bookAds.getBookpublisher());
-        title.setText(bookAds.getBooktitle());
-        date.setText("uploaded on "+bookAds.getDate());
-        category.setText(bookAds.getBookcategory());
-        desc.setText(bookAds.getBookdesc());
+        if(bookAds.getAuthor()!=null)
+            author.setText("written by "+bookAds.getAuthor());
+        if(bookAds.getPublisher()!=null)
+            publisher.setText("published by "+bookAds.getPublisher());
+        title.setText(bookAds.getTitle());
+        date.setText("uploaded on "+datedetails);
+        category.setText(bookAds.getCategory());
+        desc.setText(bookAds.getDesc());
         fullname.setText("by "+bookAds.getSellerfullname());
         back=findViewById(R.id.back);
         back.setOnClickListener(this);
@@ -154,7 +158,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
 
         booksUrl=new ArrayList<>();
-        booksUrl.add(bookAds.getBookcoverpic());
+        booksUrl.add(bookAds.getCoverpic());
         booksUrl.addAll(bookAds.getBookpicslist());
         if(booksUrl.size()==1){
             gotoleft.setVisibility(View.GONE);
@@ -281,7 +285,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
         //                                  --adid
         //                                  --from: (can be one of [homepage,ref_link])
         dref.child("user_id").setValue(uid);
-        dref.child("timestamp").setValue(new Date().getTime()+"");
+        dref.child("timestamp").setValue(new Date().getTime());
         dref.child("adid").setValue(bookAds.getAdid());
         if(wasReferredBylink)
             dref.child("from").setValue("ref");
@@ -489,8 +493,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                         if (task.isSuccessful()) {
 
-                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookcoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname,false);
-                            myChatsStatus=new MyChatsStatus(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getBookcoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname,false);
+                            myChatsStatus=new MyChatsStatus(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
 
                             DocumentSnapshot snapshot = task.getResult();
 

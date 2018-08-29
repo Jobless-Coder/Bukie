@@ -2,9 +2,10 @@ package com.example.krishna.bukie;
 
 public class Report
 {
-    private String reportedbyuid,reportedbyname,reason,additional_details,timestamp;
+    private String reportedbyuid,reportedbyname,reason,additional_details;
+    private long timestamp;
 
-    public Report(String reportedbyuid, String reportedbyname, String reason, String additional_details, String timestamp) {
+    public Report(String reportedbyuid, String reportedbyname, String reason, String additional_details, long timestamp) {
         this.reportedbyuid = reportedbyuid;
         this.reportedbyname = reportedbyname;
         this.reason = reason;
@@ -28,7 +29,7 @@ public class Report
         return additional_details;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 }

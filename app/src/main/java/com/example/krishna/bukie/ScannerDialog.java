@@ -20,10 +20,10 @@ public class ScannerDialog {
     private ZXingScannerView scannerView;
     private FrameLayout frame;
     boolean attached = false;
-    String scannedCode = "";
-    Activity ac;
-    Dialog dialog;
-    ScannerResultListener listener;
+    private String scannedCode = "";
+    private Activity ac;
+    private Dialog dialog;
+    private ScannerResultListener listener;
     public ScannerDialog(){
     }
 
@@ -61,9 +61,7 @@ public class ScannerDialog {
     {
         frame = dialog.findViewById(R.id.framescan);
         scannerView = dialog.findViewById(R.id.xingscan);
-        //ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        //scannerView.setLayoutParams(params);
-        //scannerView.setAspectTolerance(0.5f);
+
         scannerView.setResultHandler(new ZXingScannerView.ResultHandler() {
             @Override
             public void handleResult(Result result) {
@@ -71,7 +69,7 @@ public class ScannerDialog {
                 scannerView.stopCamera();
             }
         });
-        //frame.addView(scannerView);
+
 
     }
 

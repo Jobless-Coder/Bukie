@@ -29,9 +29,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipAdapter.ChipHolder> {
 
     private Context mContext;
     private List<Tuple> chipList = new ArrayList<>();
-   // TagPickerAdapter tagPickerAdapter;
-   // OnRemoveListener onRemoveListener;
-    TagItemListener tagItemListener;
+    private TagItemListener tagItemListener;
 
     public ChipAdapter(Context context,List<Tuple> chipList,TagItemListener tagItemListener){
         mContext=context;
@@ -44,7 +42,6 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipAdapter.ChipHolder> {
     public ChipHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v= LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_tags_chips,parent,false);
-        //Toast.makeText(context, "nibbas", Toast.LENGTH_SHORT).show();
         return  new ChipHolder(v);
     }
 
@@ -73,7 +70,6 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipAdapter.ChipHolder> {
                 public void onClick(View v) {
 
                     tagItemListener.onRemoveClick(chipList.get(getAdapterPosition()).getText(),chipList.get(getAdapterPosition()).getPosition());
-                   // onRemoveListener.onButtonClickListner(getAdapterPosition(),);
                 }
             });
 

@@ -285,7 +285,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });*/
 
 
-        fh = new FirebaseHelper(myChats.getChatid(), myChats.getSellerid(), myChats.getBuyerid(), username, userfullname,new IncomingMessageListener() {
+        fh = new FirebaseHelper(new IncomingMessageListener() {
             public void receiveIncomingMessage(final MessageItem ch, String id) {
                 if (!ch.getUid().equals(username))
                 {
@@ -296,7 +296,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .document(id)
                             .update("status","seen");
                     ch.setStatus("seen");
-                    final String[] time = new String[1];
+                    final long[] time = new long[1];
                     final String[] sender = new String[1];
 
                    // Log.i("Chat_status",ch.getMessage_body()+" "+ch.getUid()+" "+ch.getStatus());
@@ -306,9 +306,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             LastMessage lastMessage= dataSnapshot.getValue(LastMessage.class);
-                            time[0]=lastMessage.getTime().toString();
+                            time[0]=lastMessage.getTime();
                             sender[0]=lastMessage.getSender();
-                            if(sender[0].equals(ch.getUid())&&time[0].equals(ch.getTimestamp())){
+                            if(sender[0].equals(ch.getUid())&&time[0]==(ch.getTimestamp())){
                                 databaseReference.child("status").setValue("seen");
                             }
 
@@ -332,7 +332,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             {
                 for(int i = messageItemList.size()-1;i>=0;i--){
                     MessageItem ms = messageItemList.get(i);
-                    if(ms.getTimestamp().equals(ch.getTimestamp()))
+                    if(ms.getTimestamp()==(ch.getTimestamp()))
                     {
                         ms.setStatus("seen");
                         adapter.notifyDataSetChanged();
@@ -729,38 +729,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendMessage(String type) {
         Date d = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("hh:mm a");
-        date = ft.format(d);
+
         if(type.compareTo("camera")==0){
 
-            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths,"Sent a photo");
+            MessageItem m = new MessageItem( username, d.getTime() , type,imagepaths,"Sent a photo");
             fh.sendMessage(m);
         }
         else if(type.compareTo("message")==0){
-            MessageItem m = new MessageItem(msg, date, username, d.getTime() + "","message");
+            MessageItem m = new MessageItem(msg, username, d.getTime() ,"message");
             fh.sendMessage(m);
             chatbox.setText("");
         }
         else if(type.compareTo("location")==0){
            //Geopoint geopoint=new Geopoint(latitude,longitude);
-            MessageItem m=new MessageItem(date,username,d.getTime()+"",geopoint,type,"Sent a location");
+            MessageItem m=new MessageItem(username,d.getTime(),geopoint,type,"Sent a location");
             fh.sendMessage(m);
         }
         else if(type.compareTo("gallery")==0){
 
-            MessageItem m = new MessageItem(date, username, d.getTime() + "", type,imagepaths,"Sent photos");
+            MessageItem m = new MessageItem( username, d.getTime() , type,imagepaths,"Sent photos");
             fh.sendMessage(m);
         }
         else if(type.equals("contact")){
 
             if(contactpic==null) {
                 Contact contact = new Contact(contactname, contactnumber);
-                MessageItem m = new MessageItem(date, username, d.getTime() + "", contact, "contact", "Sent a contact");
+                MessageItem m = new MessageItem( username, d.getTime(), contact, "contact", "Sent a contact");
                 fh.sendMessage(m);
             }
             else {
                 Contact contact = new Contact(contactname, contactnumber,contactpic);
-                MessageItem m = new MessageItem(date, username, d.getTime() + "", contact, "contact", "Sent a contact");
+                MessageItem m = new MessageItem( username, d.getTime(), contact, "contact", "Sent a contact");
                 fh.sendMessage(m);
             }
 

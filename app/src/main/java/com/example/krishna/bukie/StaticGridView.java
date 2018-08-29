@@ -22,7 +22,6 @@ public class StaticGridView extends GridView {
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK, MeasureSpec.AT_MOST));
         getLayoutParams().height = getMeasuredHeight();
-        //getLayoutParams().width=100;
-       // setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight());
+
     }
 }

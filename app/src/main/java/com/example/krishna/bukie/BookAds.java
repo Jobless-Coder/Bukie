@@ -5,25 +5,23 @@ import java.util.List;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
 public class BookAds implements Parcelable{
 
 
-public String date;
-public String booktitle;
-public String price;
-public String bookcategory;
-public String bookcoverpic;
-public String bookpublisher;
-public String bookauthor;
-public String bookdesc;
-public  String sellerid;
-public String adid;
-public String sellerpic;
-public String sellerfullname;
-public Integer viewcounter=0;
+private long date;
+private String title;
+private long price;
+private String category;
+private String coverpic;
+private String publisher;
+private String author;
+private String desc;
+private String sellerid;
+private String adid;
+private String sellerpic;
+private String sellerfullname;
+private Integer viewcounter=0;
 private List<String> tagList;
 private boolean isactive;
 private boolean issold;
@@ -54,15 +52,15 @@ private boolean issold;
 
     public String isbn;
 
-    public BookAds(String date, String booktitle, String price, String bookcategory, String bookcoverpic, String bookpublisher, String bookauthor, String bookdesc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn,List<String> tagList,boolean isactive,boolean issold) {
+    public BookAds(long date, String title, long price, String category, String coverpic, String publisher, String author, String desc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn, List<String> tagList, boolean isactive, boolean issold) {
         this.date = date;
-        this.booktitle = booktitle;
+        this.title = title;
         this.price = price;
-        this.bookcategory = bookcategory;
-        this.bookcoverpic = bookcoverpic;
-        this.bookpublisher = bookpublisher;
-        this.bookauthor = bookauthor;
-        this.bookdesc = bookdesc;
+        this.category = category;
+        this.coverpic = coverpic;
+        this.publisher = publisher;
+        this.author = author;
+        this.desc = desc;
         this.sellerid = sellerid;
         this.adid = adid;
         this.sellerpic = sellerpic;
@@ -113,40 +111,40 @@ private boolean issold;
 
 
     protected BookAds(Parcel in){
-        this.date = in.readString();
-        this.booktitle = in.readString();
-        this.bookcategory = in.readString();
-        this.price = in.readString();
+        this.date = in.readLong();
+        this.title = in.readString();
+        this.category = in.readString();
+        this.price = in.readLong();
         this.bookpicslist = new ArrayList<String>();
         in.readList(bookpicslist,String.class.getClassLoader());
         this.adid=in.readString();
         this.sellerid =in.readString();
         this.sellerpic=in.readString();
         this.sellerfullname=in.readString();
-        this.bookcoverpic=in.readString();
-        this.bookauthor=in.readString();
-        this.bookpublisher=in.readString();
-        this.bookdesc=in.readString();
+        this.coverpic =in.readString();
+        this.author =in.readString();
+        this.publisher =in.readString();
+        this.desc =in.readString();
         this.isbn = in.readString();
 
 
 
     }
 
-    public String getBookcoverpic() {
-        return bookcoverpic;
+    public String getCoverpic() {
+        return coverpic;
     }
 
-    public String getBookpublisher() {
-        return bookpublisher;
+    public String getPublisher() {
+        return publisher;
     }
 
-    public String getBookauthor() {
-        return bookauthor;
+    public String getAuthor() {
+        return author;
     }
 
-    public String getBookdesc() {
-        return bookdesc;
+    public String getDesc() {
+        return desc;
     }
 
     public static final Creator<BookAds> CREATOR = new Creator<BookAds>() {
@@ -162,20 +160,20 @@ private boolean issold;
     };
 
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public String getBooktitle() {
-        return booktitle;
+    public String getTitle() {
+        return title;
     }
 
-    public String getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public String getBookcategory() {
-        return bookcategory;
+    public String getCategory() {
+        return category;
     }
 
     @Override
@@ -185,19 +183,19 @@ private boolean issold;
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.date);
-        dest.writeString(this.booktitle);
-        dest.writeString(this.bookcategory);
-        dest.writeString(this.price);
+        dest.writeLong(this.date);
+        dest.writeString(this.title);
+        dest.writeString(this.category);
+        dest.writeLong(this.price);
         dest.writeList(this.bookpicslist);
         dest.writeString(this.adid);
         dest.writeString(this.sellerid);
         dest.writeString(this.sellerpic);
         dest.writeString(this.sellerfullname);
-        dest.writeString(this.bookcoverpic);
-        dest.writeString(this.bookauthor);
-        dest.writeString(this.bookpublisher);
-        dest.writeString(this.bookdesc);
+        dest.writeString(this.coverpic);
+        dest.writeString(this.author);
+        dest.writeString(this.publisher);
+        dest.writeString(this.desc);
         dest.writeString(this.isbn);
 
 

@@ -4,10 +4,10 @@ import java.util.List;
 
 public class MessageItem {
     private String message_body;
-    private String time;
     private String uid; //this is the fucking sender u bitch!
-    private String timestamp;
-    public Geopoint geopoint;
+    private long timestamp;
+    private Geopoint geopoint;
+    private String status;
 
     public String getStatus() {
         return status;
@@ -17,14 +17,13 @@ public class MessageItem {
         this.status = status;
     }
 
-    public String status;
+
 
     public Geopoint getGeopoint() {
         return geopoint;
     }
 
-    public MessageItem(String time, String uid, String timestamp, Geopoint geoPoint, String type,String message_body) {
-        this.time = time;
+    public MessageItem( String uid, long timestamp, Geopoint geoPoint, String type,String message_body) {
         this.uid = uid;
         this.timestamp = timestamp;
         this.geopoint=geoPoint;
@@ -41,8 +40,8 @@ public class MessageItem {
      private String type;
      private List<String> imageurl;
 
-    public MessageItem(String time, String uid, String timestamp, String type, List<String> imageurl,String message_body) {
-        this.time = time;
+    public MessageItem(String uid, long timestamp, String type, List<String> imageurl,String message_body) {
+
         this.uid = uid;
         this.timestamp = timestamp;
         this.type = type;
@@ -55,9 +54,8 @@ public class MessageItem {
         return type;
     }
 
-    public MessageItem(String message_body, String time, String uid, String timestamp, String type) {
+    public MessageItem(String message_body, String uid, long timestamp, String type) {
         this.message_body = message_body;
-        this.time = time;
         this.uid = uid;
         this.timestamp = timestamp;
         this.type=type;
@@ -68,8 +66,7 @@ public class MessageItem {
         return contact;
     }
 
-    public MessageItem(String time, String uid, String timestamp, Contact contact, String type,String message_body) {
-        this.time = time;
+    public MessageItem( String uid, long timestamp, Contact contact, String type,String message_body) {
         this.uid = uid;
         this.timestamp = timestamp;
         this.contact = contact;
@@ -78,7 +75,7 @@ public class MessageItem {
         this.message_body=message_body;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
@@ -96,7 +93,5 @@ public class MessageItem {
         return uid;
     }
 
-    public String getTime() {
-        return time;
-    }
+
 }
