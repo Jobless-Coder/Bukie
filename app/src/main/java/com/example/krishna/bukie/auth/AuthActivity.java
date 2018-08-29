@@ -45,10 +45,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -70,14 +72,14 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private int height, width;
     TextView hello, bye;
     boolean helloInMiddle;
-    int big, small, hsm, hl, bsm, bl, loginsize, GREY,VIOLET,LIGHT_VIOLET;
+    int big, small, hsm, hl, bsm, bl, loginsize, GREY, VIOLET, LIGHT_VIOLET;
     LinearLayout loginflow, signflow;
     EditText forgotemail;
     private ProgressDialog mProgressDialog;
-    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth mFirebaseAuth;
     private CallbackManager mCallbackManager;
     private FirebaseFirestore mFirebaseFirestore;
-    private boolean toggleforgotpass=false;
+    private boolean mShowingForgotPass = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_auth);
 
-        firebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         mRegEmail = findViewById(R.id.regemail);
         mRegPass = findViewById(R.id.regpass);
@@ -124,9 +126,9 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
 
-        MyFirebaseInstanceIDService myFirebaseInstanceIDService=new MyFirebaseInstanceIDService();
+        MyFirebaseInstanceIDService myFirebaseInstanceIDService = new MyFirebaseInstanceIDService();
         myFirebaseInstanceIDService.onTokenRefresh();
-       // FirebaseInstanceId.getInstance().getInstanceId();
+        // FirebaseInstanceId.getInstance().getInstanceId();
         // Google
         GoogleSignInOptions gso =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -174,8 +176,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         big = 30;
         small = 15;
         GREY = 0xffeaeaea;
-        VIOLET=Color.parseColor("#673ab7");
-        LIGHT_VIOLET=Color.parseColor("#B39DDB");
+        VIOLET = Color.parseColor("#673ab7");
+        LIGHT_VIOLET = Color.parseColor("#B39DDB");
 
         hello = findViewById(R.id.hello);
         bye = findViewById(R.id.bye);
@@ -278,7 +280,6 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 initFacebookSignIn();
                 break;
             case R.id.forgotpass:
-                toggleforgotpass=true;
                 forgotPassword();
                 break;
             case R.id.sendemail:
@@ -314,7 +315,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Sign up user to Firebase with email and password. Displays appropriate toasts if either is
      * empty or if passwords do not match.
-     * */
+     */
     private void signUpWithEmailPass() {
         String email = mRegEmail.getText().toString();
         String pass = mRegPass.getText().toString();
@@ -339,13 +340,13 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mProgressDialog.show();
         Log.d(TAG, "Signing up user with email/pass: " + email + "/" + pass);
 
-        firebaseAuth.createUserWithEmailAndPassword(email, pass)
+        mFirebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         mProgressDialog.dismiss();
-                        if (task.isSuccessful()){
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
                             // Shift to sign in screen.
                             translate(hello);
                             mSignInEmail.setText(user.getEmail());
@@ -411,14 +412,15 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
         mProgressDialog.show();
         Log.d(TAG, "Signing in user with email/pass: " + email + "/" + pass);
 
-        firebaseAuth.signInWithEmailAndPassword(email, pass)
+        mFirebaseAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            handleSuccesfulSignIn(firebaseAuth.getCurrentUser(), "email");
+                            handleSuccesfulSignIn(mFirebaseAuth.getCurrentUser(), "email");
                         } else {
                             mProgressDialog.dismiss();
+                            Log.d(TAG, "Sign in failed: " + task.getException());
                             Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
                         }
                         mSignInPass.setText("");
@@ -498,23 +500,23 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      * @param signInMethod a String representing the sign in method.
      */
     private void firebaseAuthWithCredential(AuthCredential credential, final String signInMethod) {
-        firebaseAuth.signInWithCredential(credential)
+        mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
                             Log.d(TAG, "Successfully sign in user with uid: " + user.getUid());
                             if (task.getResult().getAdditionalUserInfo().isNewUser()) {
                                 // Saves one call to Firestore to check if user exists.
                                 handleUnregisteredUser(user, signInMethod);
-                            } else{
+                            } else {
                                 handleSuccesfulSignIn(user, signInMethod);
                             }
                         } else {
                             mProgressDialog.dismiss();
                             Toast.makeText(AuthActivity.this, R.string.sign_in_failed_retry, Toast.LENGTH_SHORT).show();
-                            Log.d(TAG,"Firebase auth failed with exception: " + task.getException());
+                            Log.d(TAG, "Firebase auth failed with exception: " + task.getException());
                         }
                     }
                 })
@@ -547,7 +549,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                             switch (userCount) {
                                 case 0:
                                     // User is not registered in database.
-                                    maybeReloadAndHandleUnregisteredUser(user, signInMethod);
+                                    reloadThenHandleUnregisteredUser(user, signInMethod);
                                     break;
                                 case 1:
                                     DocumentSnapshot document = querySnapshot.getDocuments().get(0);
@@ -574,8 +576,8 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
      * @param user         the Firebase user object.
      * @param signInMethod a String representing the sign in method.
      */
-    private void maybeReloadAndHandleUnregisteredUser(final FirebaseUser user, final String signInMethod) {
-        if (user.isEmailVerified()) {
+    private void reloadThenHandleUnregisteredUser(final FirebaseUser user, final String signInMethod) {
+        if (!requiresEmailVerification(user)) {
             handleUnregisteredUser(user, signInMethod);
             return;
         }
@@ -593,6 +595,23 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
+     * Checks whether the user requires email verification.
+     *
+     * @param user the Firebase user object
+     * @return whether the user requires verification
+     */
+    private boolean requiresEmailVerification(FirebaseUser user) {
+        for (UserInfo info : user.getProviderData()) {
+            Log.d(TAG, "Provider: " + info.getProviderId());
+            if (info.getProviderId().equals(EmailAuthProvider.PROVIDER_ID)) {
+                return !user.isEmailVerified();
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Handles an unregistered user. If the user does not have a verified email, displays a dialog
      * allowing the user to resend the verification email, otherwise launches a
      * {@link RegistrationActivity}.
@@ -603,7 +622,7 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
     private void handleUnregisteredUser(FirebaseUser user, String signInMethod) {
         mProgressDialog.dismiss();
         Log.d(TAG, "Unregistered user with uid: " + user.getUid());
-        if (!user.isEmailVerified()) {
+        if (requiresEmailVerification(user)) {
             Log.d(TAG, "User has unverified email, launching dialog");
             showResendVerificationEmailDialog(user);
             return;
@@ -666,23 +685,22 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void sendEmailForForgotPassword() {
-        forgotemail=this.findViewById(R.id.forgotemail);
-        String email=forgotemail.getText().toString();
+        forgotemail = this.findViewById(R.id.forgotemail);
+        final String email = forgotemail.getText().toString();
         mProgressDialog.setMessage("Sending password change email ...");
         mProgressDialog.show();
-        firebaseAuth.sendPasswordResetEmail(email)
+        mFirebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         mProgressDialog.dismiss();
                         if (task.isSuccessful()) {
-
+                            Log.d(TAG, "Successfully sent password reset email to: " + email);
                             Toast.makeText(AuthActivity.this, "Password reset email sent to your email address", Toast.LENGTH_SHORT).show();
-
-                            // Log.d(TAG, "Email sent.");
-                        }
-                        else{
-                            Toast.makeText(AuthActivity.this, "Cannot send email,retry!", Toast.LENGTH_SHORT).show();
+                            forgotemail.setText("");
+                        } else {
+                            Log.d(TAG, "Failed to send password reset email to: " + email);
+                            Toast.makeText(AuthActivity.this, "Could not send email, please retry", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).addOnCanceledListener(new OnCanceledListener() {
@@ -691,38 +709,28 @@ public class AuthActivity extends AppCompatActivity implements View.OnClickListe
                 mProgressDialog.dismiss();
             }
         });
-        forgotemail.setText("");
-
     }
 
 
     private void forgotPassword() {
+        mShowingForgotPass = true;
         this.findViewById(R.id.loginscreen).setVisibility(View.GONE);
         this.findViewById(R.id.forgotpasslayout).setVisibility(View.VISIBLE);
-
     }
 
     private void signOut() {
-        // Firebase sign out
-
-        firebaseAuth.signOut();
+        mFirebaseAuth.signOut();
         mGoogleSignInClient.signOut();
         // loginManager.logOut();
-
-        // Google sign out
     }
 
     @Override
     public void onBackPressed() {
-        if(toggleforgotpass==true){
-            toggleforgotpass=false;
-
+        if (mShowingForgotPass) {
+            mShowingForgotPass = false;
             this.findViewById(R.id.forgotpasslayout).setVisibility(View.GONE);
             this.findViewById(R.id.loginscreen).setVisibility(View.VISIBLE);
-
-        }
-        else {
-
+        } else {
             super.onBackPressed();
         }
     }

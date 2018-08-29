@@ -22,6 +22,8 @@ import com.example.krishna.bukie.User;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -38,6 +41,7 @@ import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -45,15 +49,18 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     private static final int SELECT_PHOTO = 1;
 
+    private static String TEMP_PIC_FILENAME = "temp_pic.png";
+    private static String DEFAULT_PROFILE_PIC_FILENAME = "profile_pic_default.png";
+
     private EditText mFullNameEditText;
     private View mRegisterBtn, mPickImageBtn;
     private ProgressDialog mProgressDialog;
     private ImageView mProfilePicImg;
     private User mUser;
-    private Uri mCroppedImageUri;
-    private StorageReference storageReference;
+    private Uri mNewProfilePicUri;
+    private StorageReference mStorageReference;
     private FirebaseFirestore mFirebaseFirestore;
-    private InterestAdapter interestAdapter;
+    private InterestAdapter mInterestAdapter;
     // private TextView mRegisterText;
     // private boolean mToggleProfile;
 
@@ -78,7 +85,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         mProgressDialog = new ProgressDialog(this);
 
         mFirebaseFirestore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
+        mStorageReference = FirebaseStorage.getInstance().getReference();
 
         // TODO: Support edit profile
         /*
@@ -104,19 +111,21 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             mUser.setProfilepic(uri.toString());
             Glide.with(getApplicationContext()).load(uri).into(mProfilePicImg);
         } else {
-            String path = "profilepicuser/" + getString(R.string.profile_pic_default);
-            StorageReference imageRef = storageReference.child(path);
-            imageRef.getDownloadUrl()
-                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
+            String path = "profilepicuser/" + DEFAULT_PROFILE_PIC_FILENAME;
+            StorageReference imageRef = mStorageReference.child(path);
+            final File tmpPic = new File(getCacheDir(), TEMP_PIC_FILENAME);
+            imageRef.getFile(tmpPic)
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()) {
-                                Uri uri = task.getResult();
-                                mUser.setProfilepic(uri.toString());
-                                Glide.with(getApplicationContext()).load(uri).into(mProfilePicImg);
-                            } else {
-                                Log.d(TAG, "Failed to fetch default profile pic url: " + task.getException());
-                            }
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            mNewProfilePicUri = Uri.fromFile(tmpPic);
+                            Glide.with(getApplicationContext()).load(mNewProfilePicUri).into(mProfilePicImg);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Failed to fetch default profile pic: " + e);
                         }
                     });
         }
@@ -149,7 +158,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             list.add(s.getValue().toString());
         }
         FlexboxLayout layout = findViewById(R.id.flexlayout);
-        interestAdapter = new InterestAdapter(this, list, layout);
+        mInterestAdapter = new InterestAdapter(this, list, layout);
     }
 
 
@@ -191,8 +200,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             case SELECT_PHOTO:
                 if (resultCode == RESULT_OK) {
                     Uri srcImageUri = data.getData();
-                    Uri destImageUri = Uri.fromFile(new File(getCacheDir(), getString(R.string.temp_img_png)));
-                    UCrop uCrop = UCrop.of(srcImageUri, destImageUri).withAspectRatio(1,1);
+                    File tmpPic = new File(getCacheDir(), TEMP_PIC_FILENAME);
+                    Uri destImageUri = Uri.fromFile(tmpPic);
+                    UCrop uCrop = UCrop.of(srcImageUri, destImageUri).withAspectRatio(1, 1);
                     uCrop.start(RegistrationActivity.this);
                 } else {
                     Toast.makeText(this, R.string.no_img_selected, Toast.LENGTH_SHORT).show();
@@ -200,10 +210,10 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 break;
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
-                    mCroppedImageUri = UCrop.getOutput(data);
+                    mNewProfilePicUri = UCrop.getOutput(data);
                     // Skip cache because user can change profile pic again but destImageUrl remains same.
                     Glide.with(getApplicationContext())
-                            .load(mCroppedImageUri)
+                            .load(mNewProfilePicUri)
                             .skipMemoryCache(true)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .into(mProfilePicImg);
@@ -231,7 +241,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         mProgressDialog.setMessage(getString(R.string.registering));
         mProgressDialog.show();
 
-        if (mCroppedImageUri != null) {
+        if (mNewProfilePicUri != null) {
             uploadProfilePicThenUploadUserDetails();
         } else {
             uploadUserDetails();
@@ -243,11 +253,11 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
      * {@link #uploadUserDetails} to upload the user details.
      */
     private void uploadProfilePicThenUploadUserDetails() {
-        String path = "profilepicuser/" + mUser.getUid() + ".png";
+        String path = "profilepicuser/" + UUID.randomUUID() + ".png";
         Log.d(TAG, "Uploading profile pic to: " + path);
 
-        final StorageReference imageRef = storageReference.child(path);
-        imageRef.putFile(mCroppedImageUri)
+        final StorageReference imageRef = mStorageReference.child(path);
+        imageRef.putFile(mNewProfilePicUri)
                 .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -258,19 +268,19 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     }
                 })
                 .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                     @Override
-                     public void onComplete(@NonNull Task<Uri> task) {
-                         if (task.isSuccessful()) {
-                             Uri uri = task.getResult();
-                             mUser.setProfilepic(uri.toString());
-                             uploadUserDetails();
-                         } else {
-                             mProgressDialog.dismiss();
-                             Toast.makeText(RegistrationActivity.this, R.string.error_uploading_img_retry, Toast.LENGTH_SHORT).show();
-                             Log.d(TAG, "Profile pic upload failed: " + task.getException());
-                         }
-                     }
-                 });
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri uri = task.getResult();
+                            mUser.setProfilepic(uri.toString());
+                            uploadUserDetails();
+                        } else {
+                            mProgressDialog.dismiss();
+                            Toast.makeText(RegistrationActivity.this, R.string.error_uploading_img_retry, Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "Profile pic upload failed: " + task.getException());
+                        }
+                    }
+                });
     }
 
     /**
@@ -314,7 +324,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
             if(!imageUri.equals(mProfilePicUrl)){
                 path = "profilepicuser/" + mUid ;
-                final StorageReference riversRef = storageReference.child(path);
+                final StorageReference riversRef = mStorageReference.child(path);
 
                 UploadTask uploadTask = riversRef.putFile(imageUri);
                 Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
