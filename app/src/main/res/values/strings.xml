@@ -47,6 +47,10 @@
 
     <string name="profile_pic_default">profile_pic_default.png</string>
 
+    <!-- ChatActivity -->
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+
     <!-- preferences.xml -->
     <string name="pref_application">Application</string>
     <string name="pref_title_show_notifications">Notifications</string>
