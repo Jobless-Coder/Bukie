@@ -106,7 +106,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Context context;
     private EmojiconMultiAutoCompleteTextView chatbox;
     private int count;
-    private String fullname, ppic,tmpuser,identity,username,userfullname,sendtouid;
+    private String fullname, ppic,tmpuser,identity,uid,userfullname,sendtouid;
     private TextView username2,status;
     private View camera,attach,send,rootview,keyboard,sendbtn,camerabtn,back;
    // EmojiPopup emojiPopup;
@@ -146,7 +146,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
         SharedPreferences sharedPreferences = getSharedPreferences("UserInfo", MODE_PRIVATE);
-        username = sharedPreferences.getString("uid", null);
+        uid = sharedPreferences.getString("uid", null);
         userfullname=sharedPreferences.getString("fullname",null);
         profilepicuser=sharedPreferences.getString("profilepic",null);
         Bundle bundle = getIntent().getExtras();
@@ -287,7 +287,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         fh = new FirebaseHelper(new IncomingMessageListener() {
             public void receiveIncomingMessage(final MessageItem ch, String id) {
-                if (!ch.getUid().equals(username))
+                if (!ch.getUid().equals(uid))
                 {
                     FirebaseFirestore.getInstance()
                             .collection("allchats")
@@ -599,7 +599,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         pathsurilist=new ArrayList<>();
         // check whether the result is ok
         if (resultCode == RESULT_OK) {
-            // Check for the request code, we might be usign multiple startActivityForReslut
             switch (requestCode) {
                 case RESULT_PICK_CONTACT:
                     contactPicked(data);
@@ -732,34 +731,34 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if(type.compareTo("camera")==0){
 
-            MessageItem m = new MessageItem( username, d.getTime() , type,imagepaths,"Sent a photo");
+            MessageItem m = new MessageItem( uid, d.getTime() , type,imagepaths,"Sent a photo");
             fh.sendMessage(m);
         }
         else if(type.compareTo("message")==0){
-            MessageItem m = new MessageItem(msg, username, d.getTime() ,"message");
+            MessageItem m = new MessageItem(msg, uid, d.getTime() ,"message");
             fh.sendMessage(m);
             chatbox.setText("");
         }
         else if(type.compareTo("location")==0){
            //Geopoint geopoint=new Geopoint(latitude,longitude);
-            MessageItem m=new MessageItem(username,d.getTime(),geopoint,type,"Sent a location");
+            MessageItem m=new MessageItem(uid,d.getTime(),geopoint,type,"Sent a location");
             fh.sendMessage(m);
         }
         else if(type.compareTo("gallery")==0){
 
-            MessageItem m = new MessageItem( username, d.getTime() , type,imagepaths,"Sent photos");
+            MessageItem m = new MessageItem( uid, d.getTime() , type,imagepaths,"Sent photos");
             fh.sendMessage(m);
         }
         else if(type.equals("contact")){
 
             if(contactpic==null) {
                 Contact contact = new Contact(contactname, contactnumber);
-                MessageItem m = new MessageItem( username, d.getTime(), contact, "contact", "Sent a contact");
+                MessageItem m = new MessageItem( uid, d.getTime(), contact, "contact", "Sent a contact");
                 fh.sendMessage(m);
             }
             else {
                 Contact contact = new Contact(contactname, contactnumber,contactpic);
-                MessageItem m = new MessageItem( username, d.getTime(), contact, "contact", "Sent a contact");
+                MessageItem m = new MessageItem( uid, d.getTime(), contact, "contact", "Sent a contact");
                 fh.sendMessage(m);
             }
 
@@ -827,7 +826,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = username+timeStamp;
+        String imageFileName = uid+timeStamp;
         imagefilenamelist.add(imageFileName);
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
@@ -994,27 +993,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-    @Override
-    public void onBackPressed()
-    {
-        if(popup.isShowing())
-            popup.dismiss();
-        else
-        super.onBackPressed();
-    }
-    @Override
-    public boolean onSupportNavigateUp(){
-
-       finish();
-        return true;
-    }
 
     @Override
     protected void onResume() {
         fh.startListening();
 
-        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
-        DatabaseReference presenceRef = firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username);
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(uid).setValue(true);
+        DatabaseReference presenceRef = firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(uid);
         final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
         //onDisconnectRef.cancel();
         presenceRef.onDisconnect().setValue("false");
@@ -1025,7 +1010,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
-                    firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(true);
+                    firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(uid).setValue(true);
 
                 } else {
 
@@ -1043,12 +1028,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
-        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(username).setValue(false);
+        firebaseDatabase.getReference().child("chat_status").child(myChats.getChatid()).child(uid).setValue(false);
         connectedRef.removeEventListener(listener);
 
         fh.stopListening();
         super.onStop();
     }
+    @Override
+    public void onBackPressed()
+    {
+        if(popup.isShowing())
+            popup.dismiss();
+        else
+            super.onBackPressed();
+    }
+    @Override
+    public boolean onSupportNavigateUp(){
+
+        finish();
+        return true;
+    }
+
 
 
 }

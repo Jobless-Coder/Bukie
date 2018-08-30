@@ -22,17 +22,7 @@
         >
     </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>
-    <!--android.support.v7.widget.RecyclerView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/shimmer_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:shimmer_demo_child_count="10"
-        app:shimmer_demo_duration="10"
-        app:shimmer_demo_layout_manager_type="linear_vertical"
-        app:shimmer_demo_layout="@layout/shimmerlayout"
-        app:shimmer_demo_angle="20"
-        /-->
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         app:fabSize="normal"

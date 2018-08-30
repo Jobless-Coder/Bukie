@@ -248,7 +248,7 @@ public class PostnewadActivity extends AppCompatActivity implements View.OnClick
 
         //SimpleDateFormat ft = new SimpleDateFormat("dd MMMM yyyy");
         mdate = d.getTime();
-        if(mdate!=(bookAds.getDate()))
+        if(mdate!=(bookAds.getTimestamp()))
             bookadsmap.put("date",mdate);
 
 

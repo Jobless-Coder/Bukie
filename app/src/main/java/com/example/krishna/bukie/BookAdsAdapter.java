@@ -47,7 +47,7 @@ public class BookAdsAdapter extends RecyclerView.Adapter<BookAdsAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final BookAds bookAds=bookAdsList.get(position);
-        Date date2=new Date(bookAds.getDate());
+        Date date2=new Date(bookAds.getTimestamp());
         SimpleDateFormat timeformat=new SimpleDateFormat("dd MMMM yyyy");
         price="₹ " + bookAds.getPrice();
        final String date=timeformat.format(date2);

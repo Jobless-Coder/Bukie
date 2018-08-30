@@ -9,7 +9,7 @@ import android.os.Parcelable;
 public class BookAds implements Parcelable{
 
 
-private long date;
+private long timestamp;
 private String title;
 private long price;
 private String category;
@@ -52,8 +52,8 @@ private boolean issold;
 
     public String isbn;
 
-    public BookAds(long date, String title, long price, String category, String coverpic, String publisher, String author, String desc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn, List<String> tagList, boolean isactive, boolean issold) {
-        this.date = date;
+    public BookAds(long timestamp, String title, long price, String category, String coverpic, String publisher, String author, String desc, String sellerid, String adid, String sellerpic, String sellerfullname, List<String> bookpicslist, String isbn, List<String> tagList, boolean isactive, boolean issold) {
+        this.timestamp = timestamp;
         this.title = title;
         this.price = price;
         this.category = category;
@@ -111,7 +111,7 @@ private boolean issold;
 
 
     protected BookAds(Parcel in){
-        this.date = in.readLong();
+        this.timestamp = in.readLong();
         this.title = in.readString();
         this.category = in.readString();
         this.price = in.readLong();
@@ -160,8 +160,8 @@ private boolean issold;
     };
 
 
-    public long getDate() {
-        return date;
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public String getTitle() {
@@ -183,7 +183,7 @@ private boolean issold;
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.date);
+        dest.writeLong(this.timestamp);
         dest.writeString(this.title);
         dest.writeString(this.category);
         dest.writeLong(this.price);

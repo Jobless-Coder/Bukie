@@ -185,7 +185,6 @@ public class HomePageActivity extends AppCompatActivity {
 
         firebaseDatabase.getReference().child("users").child(uid).child("last_seen").setValue("online");
         DatabaseReference presenceRef = FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("last_seen");
-        //final OnDisconnect onDisconnectRef = presenceRef.onDisconnect();
         presenceRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
 
         connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");

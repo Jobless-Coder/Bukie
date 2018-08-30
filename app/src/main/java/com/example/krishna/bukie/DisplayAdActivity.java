@@ -90,7 +90,7 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
     private void initEverything() {
         pricedetail="₹ " + bookAds.getPrice();
-        Date date2=new Date(bookAds.getDate());
+        Date date2=new Date(bookAds.getTimestamp());
         SimpleDateFormat timeformat=new SimpleDateFormat("dd MMMM yyyy");
         datedetails=timeformat.format(date2);
         progressBar=findViewById(R.id.progress_bar);
