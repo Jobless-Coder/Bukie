@@ -2,6 +2,7 @@ package com.example.krishna.bukie;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,12 +41,12 @@ private String identity;
         if(identity.equals("buyer")) {
             uid = myChatsStatus.getBuyerid();
             fullname=myChatsStatus.getBuyerfullname();
-            receiver=buyerid;
+            receiver=sellerid;
         }
         else {
             uid = myChatsStatus.getSellerid();
             fullname=myChatsStatus.getSellerfullname();
-            receiver=sellerid;
+            receiver=buyerid;
         }
         this.listener = listener;
         isListening = false;
@@ -91,12 +92,17 @@ private String identity;
                         databaseReference.child("last_message").child("time").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Log.e("last message"," inside function");
                                 if(dataSnapshot.getValue()!=null) {
+                                    Log.e("last message"," inside if");
                                     time[0] =Long.parseLong(dataSnapshot.getValue().toString());
                                     if(time[0]==null||time[0]!=null&&d> time[0]){
                                         LastMessage lastMessage=new LastMessage(message.getMessage_body(),(message.getTimestamp()),message.getType(),message.getUid(),message.getStatus());
                                         databaseReference.child("last_message").setValue(lastMessage);
                                     }
+                                }else {
+                                    LastMessage lastMessage=new LastMessage(message.getMessage_body(),(message.getTimestamp()),message.getType(),message.getUid(),message.getStatus());
+                                    databaseReference.child("last_message").setValue(lastMessage);
                                 }
                             }
 

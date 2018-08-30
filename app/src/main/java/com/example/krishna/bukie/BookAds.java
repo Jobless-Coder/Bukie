@@ -29,7 +29,7 @@ public String coverpicthumb;
 
 
     public String getCoverpicthumb() {
-        if(coverpicthumb.equals(""))
+        if(coverpicthumb == null || coverpicthumb.equals(""))
             return coverpic;
         return coverpicthumb;
     }
