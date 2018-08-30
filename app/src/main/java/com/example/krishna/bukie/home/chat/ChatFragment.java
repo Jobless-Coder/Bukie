@@ -63,7 +63,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
    // private MyChatsAdapter myChatsAdapter;
     private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
     private FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
-    private long oneday=86400000l, onemonth=2592000000l,oneyear=31536000000l;
+    private long oneday=86400000L, onemonth=2592000000L,oneyear=31536000000L;
     private FirebaseRecyclerAdapter buyAdapter,sellAdapter;
 
 
@@ -170,7 +170,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 if (holder.username.getBackground() != null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Glide.with(context)
-                            .load(myChats.getCoverpic())
+                            .load(myChats.getCoverpicthumb())
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -242,7 +242,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     }
 
                     Glide.with(context)
-                            .load(myChats.getCoverpic())
+                            .load(myChats.getCoverpicthumb())
                             .into(holder.adpic);
                     if (myChats.getBuyerid().compareTo(uid) == 0) {
                         identity = "buyer";
@@ -360,7 +360,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 if (holder.username.getBackground() != null) {
                     holder.shimmerFrameLayout.startShimmerAnimation();
                     Glide.with(context)
-                            .load(myChats.getCoverpic())
+                            .load(myChats.getCoverpicthumb())
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -432,7 +432,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                     }
 
                     Glide.with(context)
-                            .load(myChats.getCoverpic())
+                            .load(myChats.getCoverpicthumb())
                             .into(holder.adpic);
                     if (myChats.getBuyerid().compareTo(uid) == 0) {
                         identity = "buyer";

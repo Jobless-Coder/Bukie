@@ -67,7 +67,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
             holder.shimmerFrameLayout.startShimmerAnimation();
 
             Glide.with(context)
-                    .load(bookAds.getCoverpic())
+                    .load(bookAds.getCoverpicthumb())
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -95,7 +95,7 @@ public class HomeBookAdsAdapter extends RecyclerView.Adapter<HomeBookAdsAdapter.
         else{
 
             Glide.with(context)
-                    .load(bookAds.getCoverpic())
+                    .load(bookAds.getCoverpicthumb())
                     .into(holder.bookpic);
             holder.booktitle.setText(bookAds.getTitle());
             holder.bookprice.setText(price);

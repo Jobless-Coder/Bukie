@@ -7,7 +7,7 @@ public class MyChats implements Parcelable{
     private  String sellerid;
     private String buyerid;
     private String adid;
-    private String coverpic;
+    private String coverpicthumb;
     private String chatid;
     private String sellerpic;
     private String buyerpic;
@@ -19,7 +19,7 @@ public class MyChats implements Parcelable{
         this.sellerid = sellerid;
         this.buyerid = buyerid;
         this.adid = adid;
-        this.coverpic = coverpic;
+        this.coverpicthumb = coverpic;
         this.chatid = chatid;
         this.sellerpic = sellerpic;
         this.buyerpic = buyerpic;
@@ -78,7 +78,7 @@ public class MyChats implements Parcelable{
         sellerid = in.readString();
         buyerid = in.readString();
         adid = in.readString();
-        coverpic = in.readString();
+        coverpicthumb = in.readString();
         chatid = in.readString();
         buyerpic=in.readString();
         sellerpic=in.readString();
@@ -130,7 +130,7 @@ public class MyChats implements Parcelable{
     }
 
     public String getCoverpic() {
-        return coverpic;
+        return coverpicthumb;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class MyChats implements Parcelable{
         dest.writeString(sellerid);
         dest.writeString(buyerid);
         dest.writeString(adid);
-        dest.writeString(coverpic);
+        dest.writeString(coverpicthumb);
         dest.writeString(chatid);
         dest.writeString(buyerpic);
         dest.writeString(sellerpic);

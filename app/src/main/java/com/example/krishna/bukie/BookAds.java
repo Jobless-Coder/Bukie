@@ -25,6 +25,19 @@ private Integer viewcounter=0;
 private List<String> tagList;
 private boolean isactive;
 private boolean issold;
+public String coverpicthumb;
+
+
+    public String getCoverpicthumb() {
+        if(coverpicthumb.equals(""))
+            return coverpic;
+        return coverpicthumb;
+    }
+
+    public void setBookcoverpicthumb(String bookcoverpicthumb) {
+        this.coverpicthumb = bookcoverpicthumb;
+    }
+
 
     public boolean isIsactive() {
         return isactive;
@@ -70,6 +83,7 @@ private boolean issold;
         this.tagList=tagList;
         this.isactive=isactive;
         this.issold=issold;
+        this.coverpicthumb = "";
     }
 
 
@@ -126,6 +140,7 @@ private boolean issold;
         this.publisher =in.readString();
         this.desc =in.readString();
         this.isbn = in.readString();
+        this.coverpicthumb = in.readString();
 
 
 
@@ -197,6 +212,7 @@ private boolean issold;
         dest.writeString(this.publisher);
         dest.writeString(this.desc);
         dest.writeString(this.isbn);
+        dest.writeString(this.coverpicthumb);
 
 
 

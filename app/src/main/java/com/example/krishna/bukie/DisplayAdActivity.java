@@ -493,8 +493,8 @@ public class DisplayAdActivity extends AppCompatActivity implements DrawControll
 
                         if (task.isSuccessful()) {
 
-                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname,false);
-                            myChatsStatus=new MyChatsStatus(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpic(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
+                            myChats=new MyChats(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpicthumb(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname,false);
+                            myChatsStatus=new MyChatsStatus(bookAds.getSellerid(),uid,bookAds.getAdid(),bookAds.getCoverpicthumb(),chatid,bookAds.getSellerpic(),userprofilepic,bookAds.getSellerfullname(),userfullname);
 
                             DocumentSnapshot snapshot = task.getResult();
 
